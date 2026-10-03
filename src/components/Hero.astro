@@ -54,7 +54,7 @@ import { site } from '../data/site';
   @media (max-width: 48rem) {
     .hero__scene { aspect-ratio: 4 / 3; }
     .hero__fill { object-fit: cover; object-position: 60% 50%; }
-    .hero__layer .hero__cloud:nth-of-type(n + 3) { display: none; }
+    .hero__cloud ~ .hero__cloud ~ .hero__cloud { display: none; }
   }
   .hero__kicker { color: var(--gold-text); margin-bottom: var(--space-s); }
   .hero h1 { font-size: var(--step-4); max-width: 12ch; }
