@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const LAYERS = ['far', 'peaks', 'mid', 'tram'];
+const LAYERS = ['far', 'peaks', 'peaks-front', 'mid', 'tram'];
 
 test('hero scene loads every layer and cloud', async ({ page }) => {
   await page.goto('/');
