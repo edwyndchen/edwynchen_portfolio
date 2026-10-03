@@ -10,9 +10,14 @@ export function scrollShift(scrollFactor: number, maxPercent = 10): number {
   return -maxPercent * scrollFactor || 0;
 }
 
-/** Starting yPercent for a layer at page top: spreads layers away from the Melbourne layer (depth 0.5). */
+/** Starting yPercent at page top: layers behind Melbourne (depth 0.5) start higher, layers in front start lower. */
 export function spreadPercent(depth: number, k = 30): number {
-  return Math.round((depth - 0.5) * -k * 100) / 100 || 0;
+  return Math.round((depth - 0.5) * k * 100) / 100 || 0;
+}
+
+/** Settled yPercent once the scene reaches the top: a tighter landscape than the painting, back layers sink, front layers rise. */
+export function collapsePercent(depth: number, c = 10): number {
+  return Math.round((depth - 0.5) * -c * 100) / 100 || 0;
 }
 
 export function cloudDuration(depth: number, index: number): number {
@@ -54,7 +59,7 @@ export function initHero(root: HTMLElement): () => void {
 
     const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]')];
     // One scrubbed timeline per layer: phase 1 (page top -> scene top reaches viewport top) collapses the
-    // fanned-out spread to the composed view; phase 2 is the existing scroll-out parallax.
+    // tall spread into a tighter landscape; phase 2 is the scroll-out parallax from there.
     const mobile = window.matchMedia('(max-width: 48rem)');
     const settleShare = () => {
       const settle = scene.getBoundingClientRect().top + window.scrollY;
@@ -67,10 +72,13 @@ export function initHero(root: HTMLElement): () => void {
       const build = () => {
         const share = settleShare();
         tl.clear();
+        const collapsed = collapsePercent(depth, mobile.matches ? 6 : 10);
         if (share > 0.001) {
-          tl.fromTo(layer, { yPercent: spreadPercent(depth, mobile.matches ? 16 : 30) }, { yPercent: 0, ease: 'none', duration: share });
+          tl.fromTo(layer, { yPercent: spreadPercent(depth, mobile.matches ? 16 : 30) }, { yPercent: collapsed, ease: 'none', duration: share });
+        } else {
+          tl.set(layer, { yPercent: collapsed });
         }
-        tl.to(layer, { yPercent: scrollShift(factor), ease: 'none', duration: 1 - share });
+        tl.to(layer, { yPercent: collapsed + scrollShift(factor), ease: 'none', duration: 1 - share });
       };
       build();
       return build;

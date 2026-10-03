@@ -83,7 +83,7 @@ async function settleY(page: import('@playwright/test').Page) {
 }
 const farTop = (page: import('@playwright/test').Page) => page.locator('.hero__scene [data-depth]').first().evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
 
-test('desktop: layers start fanned out and collapse to the composed view on scroll', async ({ page }, testInfo) => {
+test('desktop: layers start spread upward and collapse downward on scroll', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
@@ -96,7 +96,7 @@ test('desktop: layers start fanned out and collapse to the composed view on scro
   await page.waitForTimeout(1500);
   const farSettled = await farTop(page);
   const melbSettled = (await melb.boundingBox())!.y + (await page.evaluate(() => window.scrollY));
-  expect(farStart).toBeGreaterThan(farSettled + 20);
+  expect(farSettled).toBeGreaterThan(farStart + 20); // far range starts high and sinks into place
   expect(Math.abs(melbStart - melbSettled)).toBeLessThan(4);
 });
 

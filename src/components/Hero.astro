@@ -64,13 +64,14 @@ import { site } from '../data/site';
   .hero__cta:hover::after { transform: translateY(2px); }
 
   .hero__scene {
-    position: relative; width: 100%; aspect-ratio: 3120 / 1328; overflow: hidden; background: var(--porcelain);
+    /* 16% extra sky above the painting so layers spread upward on load never get their peaks cut flat */
+    position: relative; width: 100%; aspect-ratio: 3120 / 1540; overflow: hidden; background: var(--porcelain);
     /* the art's paper edge dissolves into the glaze instead of ending on a hard line */
     -webkit-mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 7%, var(--cobalt-ink) 94%, transparent);
     mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 7%, var(--cobalt-ink) 94%, transparent);
   }
-  /* layers are slightly oversized so parallax never reveals an edge */
-  .hero__layer { position: absolute; inset: -3% -3%; will-change: transform; }
+  /* layers keep the painting's aspect, sit on the bottom of the scene and are slightly oversized so parallax never reveals an edge */
+  .hero__layer { position: absolute; inset: auto -3% -3% -3%; height: 91.4%; /* 106% width at the painting aspect, inside the 1540-tall scene */ will-change: transform; }
   .hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .hero__cloud { position: absolute; height: auto; }
   .hero__tram { position: absolute; left: 31%; top: 77%; width: 3.6%; height: auto; opacity: 0; }
@@ -79,9 +80,9 @@ import { site } from '../data/site';
   @media (max-width: 48rem) {
     /* Layers keep the art's aspect (2400/1021) and overflow the scene, so %-positioned items stay on
        the artwork. 144% wide, shifted 27% left, frames the Spire (~21-29% across the art) through the
-       Flinders Street clock tower (~88%). Scene aspect = 1.44 * 2.3506 / 1.06 so the layer height is 106%. */
-    .hero__scene { aspect-ratio: 1.73; }
-    .hero__layer { inset: auto; top: -3%; height: 106%; width: 144%; left: -27%; }
+       Flinders Street clock tower (~88%). Scene aspect 1.49 adds the same 16% sky headroom as desktop. */
+    .hero__scene { aspect-ratio: 1.49; }
+    .hero__layer { inset: auto; bottom: -3%; height: 91.3%; width: 144%; left: -27%; }
     .hero__cloud ~ .hero__cloud ~ .hero__cloud { display: none; }
   }
 </style>
