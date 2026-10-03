@@ -10,8 +10,3 @@ for (const path of ['/', '/work/form-guide-redesign/']) {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 }
-
-test('About placeholder character uses the brush calligraphy font', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('.about__placeholder')).toHaveCSS('font-family', /Ma Shan Zheng/);
-});

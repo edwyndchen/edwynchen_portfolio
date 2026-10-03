@@ -1,15 +1,17 @@
 ---
-import Plate from './Plate.astro';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import Flora from './Flora.astro';
+import { webpSize } from '../lib/image-size';
+
+// read the portrait's real pixel size at build, so swapping the file never leaves stale width/height
+const ED_SRC = '/images/ed-porcelain.webp';
+const ed = webpSize(readFileSync(join(process.cwd(), 'public', ED_SRC)));
 ---
-<section id="about" class="about wrap" aria-labelledby="about-title">
+<section id="about" class="about wrap" aria-labelledby="about-title" data-about>
   <Flora plant="gum" side="left" class="flora--about" />
-  <Plate class="about__portrait">
-    <span class="about__placeholder" aria-hidden="true" lang="zh-Hant">陳</span>
-    <img src="/images/ed-portrait.jpg" alt="Edwyn Chen" width="600" height="750" loading="lazy" onerror="this.remove()" />
-  </Plate>
   <div class="about__text" data-reveal-on-scroll>
-    <h2 id="about-title">About me</h2>
+    <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
     <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
     <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
     <h3 class="label">What I do</h3>
@@ -21,33 +23,63 @@ import Flora from './Flora.astro';
       <li>Illustration and brand</li>
     </ul>
   </div>
+  <figure class="about__figure">
+    <img class="about__ed" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
+    <img class="about__cloud about__cloud--back" src="/hero/cloud-n5.webp" alt="" aria-hidden="true" width="1100" height="438" loading="lazy" decoding="async" />
+    <img class="about__cloud about__cloud--left" src="/hero/cloud-n2.webp" alt="" aria-hidden="true" width="1100" height="534" loading="lazy" decoding="async" />
+    <img class="about__cloud about__cloud--right" src="/hero/cloud-n3.webp" alt="" aria-hidden="true" width="1100" height="403" loading="lazy" decoding="async" />
+  </figure>
 </section>
 
 <style>
   .about {
     position: relative; overflow-x: clip; display: grid; gap: var(--space-l) var(--space-xl);
     padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
-    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); align-items: center;
+    grid-template-columns: minmax(0, 1fr); align-items: center;
   }
-  /* the gum branch drapes behind the portrait frame's top corner */
-  :global(.flora--about) { top: calc(var(--space-2xl) - 6rem); }
-  /* Plate renders the element, so its passed class needs :global to be styled from here */
-  .about :global(.about__portrait), .about__text { position: relative; z-index: 1; }
-  .about :global(.about__portrait) { aspect-ratio: 4 / 5; display: grid; place-items: center; overflow: hidden; }
-  /* until Ed's portrait arrives the frame holds its shape around a quiet 陳 in brush calligraphy */
-  .about__placeholder {
-    grid-area: 1 / 1;
-    font-family: var(--font-cjk); font-weight: 400; font-size: clamp(5.5rem, 11vw, 10rem); line-height: 1;
-    color: var(--blue-200);
-  }
-  .about :global(.about__portrait) img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: cover; position: relative; }
+  /* the gum branch hangs above the heading on the text side, clear of Ed and of the letters */
+  :global(.flora--about) { top: calc(var(--space-2xl) - 11.5rem); }
+  .about__text { position: relative; z-index: 1; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
+  .about__mark {
+    font-family: var(--font-cjk); font-weight: 400; font-size: 1.1em; line-height: 1;
+    color: var(--blue-300); margin-inline-start: 0.3em;
+  }
   .about h3 { color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
   .about__caps li { border-top: var(--rule-hair); padding-block: var(--space-3); }
+
+  /* Ed stands free on the page (no frame), sunk into a bank of hero clouds drawn in front of his robes */
+  /* 82% wide so the cloud bank's overhang stays inside the section's overflow clip: no hard cut edges */
+  .about__figure { position: relative; margin: 0 auto; width: 82%; max-width: 26rem; }
+  /* the painting's ribbons run off its right edge: feather that edge so they trail away instead of stopping dead */
+  .about__ed {
+    position: relative; z-index: 1; display: block; width: 100%; height: auto;
+    mask-image: linear-gradient(to left, transparent, #000 9%);
+  }
+  .about__cloud { position: absolute; height: auto; pointer-events: none; transform-origin: 50% 100%; }
+
+  /* Cloud bank: retune here. Each cloud is width / bottom / left-or-right, as % of the figure.
+     At rest the bank sits low and to the sides, catching only the tips of his trailing ribbons; he has flown
+     clear of it. Keep left and right overhang under ~9% or the section clip will slice a cloud. */
+  .about__cloud--back  { z-index: 2; width: 40%; bottom: -12%; left: 34%; }
+  .about__cloud--left  { z-index: 3; width: 56%; bottom: -16%; left: -9%; }
+  .about__cloud--right { z-index: 3; width: 52%; bottom: -9%; right: -8%; }
+  /* room below for the overhanging bank, so it never sits on the next section */
+  .about__figure { margin-bottom: 12%; }
+
+  @media (min-width: 60rem) {
+    .about { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .about__figure { max-width: none; }
+  }
   @media (max-width: 48rem) {
-    .about { grid-template-columns: minmax(0, 1fr); }
-    .about :global(.about__portrait) { width: min(72%, 17rem); }
-    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: calc(var(--space-2xl) + 3rem); }
+    /* phones: tucked top-right beside the heading, clear of the bio */
+    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: calc(var(--space-2xl) - 2rem); }
   }
 </style>
+
+<script>
+  import { initAboutRise } from '../scripts/about-rise';
+  const el = document.querySelector<HTMLElement>('[data-about]');
+  if (el) initAboutRise(el);
+</script>
