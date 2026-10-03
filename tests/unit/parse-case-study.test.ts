@@ -56,6 +56,37 @@ describe('parseCaseStudy', () => {
     ]);
   });
 
+  test('skips metrics with bold spans exceeding 12 characters', () => {
+    const md = `# Test
+## Outcomes
+- **Prototyping productivity up 500%.** Pre-prototyped components...
+`;
+    const { data: testData } = parseCaseStudy(md, { order: 1, discipline: 'product-design' });
+    expect(testData.metrics).toEqual([]);
+  });
+
+  test('skips metrics with bold spans without digits', () => {
+    const md = `# Test
+## Outcomes
+- **Full WCAG AA compliance** across the colour system
+`;
+    const { data: testData } = parseCaseStudy(md, { order: 1, discipline: 'product-design' });
+    expect(testData.metrics).toEqual([]);
+  });
+
+  test('accepts metrics with 12 chars or fewer and at least one digit', () => {
+    const md = `# Test
+## Outcomes
+- **52% faster** delivery times
+- **3.5/5** satisfaction
+`;
+    const { data: testData } = parseCaseStudy(md, { order: 1, discipline: 'product-design' });
+    expect(testData.metrics).toEqual([
+      { value: '52% faster', label: 'Delivery times' },
+      { value: '3.5/5', label: 'Satisfaction' },
+    ]);
+  });
+
   test('passes meta through and leaves cover empty', () => {
     expect(data.order).toBe(1);
     expect(data.discipline).toBe('product-design');
@@ -79,5 +110,13 @@ describe('toMdoc', () => {
     expect(out).toBe(
       '---\ntitle: "A \\"quoted\\" title"\norder: 2\nmetrics:\n  - value: "30%"\n    label: "Faster"\n---\n\n## Overview\n\nHi\n',
     );
+  });
+
+  test('writes empty metrics array as metrics: []', () => {
+    const out = toMdoc(
+      { title: 'T', metrics: [] },
+      'body',
+    );
+    expect(out).toContain('metrics: []');
   });
 });

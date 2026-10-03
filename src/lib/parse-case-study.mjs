@@ -31,8 +31,11 @@ export function parseCaseStudy(markdown, meta) {
   for (const line of section(markdown, 'Outcomes').split('\n')) {
     const bold = line.match(/^- .*?\*\*([^*]+)\*\*/);
     if (!bold) continue;
+    const value = bold[1].trim();
+    // Only accept as metric if: contains a digit AND is at most 12 chars
+    if (!/\d/.test(value) || value.length > 12) continue;
     const label = line.replace(/^- /, '').replace(`**${bold[1]}**`, '').replace(/\s+/g, ' ').trim();
-    data.metrics.push({ value: bold[1].trim(), label: capitalise(label) });
+    data.metrics.push({ value, label: capitalise(label) });
   }
 
   const bodyStart = markdown.indexOf('## Overview');
