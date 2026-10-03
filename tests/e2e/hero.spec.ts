@@ -77,3 +77,34 @@ test('mobile: tram stays inside the scene', async ({ page }, testInfo) => {
   expect(tram.x + tram.width).toBeLessThanOrEqual(scene.x + scene.width);
   expect(tram.y + tram.height).toBeLessThanOrEqual(scene.y + scene.height);
 });
+
+async function settleY(page: import('@playwright/test').Page) {
+  return page.evaluate(() => Math.round(document.querySelector('.hero__scene')!.getBoundingClientRect().top + window.scrollY));
+}
+const farTop = (page: import('@playwright/test').Page) => page.locator('.hero__scene [data-depth]').first().evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+
+test('desktop: layers start fanned out and collapse to the composed view on scroll', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  await page.waitForTimeout(800);
+  const melb = page.locator('.hero__scene [data-depth="0.5"]').first();
+  const farStart = await farTop(page);
+  const melbStart = (await melb.boundingBox())!.y + (await page.evaluate(() => window.scrollY));
+  const y = await settleY(page);
+  await page.evaluate((v) => window.scrollTo(0, v), y);
+  await page.waitForTimeout(1500);
+  const farSettled = await farTop(page);
+  const melbSettled = (await melb.boundingBox())!.y + (await page.evaluate(() => window.scrollY));
+  expect(farStart).toBeGreaterThan(farSettled + 20);
+  expect(Math.abs(melbStart - melbSettled)).toBeLessThan(4);
+});
+
+test('reduced motion: layers do not fan out', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const a = await farTop(page);
+  await page.evaluate((v) => window.scrollTo(0, v), await settleY(page));
+  await page.waitForTimeout(500);
+  expect(Math.abs((await farTop(page)) - a)).toBeLessThan(1);
+});

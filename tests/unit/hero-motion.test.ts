@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { cloudDuration, parallaxOffset, scrollShift } from '../../src/scripts/hero-motion';
+import { cloudDuration, parallaxOffset, scrollShift, spreadPercent } from '../../src/scripts/hero-motion';
 
 describe('parallaxOffset', () => {
   test('centre pointer gives no offset', () => expect(parallaxOffset(0, 0.5)).toBe(0));
@@ -24,4 +24,19 @@ describe('cloudDuration', () => {
   test('very slow: every crossing takes at least 80 seconds', () => {
     for (const d of [0.04, 0.12, 0.35, 1]) for (const i of [0, 1, 2]) expect(cloudDuration(d, i)).toBeGreaterThanOrEqual(80);
   });
+});
+
+describe('spreadPercent', () => {
+  test('Melbourne layer (depth 0.5) stays anchored', () => expect(spreadPercent(0.5)).toBe(0));
+  test('layers behind Melbourne start lower', () => expect(spreadPercent(0.04)).toBeGreaterThan(0));
+  test('layers in front start higher', () => expect(spreadPercent(1)).toBeLessThan(0));
+  test('decreases monotonically with depth', () => {
+    const ds = [0.04, 0.12, 0.35, 0.5, 1];
+    for (let i = 1; i < ds.length; i++) expect(spreadPercent(ds[i])).toBeLessThan(spreadPercent(ds[i - 1]));
+  });
+  test('k scales the spread', () => {
+    expect(spreadPercent(0.04, 60)).toBeCloseTo(spreadPercent(0.04, 30) * 2, 1);
+    expect(spreadPercent(0.04, 16)).toBeLessThan(spreadPercent(0.04, 30));
+  });
+  test('rounded to 2dp', () => expect(spreadPercent(0.04)).toBe(13.8));
 });

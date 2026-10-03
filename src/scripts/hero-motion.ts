@@ -10,6 +10,11 @@ export function scrollShift(scrollFactor: number, maxPercent = 10): number {
   return -maxPercent * scrollFactor || 0;
 }
 
+/** Starting yPercent for a layer at page top: spreads layers away from the Melbourne layer (depth 0.5). */
+export function spreadPercent(depth: number, k = 30): number {
+  return Math.round((depth - 0.5) * -k * 100) / 100 || 0;
+}
+
 export function cloudDuration(depth: number, index: number): number {
   return 200 - depth * 110 + (index % 3) * 15;
 }
@@ -21,6 +26,7 @@ export function initHero(root: HTMLElement): () => void {
   gsap.registerPlugin(ScrollTrigger);
 
   let onMove: ((e: PointerEvent) => void) | undefined;
+  let removeRefresh: (() => void) | undefined;
 
   const ctx = gsap.context(() => {
     gsap.fromTo('[data-reveal]', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
@@ -47,13 +53,32 @@ export function initHero(root: HTMLElement): () => void {
     gsap.to('.hero__cross circle', { opacity: 0.35, duration: 2.4, stagger: { each: 0.5, repeat: -1, yoyo: true }, ease: 'sine.inOut' });
 
     const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]')];
-    layers.forEach((layer) =>
-      gsap.to(layer, {
-        yPercent: scrollShift(Number(layer.dataset.scroll)),
-        ease: 'none',
-        scrollTrigger: { trigger: scene, start: 'top top', end: 'bottom top', scrub: true },
-      }),
-    );
+    // One scrubbed timeline per layer: phase 1 (page top -> scene top reaches viewport top) collapses the
+    // fanned-out spread to the composed view; phase 2 is the existing scroll-out parallax.
+    const mobile = window.matchMedia('(max-width: 48rem)');
+    const settleShare = () => {
+      const settle = scene.getBoundingClientRect().top + window.scrollY;
+      return settle / (settle + scene.offsetHeight);
+    };
+    const builders = layers.map((layer) => {
+      const depth = Number(layer.dataset.depth);
+      const factor = Number(layer.dataset.scroll);
+      const tl = gsap.timeline({ scrollTrigger: { trigger: scene, start: 0, end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true } });
+      const build = () => {
+        const share = settleShare();
+        tl.clear();
+        if (share > 0.001) {
+          tl.fromTo(layer, { yPercent: spreadPercent(depth, mobile.matches ? 16 : 30) }, { yPercent: 0, ease: 'none', duration: share });
+        }
+        tl.to(layer, { yPercent: scrollShift(factor), ease: 'none', duration: 1 - share });
+      };
+      build();
+      return build;
+    });
+    // layout changes (resize, fonts, images) move the scene, so the phase split is recomputed on every refresh
+    const onRefreshInit = () => builders.forEach((b) => b());
+    ScrollTrigger.addEventListener('refreshInit', onRefreshInit);
+    removeRefresh = () => ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
 
     if (window.matchMedia('(pointer: fine)').matches) {
       onMove = (e: PointerEvent) => {
@@ -71,6 +96,7 @@ export function initHero(root: HTMLElement): () => void {
 
   return () => {
     if (onMove) scene.removeEventListener('pointermove', onMove);
+    removeRefresh?.();
     ctx.revert();
   };
 }
