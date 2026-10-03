@@ -34,8 +34,11 @@ import { site } from '../data/site';
   }
   .nav__links a:hover { color: var(--action-primary-hover); }
   .nav__links a:active { color: var(--action-primary-active); }
+  /* small phones (320-415px): tighten so brand + three links never overflow */
   @media (max-width: 26rem) {
-    .nav__links a { letter-spacing: 0.12em; }
+    .nav__links { gap: 0.625rem; }
+    .nav__links a { letter-spacing: 0.06em; }
+    .nav__brand :global(svg) { height: 20px; width: auto; }
   }
 </style>
 
