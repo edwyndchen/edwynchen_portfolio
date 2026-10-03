@@ -20,6 +20,8 @@ export function initHero(root: HTMLElement): () => void {
   if (!scene) return () => {};
   gsap.registerPlugin(ScrollTrigger);
 
+  let onMove: ((e: PointerEvent) => void) | undefined;
+
   const ctx = gsap.context(() => {
     gsap.from('[data-reveal]', { y: 24, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
 
@@ -53,7 +55,7 @@ export function initHero(root: HTMLElement): () => void {
     );
 
     if (window.matchMedia('(pointer: fine)').matches) {
-      scene.addEventListener('pointermove', (e) => {
+      onMove = (e: PointerEvent) => {
         const r = scene.getBoundingClientRect();
         const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
         const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
@@ -61,9 +63,13 @@ export function initHero(root: HTMLElement): () => void {
           const depth = Number(layer.dataset.depth);
           gsap.to(layer, { x: parallaxOffset(nx, depth), y: parallaxOffset(ny, depth, 10), duration: 1.2, ease: 'power3.out', overwrite: 'auto' });
         });
-      });
+      };
+      scene.addEventListener('pointermove', onMove);
     }
   }, root);
 
-  return () => ctx.revert();
+  return () => {
+    if (onMove) scene.removeEventListener('pointermove', onMove);
+    ctx.revert();
+  };
 }

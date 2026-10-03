@@ -24,6 +24,8 @@ test('contact has a mailto link', async ({ page }) => {
 });
 
 test('home has no axe violations', async ({ page }) => {
+  // reduced motion: skips the hero fade-in so axe never samples mid-fade colours
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(results.violations).toEqual([]);

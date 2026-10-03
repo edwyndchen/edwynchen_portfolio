@@ -43,3 +43,37 @@ test('reduced motion: scene is still, tram parked and visible, copy visible', as
   await expect(tram).toHaveCSS('opacity', '1');
   await expect(page.locator('#hero-title')).toHaveCSS('opacity', '1');
 });
+
+test('reduced motion: clouds are spread across the scene, not stacked', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const clouds = page.locator('.hero__scene .hero__cloud');
+  expect(await clouds.count()).toBe(9);
+  const xs: number[] = [];
+  for (let i = 0; i < 9; i++) {
+    const box = await clouds.nth(i).boundingBox(); // null when hidden (extra clouds are hidden on mobile)
+    if (box) xs.push(box.x);
+  }
+  expect(xs.length).toBeGreaterThan(3);
+  expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(20);
+});
+
+test('mobile: tram stays inside the scene', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  // fill images must not be cropped (box aspect == artwork aspect), else %-positioned tram drifts off the bridge
+  for (const el of await page.locator('.hero__fill').all()) {
+    const { box, natural } = await el.evaluate((i: HTMLImageElement) => {
+      const r = i.getBoundingClientRect();
+      return { box: r.width / r.height, natural: i.naturalWidth / i.naturalHeight };
+    });
+    expect(Math.abs(box / natural - 1)).toBeLessThan(0.03);
+  }
+  const tram = (await page.locator('[data-tram]').boundingBox())!;
+  const scene = (await page.locator('.hero__scene').boundingBox())!;
+  expect(tram.x).toBeGreaterThanOrEqual(scene.x);
+  expect(tram.y).toBeGreaterThanOrEqual(scene.y);
+  expect(tram.x + tram.width).toBeLessThanOrEqual(scene.x + scene.width);
+  expect(tram.y + tram.height).toBeLessThanOrEqual(scene.y + scene.height);
+});
