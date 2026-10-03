@@ -4,8 +4,8 @@ export const site = {
   location: 'Melbourne',
   email: 'edchen0203@gmail.com',
   // Not supplied yet. Components render these links only when non-empty.
-  linkedin: '',
-  resume: '',
+  linkedin: '' as string,
+  resume: '' as string,
   nav: [
     { label: 'Work', href: '/#work' },
     { label: 'About', href: '/#about' },

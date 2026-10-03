@@ -1,0 +1,26 @@
+---
+import { site } from '../data/site';
+---
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__copy wrap">
+    <p class="label hero__kicker" data-reveal>{site.role}, {site.location}</p>
+    <h1 id="hero-title" data-reveal>{site.name}</h1>
+    <p class="hero__line" data-reveal>I design products that make complicated things easy to use. Most recently, bounce rate down 52% on the Punters form guide.</p>
+    <a class="hero__cta" href="#work" data-reveal>View work</a>
+  </div>
+  <div class="hero__scene" aria-hidden="true"></div>
+</section>
+
+<style>
+  .hero { overflow: clip; }
+  .hero__copy { padding-top: clamp(3rem, 8vh, 7rem); padding-bottom: var(--space-l); }
+  .hero__scene { position: relative; width: 100%; aspect-ratio: 3120 / 1328; }
+  .hero__kicker { color: var(--gold-text); margin-bottom: var(--space-s); }
+  .hero h1 { font-size: var(--step-4); max-width: 12ch; }
+  .hero__line { font-size: var(--step-1); max-width: 34ch; margin-top: var(--space-m); }
+  .hero__cta {
+    display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.5rem;
+    border: var(--rule); font-weight: 600; text-decoration: none; letter-spacing: 0.04em;
+  }
+  .hero__cta:hover { background: var(--cobalt); color: var(--porcelain); }
+</style>

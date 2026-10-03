@@ -1,0 +1,20 @@
+---
+import { site } from '../data/site';
+---
+<section id="contact" class="contact wrap" aria-labelledby="contact-title">
+  <h2 id="contact-title">Have a project or a role in mind?</h2>
+  <p>Keen to hear about it. Email is quickest.</p>
+  <ul class="contact__links">
+    <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+    {site.linkedin && <li><a href={site.linkedin}>LinkedIn</a></li>}
+    {site.resume && <li><a href={site.resume}>Resume</a></li>}
+  </ul>
+</section>
+
+<style>
+  .contact { padding-block: var(--space-xl); text-align: center; }
+  .contact h2 { font-size: var(--step-3); margin-inline: auto; max-width: 18ch; }
+  .contact p { margin: var(--space-m) auto; }
+  .contact__links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-m); }
+  .contact__links a { display: inline-flex; align-items: center; min-height: 48px; font-size: var(--step-1); font-family: var(--font-display); }
+</style>

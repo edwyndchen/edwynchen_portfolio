@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Plate from './Plate.astro';
+import { sortCaseStudies } from '../lib/case-studies';
+const studies = sortCaseStudies(await getCollection('caseStudies'));
+---
+<section id="work" class="work wrap" aria-labelledby="work-title">
+  <h2 id="work-title">Selected work</h2>
+  <ol class="work__list">
+    {studies.map((s, i) => (
+      <li data-reveal-on-scroll>
+        <Plate as="article" class="work__plate">
+          {s.data.cover && <img class="work__cover" src={s.data.cover} alt={s.data.coverAlt} width="800" height="450" loading="lazy" />}
+          <p class="label work__meta"><span class="work__num">{String(i + 1).padStart(2, '0')}</span> {s.data.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
+          <h3><a href={`/work/${s.id}/`}>{s.data.title}</a></h3>
+          <p class="work__outcome">{s.data.outcome}</p>
+        </Plate>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .work { padding-block: var(--space-xl); }
+  .work h2 { font-size: var(--step-3); margin-bottom: var(--space-l); }
+  .work__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l); grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); }
+  .work__plate { height: 100%; position: relative; }
+  .work__cover { width: 100%; height: auto; margin-bottom: var(--space-m); mix-blend-mode: multiply; }
+  .work__num { color: var(--gold-text); margin-right: 0.5rem; }
+  .work h3 { font-size: var(--step-2); margin: var(--space-xs) 0 var(--space-s); }
+  .work h3 a { color: var(--cobalt-ink); text-decoration: none; }
+  .work h3 a::after { content: ''; position: absolute; inset: 0; }
+  .work__plate:hover h3 a, .work h3 a:focus-visible { text-decoration: underline; }
+  .work__outcome { margin: 0; }
+</style>

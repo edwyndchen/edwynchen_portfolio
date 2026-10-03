@@ -1,0 +1,31 @@
+---
+import Plate from './Plate.astro';
+---
+<section id="about" class="about wrap" aria-labelledby="about-title">
+  <Plate class="about__portrait">
+    <img src="/images/ed-portrait.jpg" alt="Edwyn Chen" width="600" height="750" loading="lazy" onerror="this.remove()" />
+  </Plate>
+  <div class="about__text" data-reveal-on-scroll>
+    <h2 id="about-title">About me</h2>
+    <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
+    <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
+    <h3 class="label">What I do</h3>
+    <ul class="about__caps">
+      <li>Product and UX design</li>
+      <li>Design systems</li>
+      <li>Accessibility</li>
+      <li>Prototyping</li>
+      <li>Illustration and brand</li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .about { display: grid; gap: var(--space-xl); padding-block: var(--space-xl); grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; }
+  .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
+  .about h3 { font-family: var(--font-body); color: var(--gold-text); margin-top: var(--space-l); }
+  .about__portrait { aspect-ratio: 4 / 5; display: grid; place-items: center; }
+  .about__portrait img { width: 100%; height: 100%; object-fit: cover; }
+  .about__caps { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  @media (max-width: 48rem) { .about { grid-template-columns: 1fr; } }
+</style>

@@ -29,3 +29,12 @@ purple, teal, neon, gradient, glossy 3D render, photograph, watercolour bleed, b
 - Round 2 (T3–T6): porcelain brush style chosen (T6 the favourite). Melbourne 108 and Eureka removed: too busy, and the model drew Eureka instead of 108.
 - Round 3 (T7–T10): **Hero = T7 option A** (`7fe457e1-a346-44db-a466-2c1e0affc431`): Arts Centre Spire left, Flinders Street Station right, mountains and cloud scrolls, tram on an arched bridge. Only those two landmarks, no other buildings.
 - Corner ornaments rejected ("won't work on a webpage"). Flora appears as free-floating spot illustrations instead. **Style = the waratah sprig (T9).** Each plant separate: waratah, wattle, banksia, gum leaves as their own pieces.
+
+## Batch 1 (hero) — approved approach, 2026-10-03
+
+Final hero = approved option A (`7fe457e1`) split into depth layers via Seedream edits, not regenerated: far range (`66bbdbe7`), peaks (`1f44e585`), Melbourne without mountains (`99f59d83`), tram (`8b3d4601`), clouds n1–n7 with tails trailing left (`764a9c9e`, `bd2f1582`, `9eae2eaf`, `7291d28c`, `938aa88b`, `356d8276`, `c3c2ede5`). Editable full-size sources live in `art/hero-source/`; Ed edits them and runs `node art/hero-source/build.mjs` (solid white fill under shapes, softened cloud outlines, outputs to `public/hero/`).
+
+## Batch 2 (flora + covers) — approved by Ed, 2026-10-03
+
+- Flora, one species each: waratah `268ebda7`, wattle `85f775bc`, banksia `8b663646`, gum branch `2b8b9cd0`.
+- Covers: form guide horse `cc3601d9`, EonX lattice `be5eec04`, Pay By Account coin `29e8a24f`, Punters pattern-book page `a8b707a0` (re-roll; v1 `b1bd6669` rejected: physical tiles with shadows and a Japanese-looking wave).
