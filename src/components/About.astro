@@ -23,13 +23,30 @@ import Flora from './Flora.astro';
 </section>
 
 <style>
-  .about { position: relative; overflow-x: clip; display: grid; gap: var(--space-xl); padding-block: var(--space-xl); grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; }
-  :global(.flora--about) { bottom: 0; }
-  .about__portrait, .about__text { position: relative; z-index: 1; }
+  .about {
+    position: relative; overflow-x: clip; display: grid; gap: var(--space-l) var(--space-xl);
+    padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); align-items: center;
+  }
+  /* the gum branch drapes behind the portrait frame's top corner */
+  :global(.flora--about) { top: calc(var(--space-2xl) - 6rem); }
+  /* Plate renders the element, so its passed class needs :global to be styled from here */
+  .about :global(.about__portrait), .about__text { position: relative; z-index: 1; }
+  .about :global(.about__portrait) { aspect-ratio: 4 / 5; display: grid; place-items: center; overflow: hidden; }
+  /* until Ed's portrait arrives the frame holds its shape around a quiet seal character */
+  .about :global(.about__portrait)::before {
+    content: '\9648'; grid-area: 1 / 1;
+    font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: clamp(5rem, 10vw, 9rem); line-height: 1;
+    color: var(--cobalt-wash);
+  }
+  .about :global(.about__portrait) img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: cover; position: relative; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
-  .about h3 { font-family: var(--font-body); color: var(--gold-text); margin-top: var(--space-l); }
-  .about__portrait { aspect-ratio: 4 / 5; display: grid; place-items: center; }
-  .about__portrait img { width: 100%; height: 100%; object-fit: cover; }
-  .about__caps { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
-  @media (max-width: 48rem) { .about { grid-template-columns: 1fr; } }
+  .about h3 { font-family: var(--font-body); color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
+  .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
+  .about__caps li { border-top: var(--rule-soft); padding-block: 0.5rem; }
+  @media (max-width: 48rem) {
+    .about { grid-template-columns: minmax(0, 1fr); }
+    .about :global(.about__portrait) { width: min(72%, 17rem); }
+    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: calc(var(--space-2xl) + 3rem); }
+  }
 </style>

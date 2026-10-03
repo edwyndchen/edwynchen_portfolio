@@ -36,8 +36,10 @@ const d = entry.data;
       <AtAGlance data={d} />
     </div>
 
-    <div class="wrap prose case-body">
-      <Content />
+    <div class="wrap case-body">
+      <div class="prose">
+        <Content />
+      </div>
     </div>
   </article>
   <CaseNav prev={prev} next={next} />
@@ -47,9 +49,11 @@ const d = entry.data;
   .case-head { padding-top: var(--space-xl); position: relative; overflow-x: clip; }
   :global(.flora--case) { top: var(--space-l); }
   .case-head > :global(.plate), .case-head__cover { position: relative; z-index: 1; }
-  .case-head h1 { font-size: var(--step-4); margin: var(--space-s) 0; }
+  .case-head h1 { font-size: var(--step-4); margin: var(--space-s) 0 var(--space-m); }
   .case-head__kicker { color: var(--gold-text); margin: 0; }
-  .case-head__dek { font-size: var(--step-1); margin: 0; }
+  .case-head__dek { font-size: var(--step-1); line-height: 1.45; margin: 0; max-width: 40ch; }
   .case-head__cover { margin-top: var(--space-l); width: 100%; height: auto; mix-blend-mode: multiply; }
-  .case-summary { display: grid; gap: var(--space-xl); padding-block: var(--space-xl); }
+  /* results first, then the facts, then a longer pause before the story starts */
+  .case-summary { display: grid; gap: var(--space-xl); padding-top: var(--space-xl); }
+  .case-body { padding-top: var(--space-2xl); }
 </style>

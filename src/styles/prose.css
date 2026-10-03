@@ -1,6 +1,7 @@
 .prose { max-width: var(--measure); }
-.prose h2 { font-size: var(--step-2); margin: var(--space-xl) 0 var(--space-m); }
-.prose h3 { font-size: var(--step-1); margin: var(--space-l) 0 var(--space-s); }
+.prose h2 { font-size: var(--step-2); margin: clamp(3rem, 2.4rem + 2.4vw, 4.75rem) 0 var(--space-s); }
+.prose > :first-child { margin-top: 0; }
+.prose h3 { font-size: var(--step-1); margin: var(--space-l) 0 var(--space-xs); }
 .prose ul, .prose ol { padding-left: 1.2em; }
 .prose li { margin-bottom: 0.4em; }
 .prose li::marker { color: var(--cobalt); }

@@ -16,11 +16,11 @@ h1, h2, h3 {
   font-family: var(--font-display);
   font-weight: 500;
   line-height: 1.05;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0;
   text-wrap: balance;
 }
-p { margin: 0 0 1em; max-width: var(--measure); }
+p { margin: 0 0 1em; max-width: var(--measure); text-wrap: pretty; }
 a { color: var(--cobalt); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; }
@@ -41,6 +41,13 @@ a:hover { text-decoration-thickness: 2px; }
   background: var(--cobalt-ink); color: var(--porcelain); padding: 0.75rem 1rem;
 }
 .skip-link:focus { top: 1rem; }
+
+/* Hero copy starts hidden only when JS is running and motion is allowed, so it never
+   flashes in then out. If the hero script never runs, the fallback brings it back. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] { opacity: 0; animation: reveal-fallback 0s 2.5s forwards; }
+}
+@keyframes reveal-fallback { to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

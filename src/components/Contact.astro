@@ -14,11 +14,16 @@ import Flora from './Flora.astro';
 </section>
 
 <style>
-  .contact { padding-block: var(--space-xl); text-align: center; position: relative; overflow-x: clip; }
+  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); text-align: center; position: relative; overflow-x: clip; }
   :global(.flora--contact) { top: var(--space-l); }
   .contact h2, .contact p, .contact__links { position: relative; z-index: 1; }
-  .contact h2 { font-size: var(--step-3); margin-inline: auto; max-width: 18ch; }
-  .contact p { margin: var(--space-m) auto; }
-  .contact__links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-m); }
-  .contact__links a { display: inline-flex; align-items: center; min-height: 48px; font-size: var(--step-1); font-family: var(--font-display); }
+  .contact h2 { font-size: var(--step-3); margin-inline: auto; max-width: 16ch; }
+  .contact p { margin: var(--space-m) auto var(--space-s); }
+  .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-m); }
+  .contact__links a { display: inline-flex; align-items: center; min-height: 48px; font-size: var(--step-1); font-family: var(--font-display); overflow-wrap: anywhere; }
+  /* on a phone the wattle sits above the heading, not over it */
+  @media (max-width: 48rem) {
+    .contact { padding-top: calc(var(--space-xl) + 5rem); }
+    :global(.flora--contact) { top: var(--space-l); }
+  }
 </style>

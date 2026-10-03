@@ -23,17 +23,30 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
 </section>
 
 <style>
-  .work { padding-block: var(--space-xl); position: relative; overflow-x: clip; }
+  .work { padding-top: var(--space-xl); position: relative; overflow-x: clip; }
   :global(.flora--work) { top: 0; }
   .work h2, .work__list { position: relative; z-index: 1; }
   .work h2 { font-size: var(--step-3); margin-bottom: var(--space-l); }
-  .work__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l); grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); }
-  .work__plate { height: 100%; position: relative; }
+  .work__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l) var(--space-xl); align-items: start; }
+  /* two columns, the right one dropped half a step: a catalogue wall, not a tiled grid */
+  @media (min-width: 60rem) {
+    .work__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .work__list { padding-bottom: var(--space-xl); }
+    .work__list > li:nth-child(even) { translate: 0 var(--space-xl); }
+  }
+  /* Plate renders the element, so its passed class needs :global to be styled from here */
+  .work :global(.work__plate) { position: relative; transition: box-shadow 0.25s var(--ease-settle); }
   .work__cover { width: 100%; height: auto; margin-bottom: var(--space-m); mix-blend-mode: multiply; }
+  .work__meta { margin-bottom: 0; }
   .work__num { color: var(--gold-text); margin-right: 0.5rem; }
   .work h3 { font-size: var(--step-2); margin: var(--space-xs) 0 var(--space-s); }
   .work h3 a { color: var(--cobalt-ink); text-decoration: none; }
   .work h3 a::after { content: ''; position: absolute; inset: 0; }
-  .work__plate:hover h3 a, .work h3 a:focus-visible { text-decoration: underline; }
-  .work__outcome { margin: 0; }
+  .work :global(.work__plate:hover) h3 a, .work h3 a:focus-visible { text-decoration: underline; }
+  .work__outcome { margin: 0; max-width: 46ch; }
+  /* focus ring around the whole plate (the stretched link covers it), clear of the double keyline */
+  @supports selector(:has(*)) {
+    .work h3 a:focus-visible { outline: none; }
+    .work :global(.work__plate:has(a:focus-visible)) { box-shadow: 0 0 0 4px var(--porcelain), 0 0 0 6px var(--cobalt); }
+  }
 </style>
