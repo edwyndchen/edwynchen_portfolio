@@ -1,0 +1,22 @@
+---
+import SouthernCross from './SouthernCross.astro';
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p class="label">© {year} {site.name}</p>
+    <p class="footer__made">
+      Made in Melbourne
+      <SouthernCross class="footer__cross" />
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: var(--rule-soft); padding-block: var(--space-l); margin-top: var(--space-xl); }
+  .footer__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-s); }
+  .footer p { margin: 0; }
+  .footer__made { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--step--1); }
+  .footer__cross { width: 1rem; height: 1rem; color: var(--wattle-gold); }
+</style>

@@ -1,6 +1,7 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 ---
-<html lang="en-AU">
-  <head><meta charset="utf-8" /><title>Edwyn Chen</title></head>
-  <body><h1>Edwyn Chen</h1></body>
-</html>
+<BaseLayout title={`${site.name}, ${site.role} in ${site.location}`} description="Product design portfolio of Edwyn Chen, Melbourne.">
+  <h1 class="wrap">{site.name}</h1>
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import SouthernCross from './SouthernCross.astro';
+interface Props { size?: number }
+const { size = 44 } = Astro.props;
+---
+<span class="seal" style={`--size:${size}px`} aria-hidden="true">
+  <span class="seal__char">陈</span>
+  <SouthernCross class="seal__cross" />
+</span>
+
+<style>
+  .seal {
+    position: relative; display: inline-grid; place-items: center;
+    width: var(--size); height: var(--size);
+    border: 2px solid var(--wattle-gold); border-radius: 18%;
+    color: var(--wattle-gold);
+  }
+  .seal__char {
+    font-family: 'Noto Serif SC', serif; font-weight: 700;
+    font-size: calc(var(--size) * 0.58); line-height: 1;
+  }
+  .seal__cross {
+    position: absolute; right: 7%; bottom: 7%;
+    width: 26%; height: 26%;
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+interface Props { class?: string; title?: string }
+const { class: className, title } = Astro.props;
+const stars = [
+  { x: 50, y: 8, r: 3.2 },   // Gacrux
+  { x: 44, y: 92, r: 3.6 },  // Acrux
+  { x: 14, y: 46, r: 3.2 },  // Mimosa
+  { x: 80, y: 36, r: 2.6 },  // Delta Crucis
+  { x: 62, y: 62, r: 1.6 },  // Epsilon Crucis
+];
+---
+<svg class={className} viewBox="0 0 100 100" role={title ? 'img' : undefined} aria-hidden={title ? undefined : 'true'}>
+  {title && <title>{title}</title>}
+  {stars.map((s) => (
+    <path
+      d={`M${s.x} ${s.y - s.r * 2} L${s.x + s.r * 0.45} ${s.y - s.r * 0.45} L${s.x + s.r * 2} ${s.y} L${s.x + s.r * 0.45} ${s.y + s.r * 0.45} L${s.x} ${s.y + s.r * 2} L${s.x - s.r * 0.45} ${s.y + s.r * 0.45} L${s.x - s.r * 2} ${s.y} L${s.x - s.r * 0.45} ${s.y - s.r * 0.45} Z`}
+      fill="currentColor"
+    />
+  ))}
+</svg>

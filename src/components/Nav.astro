@@ -1,0 +1,38 @@
+---
+import Seal from './Seal.astro';
+import { site } from '../data/site';
+---
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="nav__brand" href="/">
+      <Seal size={36} />
+      <span>{site.name}</span>
+    </a>
+    <nav aria-label="Main">
+      <ul class="nav__links">
+        {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--porcelain) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: var(--rule-soft);
+  }
+  .nav__inner { display: flex; align-items: center; justify-content: space-between; min-height: 4rem; }
+  .nav__brand {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    font-family: var(--font-display); font-size: 1.25rem; color: var(--cobalt-ink); text-decoration: none;
+  }
+  .nav__links { display: flex; gap: clamp(1rem, 3vw, 2.5rem); list-style: none; margin: 0; padding: 0; }
+  .nav__links a {
+    display: inline-block; padding: 0.75rem 0; min-height: 44px;
+    font-size: var(--step--1); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--cobalt-ink); text-decoration: none;
+  }
+  .nav__links a:hover { color: var(--cobalt); text-decoration: underline; }
+</style>
