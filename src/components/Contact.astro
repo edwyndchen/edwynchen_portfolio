@@ -1,7 +1,9 @@
 ---
 import { site } from '../data/site';
+import Flora from './Flora.astro';
 ---
 <section id="contact" class="contact wrap" aria-labelledby="contact-title">
+  <Flora plant="wattle" side="right" class="flora--contact" />
   <h2 id="contact-title">Have a project or a role in mind?</h2>
   <p>Keen to hear about it. Email is quickest.</p>
   <ul class="contact__links">
@@ -12,7 +14,9 @@ import { site } from '../data/site';
 </section>
 
 <style>
-  .contact { padding-block: var(--space-xl); text-align: center; }
+  .contact { padding-block: var(--space-xl); text-align: center; position: relative; overflow-x: clip; }
+  :global(.flora--contact) { top: var(--space-l); }
+  .contact h2, .contact p, .contact__links { position: relative; z-index: 1; }
   .contact h2 { font-size: var(--step-3); margin-inline: auto; max-width: 18ch; }
   .contact p { margin: var(--space-m) auto; }
   .contact__links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-m); }

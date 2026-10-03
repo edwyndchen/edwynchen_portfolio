@@ -1,0 +1,12 @@
+---
+interface Props { plant: 'waratah' | 'wattle' | 'banksia' | 'gum'; side?: 'left' | 'right'; class?: string }
+const { plant, side = 'right', class: className } = Astro.props;
+---
+<img class:list={['flora', `flora--${side}`, className]} src={`/flora/${plant}.webp`} alt="" width="700" height="525" loading="lazy" decoding="async" />
+
+<style>
+  .flora { position: absolute; width: clamp(110px, 16vw, 240px); height: auto; pointer-events: none; z-index: 0; }
+  .flora--right { right: calc(var(--gutter) * -0.5); }
+  .flora--left { left: calc(var(--gutter) * -0.5); }
+  @media (max-width: 48rem) { .flora { width: 96px; opacity: 0.9; } }
+</style>

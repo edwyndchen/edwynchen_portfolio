@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Plate from '../../components/Plate.astro';
+import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
 import StatPanels from '../../components/StatPanels.astro';
 import CaseNav from '../../components/CaseNav.astro';
@@ -21,6 +22,7 @@ const d = entry.data;
 <BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
   <article>
     <header class="wrap case-head">
+      <Flora plant="banksia" side="right" class="flora--case" />
       <Plate>
         <p class="label case-head__kicker">{d.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
         <h1>{d.title}</h1>
@@ -42,7 +44,9 @@ const d = entry.data;
 </BaseLayout>
 
 <style>
-  .case-head { padding-top: var(--space-xl); }
+  .case-head { padding-top: var(--space-xl); position: relative; overflow-x: clip; }
+  :global(.flora--case) { top: var(--space-l); }
+  .case-head > :global(.plate), .case-head__cover { position: relative; z-index: 1; }
   .case-head h1 { font-size: var(--step-4); margin: var(--space-s) 0; }
   .case-head__kicker { color: var(--gold-text); margin: 0; }
   .case-head__dek { font-size: var(--step-1); margin: 0; }
