@@ -1,0 +1,127 @@
+/* ============================================================
+   COLORS — Blue-and-white porcelain (青花) palette
+   Full 50–950 primitive scales, then semantic aliases.
+   Every -500 meets WCAG AA (>=4.5:1) as text on its own -50.
+   ============================================================ */
+:root {
+  /* --- Porcelain cobalt (青花 blue) : the primary brand hue --- */
+  --blue-950: #16233f; /* deepest ink-navy, dark surfaces / footer */
+  --blue-900: #1d2f52;
+  --blue-800: #24406f;
+  --blue-700: #2b4c86; /* PRIMARY — the cobalt of the wordmark */
+  --blue-600: #33589a;
+  --blue-500: #4269ad; /* illustration mid-blue */
+  --blue-400: #6d8bc4;
+  --blue-300: #9bb1d7;
+  --blue-200: #c4d1e8;
+  --blue-100: #dee6f2;
+  --blue-50:  #eef2f9;
+
+  /* --- Paper / porcelain glaze — warm ivory → deep clay neutral --- */
+  --paper-0:   #ffffff; /* glaze white — the fired porcelain body */
+  --paper-950:  #171410;
+  --paper-900:  #211c15;
+  --paper-800:  #342c1e;
+  --paper-700:  #483c28; /* warm taupe: 4.5:1+ on paper-50 */
+  --paper-600:  #5b4c31;
+  --paper-500:  #6f5c3b;
+  --paper-400:  #a6987e;
+  --paper-300:  #ddd4c0;
+  --paper-200:  #ebe5d6;
+  --paper-100:  #f4f0e6;
+  --paper-50:   #faf8f2;
+
+  /* --- Ink — warm graphite neutral for text --- */
+  --ink-950:    #101110;
+  --ink-900:    #1b1c1a; /* primary ink */
+  --ink-800:    #2b2c29;
+  --ink-700:    #3a3b38;
+  --ink-600:    #53544f;
+  --ink-500:    #6b6c66; /* muted ink */
+  --ink-400:    #8f9089;
+  --ink-300:    #b6b7af;
+  --ink-200:    #d7d8d3;
+  --ink-100:    #ebebe9;
+  --ink-50:     #f5f5f4;
+
+  /* --- Gilt gold (描金) — warm metallic accent --- */
+  --gold-950:   #1e1808;
+  --gold-900:   #33280b;
+  --gold-800:   #4a390d;
+  --gold-700:   #624a0d;
+  --gold-600:   #795b0d;
+  --gold-500:   #8f6b10; /* GOLD — AA text accent */
+  --gold-400:   #e8be54; /* bright gilt fill */
+  --gold-300:   #e9ce8b;
+  --gold-200:   #eddfba;
+  --gold-100:   #f4eedf;
+  --gold-50:    #faf8f3;
+
+  /* --- Seal red (印章) — stamp accent --- */
+  --seal-950:   #1c0c0a;
+  --seal-900:   #3d1713;
+  --seal-800:   #602019;
+  --seal-700:   #84281e;
+  --seal-600:   #a93023;
+  --seal-500:   #cb3a2a; /* SEAL — AA text accent */
+  --seal-400:   #db6d61;
+  --seal-300:   #e19b94;
+  --seal-200:   #e9c3be;
+  --seal-100:   #f2e2e0;
+  --seal-50:    #f9f4f3;
+
+  /* --- Celadon — secondary botanical green --- */
+  --celadon-950: #0f170f;
+  --celadon-900: #1b2a1a;
+  --celadon-800: #253e24;
+  --celadon-700: #2f532e;
+  --celadon-600: #396838;
+  --celadon-500: #447b42; /* AA text accent */
+  --celadon-400: #84ba82;
+  --celadon-300: #aacca9;
+  --celadon-200: #cbddca;
+  --celadon-100: #e6ede5;
+  --celadon-50: #f5f7f5;
+
+  /* ============================================================
+     SEMANTIC ALIASES — reference these in components, not primitives
+     ============================================================ */
+  /* Surfaces */
+  --surface-page:        var(--paper-50);
+  --surface-raised:      var(--paper-0);
+  --surface-scroll:      var(--paper-100);
+  --surface-sunken:      var(--paper-100);
+  --surface-invert:      var(--blue-950); /* dark sections / footer */
+  --surface-brand:       var(--blue-700);
+  --surface-brand-soft:  var(--blue-50);
+
+  /* Text */
+  --text-primary:    var(--ink-900);
+  --text-secondary:  var(--ink-500);
+  --text-muted:      var(--ink-400);
+  --text-brand:      var(--blue-700);
+  --text-on-brand:   var(--paper-0);
+  --text-on-invert:  var(--paper-50);
+  --text-invert-dim: var(--blue-300);
+  --text-seal:       var(--seal-500);
+  --text-gold:       var(--gold-600);
+
+  /* Lines & borders */
+  --border-hairline: var(--blue-100);
+  --border-default:  var(--blue-200);
+  --border-strong:   var(--blue-700);
+  --border-ink:      var(--ink-300);
+  --border-invert:   rgba(255,255,255,0.18);
+
+  /* Interactive */
+  --action-primary:        var(--blue-700);
+  --action-primary-hover:  var(--blue-800);
+  --action-primary-active: var(--blue-900);
+  --action-seal:           var(--seal-500);
+  --action-seal-hover:     var(--seal-600);
+  --action-gold:           var(--gold-500);
+  --action-gold-hover:     var(--gold-600);
+
+  /* Focus */
+  --focus-ring: var(--blue-500);
+}

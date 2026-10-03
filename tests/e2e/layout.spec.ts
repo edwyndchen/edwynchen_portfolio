@@ -20,5 +20,5 @@ test('layout has landmarks, skip link and nav', async ({ page }) => {
 test('body background is porcelain', async ({ page }) => {
   await page.goto('/');
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(bg).toBe('rgb(251, 250, 247)');
+  expect(bg).toBe('rgb(250, 248, 242)'); // DS --surface-page #FAF8F2
 });

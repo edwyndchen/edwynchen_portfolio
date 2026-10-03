@@ -1,30 +1,44 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { contrastRatio, readTokens } from '../../src/lib/contrast';
+import { contrastRatio, readTokens, resolveToken } from '../../src/lib/contrast';
 
 describe('contrastRatio', () => {
   test('black on white is 21', () => {
     expect(contrastRatio('#000000', '#FFFFFF')).toBeCloseTo(21, 1);
   });
   test('is symmetric', () => {
-    expect(contrastRatio('#142B6F', '#FBFAF7')).toBeCloseTo(contrastRatio('#FBFAF7', '#142B6F'), 5);
+    expect(contrastRatio('#2B4C86', '#FAF8F2')).toBeCloseTo(contrastRatio('#FAF8F2', '#2B4C86'), 5);
   });
 });
 
 describe('design tokens', () => {
-  const tokens = readTokens(readFileSync('src/styles/tokens.css', 'utf8'));
+  // DS primitives and semantics first, site aliases last (same order as the @imports)
+  const css = ['tokens/colors.css', 'tokens/typography.css', 'tokens/spacing.css', 'tokens.css']
+    .map((f) => readFileSync(`src/styles/${f}`, 'utf8'))
+    .join('\n');
+  const tokens = readTokens(css);
+  const hex = (name: string) => resolveToken(tokens, name);
 
-  test('all six palette tokens exist', () => {
-    for (const name of ['porcelain', 'cobalt-ink', 'cobalt', 'cobalt-wash', 'wattle-gold', 'gold-text']) {
-      expect(tokens[name], name).toMatch(/^#[0-9A-Fa-f]{6}$/);
+  test('site aliases resolve to the DS colours', () => {
+    expect(hex('porcelain').toLowerCase()).toBe('#faf8f2');
+    expect(hex('ink').toLowerCase()).toBe('#1b1c1a');
+    expect(hex('cobalt').toLowerCase()).toBe('#2b4c86');
+    for (const name of ['cobalt-ink', 'cobalt-wash', 'wattle-gold', 'gold-text']) {
+      expect(hex(name), name).toMatch(/^#[0-9A-Fa-f]{6}$/);
     }
   });
 
-  test.each(['cobalt-ink', 'cobalt', 'gold-text'])('%s text on porcelain passes AA', (name) => {
-    expect(contrastRatio(tokens[name], tokens.porcelain)).toBeGreaterThanOrEqual(4.5);
-  });
-
-  test('porcelain text on cobalt-ink passes AA', () => {
-    expect(contrastRatio(tokens.porcelain, tokens['cobalt-ink'])).toBeGreaterThanOrEqual(4.5);
+  // the text/ground pairs the site actually uses
+  test.each([
+    ['text-primary', 'surface-page'],
+    ['text-brand', 'surface-page'],
+    ['text-gold', 'surface-page'],
+    ['text-secondary', 'surface-page'],
+    ['text-secondary', 'surface-raised'],
+    ['text-brand', 'surface-raised'],
+    ['text-on-invert', 'surface-invert'],
+    ['text-invert-dim', 'surface-invert'],
+  ])('%s on %s passes AA', (fg, bg) => {
+    expect(contrastRatio(hex(fg), hex(bg))).toBeGreaterThanOrEqual(4.5);
   });
 });

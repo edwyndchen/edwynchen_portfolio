@@ -1,0 +1,57 @@
+/* ============================================================
+   TYPOGRAPHY — Cormorant Garamond (display) · Manrope (sans) · Ma Shan Zheng (cjk)
+   ============================================================ */
+:root {
+  /* Families */
+  --font-display: 'Cormorant Garamond', 'Ma Shan Zheng', Georgia, serif;
+  --font-sans:    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --font-cjk:     'Ma Shan Zheng', 'Cormorant Garamond', serif;
+  --font-mono:    ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  /* Weights */
+  --fw-light: 300; /* @kind font */
+  --fw-regular: 400; /* @kind font */
+  --fw-medium: 500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold: 700; /* @kind font */
+
+  /* Fluid display scale (Cormorant) — exhibition headlines, high contrast */
+  --text-display-2xl: 5.5rem;   /* hero */
+  --text-display-xl:  4rem;
+  --text-display-lg:  3rem;
+  --text-display-md:  2.25rem;
+  --text-display-sm:  1.75rem;
+
+  /* Sans scale (Manrope) — UI + body */
+  --text-2xl: 1.5rem;
+  --text-xl:  1.25rem;
+  --text-lg:  1.125rem;
+  --text-md:  1rem;
+  --text-sm:  0.875rem;
+  --text-xs:  0.75rem;
+
+  /* Eyebrow / label — small caps, letterspaced */
+  --text-label: 0.75rem;
+
+  /* Line heights */
+  --lh-tight:   1.06; /* @kind font */
+  --lh-snug:    1.2; /* @kind font */
+  --lh-normal:  1.5; /* @kind font */
+  --lh-relaxed: 1.65; /* @kind font */
+
+  /* Letter spacing */
+  --ls-display: -0.01em; /* @kind font */
+  --ls-normal:  0; /* @kind font */
+  --ls-label:   0.18em; /* @kind font */
+  --ls-caps:    0.08em; /* @kind font */
+
+  /* Semantic roles */
+  --type-hero:      var(--fw-medium) var(--text-display-2xl)/var(--lh-tight) var(--font-display);
+  --type-h1:        var(--fw-medium) var(--text-display-xl)/var(--lh-tight) var(--font-display);
+  --type-h2:        var(--fw-medium) var(--text-display-lg)/var(--lh-snug) var(--font-display);
+  --type-h3:        var(--fw-semibold) var(--text-display-sm)/var(--lh-snug) var(--font-display);
+  --type-body:      var(--fw-regular) var(--text-md)/var(--lh-relaxed) var(--font-sans);
+  --type-body-lg:   var(--fw-regular) var(--text-lg)/var(--lh-relaxed) var(--font-sans);
+  --type-ui:        var(--fw-medium) var(--text-sm)/var(--lh-normal) var(--font-sans);
+  --type-quote:     italic var(--fw-medium) var(--text-display-md)/var(--lh-snug) var(--font-display);
+}

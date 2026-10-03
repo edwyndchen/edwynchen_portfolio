@@ -1,0 +1,55 @@
+/* ============================================================
+   SPACING · RADII · SHADOWS · MOTION · LAYOUT
+   ============================================================ */
+:root {
+  /* Spacing — 4px base, generous exhibition whitespace */
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4  */
+  --space-2: 0.5rem;   /* 8  */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.5rem;   /* 24 */
+  --space-6: 2rem;     /* 32 */
+  --space-7: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-9: 6rem;     /* 96 */
+  --space-10: 8rem;    /* 128 — section rhythm */
+
+  /* Radii — restrained; porcelain edges are soft but not pill-y */
+  --radius-none: 0;
+  --radius-sm: 0;
+  --radius-xs: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-round: 999px; /* only for dot indicators / small chips */
+
+  /* Semantic — cards & images default to SHARP corners (brand default) */
+  --radius-card: 0;
+  --radius-image: 0;
+
+  /* Borders */
+  --border-width-hair: 1px;
+  --border-width-frame: 1.5px; /* ornamental card frames */
+
+  /* Shadows — soft, cool-tinted, low; porcelain sits in gentle light */
+  --shadow-xs: 0 1px 2px rgba(22,35,63,0.06);
+  --shadow-sm: 0 2px 8px rgba(22,35,63,0.07);
+  --shadow-md: 0 8px 24px rgba(22,35,63,0.09);
+  --shadow-lg: 0 20px 48px rgba(22,35,63,0.12);
+  --shadow-float: 0 30px 70px rgba(22,35,63,0.16); /* the floating porcelain plate */
+  --shadow-inset-hairline: inset 0 0 0 1px var(--border-hairline);
+
+  /* Motion — calm, intentional; long ease-outs, no bounce */
+  --ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1); /* @kind other */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --dur-fast: 140ms; /* @kind other */
+  --dur-med: 260ms; /* @kind other */
+  --dur-slow: 520ms; /* @kind other */
+
+  /* Layout */
+  --container-max: 1200px;
+  --container-wide: 1400px;
+  --gutter: var(--space-6);
+  --section-y: var(--space-10);
+}

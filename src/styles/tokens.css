@@ -1,37 +1,55 @@
+/* Edwyn Chen Porcelain Design System tokens (copied verbatim from docs/design-system/tokens/),
+   then the site's own aliases on top. Components use the aliases; the aliases point at DS
+   semantic tokens, so re-pointing a DS token re-themes the site.
+   Fonts load via <link> in BaseLayout, not @import, so they don't block on this file. */
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+
 :root {
-  /* palette */
-  --porcelain: #FBFAF7;
-  --cobalt-ink: #142B6F;
-  --cobalt: #1F3FA8;
-  --cobalt-wash: #A9B8E6;
-  --wattle-gold: #B8862B;
-  --gold-text: #8A6420;
+  /* palette aliases */
+  --porcelain: var(--surface-page);      /* #FAF8F2 page ground */
+  --ink: var(--text-primary);            /* #1B1C1A body text */
+  --cobalt: var(--text-brand);           /* #2B4C86 headings, links, actions */
+  --cobalt-ink: var(--text-brand);       /* headings stay cobalt; body moved to --ink */
+  --cobalt-wash: var(--blue-300);
+  --wattle-gold: var(--gold-400);        /* gilt fill: Southern Cross */
+  --gold-text: var(--text-gold);         /* gold-600, AA on paper */
 
-  /* type */
-  --font-display: 'Bodoni Moda', 'Didot', Georgia, serif;
-  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
-  --step--1: clamp(0.75rem, 0.72rem + 0.1vw, 0.8rem);
-  --step-0: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
-  --step-1: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
-  --step-2: clamp(1.8rem, 1.5rem + 1.4vw, 2.6rem);
-  --step-3: clamp(2.25rem, 1.7rem + 2.6vw, 3.75rem);
-  --step-4: clamp(3rem, 1.9rem + 4.6vw, 6rem);
+  /* type: --font-display (Cormorant Garamond) and --font-cjk (Ma Shan Zheng) come from the DS */
+  --font-body: var(--font-sans);         /* Manrope */
 
-  /* space */
-  --space-xs: 0.5rem;
-  --space-s: 1rem;
-  --space-m: 1.5rem;
-  --space-l: 2.5rem;
-  --space-xl: clamp(3.5rem, 2.6rem + 3.6vw, 6.5rem);
-  --space-2xl: clamp(5rem, 3.4rem + 6vw, 10rem);
-  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --max: 82rem;
+  /* fluid versions of the DS display scale: DS size at desktop, sensible at 375px */
+  --fluid-display-2xl: clamp(3rem, 1.95rem + 4.5vw, var(--text-display-2xl));  /* 48 → 88 */
+  --fluid-display-xl: clamp(2.5rem, 1.85rem + 2.8vw, var(--text-display-xl));   /* 40 → 64 */
+  --fluid-display-lg: clamp(2.125rem, 1.75rem + 1.6vw, var(--text-display-lg)); /* 34 → 48 */
+  --fluid-display-md: clamp(1.75rem, 1.55rem + 0.85vw, var(--text-display-md)); /* 28 → 36 */
+  --fluid-display-sm: clamp(1.5rem, 1.4rem + 0.45vw, var(--text-display-sm));  /* 24 → 28 */
+
+  --step--1: var(--text-label);                          /* labels, 12px */
+  --step-0: clamp(var(--text-md), 0.95rem + 0.2vw, var(--text-lg)); /* body 16 → 18 */
+  --step-1: clamp(var(--text-lg), 1rem + 0.5vw, var(--text-2xl));   /* lead text 18 → 24 */
+  --step-2: var(--fluid-display-sm);                     /* h3 */
+  --step-3: var(--fluid-display-lg);                     /* section h2 */
+  --step-4: var(--fluid-display-2xl);                    /* hero */
+
+  /* space: site names sit on DS steps (no name collisions with the DS --space-1…10) */
+  --space-xs: var(--space-2);   /* 8 */
+  --space-s: var(--space-4);    /* 16 */
+  --space-m: var(--space-5);    /* 24 */
+  --space-l: var(--space-6);    /* 32 */
+  --space-xl: clamp(var(--space-7), 2.2rem + 3.4vw, var(--space-9)); /* 48 → 96 */
+  --section-y: clamp(5rem, 3.9rem + 4.7vw, var(--space-10));        /* 80 → 128 section rhythm */
+  --space-2xl: var(--section-y);
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, var(--space-6)); /* overrides DS fixed 32px: 16px gutter on phones */
+  --max: var(--container-max);  /* 1200px */
   --measure: 68ch;
 
   /* lines */
-  --rule: 1px solid var(--cobalt);
-  --rule-soft: 1px solid color-mix(in srgb, var(--cobalt) 25%, transparent);
+  --rule: 1px solid var(--border-strong);
+  --rule-soft: 1px solid var(--border-default);
+  --rule-hair: 1px solid var(--border-hairline);
 
   /* motion */
-  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-settle: var(--ease-entrance);
 }

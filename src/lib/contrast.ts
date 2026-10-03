@@ -14,8 +14,20 @@ export function contrastRatio(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+/** Custom properties whose value is a hex colour or a single var() alias, e.g. { 'blue-700': '#2b4c86', 'text-brand': 'var(--blue-700)' } */
 export function readTokens(css: string): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const m of css.matchAll(/--([a-z-]+):\s*(#[0-9A-Fa-f]{6})/g)) out[m[1]] = m[2];
+  for (const m of css.matchAll(/--([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6}|var\(--[a-z0-9-]+\))\s*;/g)) out[m[1]] = m[2];
   return out;
+}
+
+/** Follows var() aliases down to a hex value. Throws if the chain is broken. */
+export function resolveToken(tokens: Record<string, string>, name: string): string {
+  let value = tokens[name];
+  for (let hops = 0; value?.startsWith('var('); hops++) {
+    if (hops > 10) throw new Error(`alias loop at --${name}`);
+    value = tokens[value.slice(6, -1)];
+  }
+  if (!value) throw new Error(`--${name} does not resolve to a colour`);
+  return value;
 }
