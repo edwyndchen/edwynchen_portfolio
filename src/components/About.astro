@@ -25,15 +25,13 @@ const ed = webpSize(readFileSync(join(process.cwd(), 'public', ED_SRC)));
   </div>
   <figure class="about__figure">
     <img class="about__ed" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
-    <img class="about__cloud about__cloud--back" src="/hero/cloud-n5.webp" alt="" aria-hidden="true" width="1100" height="438" loading="lazy" decoding="async" />
-    <img class="about__cloud about__cloud--left" src="/hero/cloud-n2.webp" alt="" aria-hidden="true" width="1100" height="534" loading="lazy" decoding="async" />
-    <img class="about__cloud about__cloud--right" src="/hero/cloud-n3.webp" alt="" aria-hidden="true" width="1100" height="403" loading="lazy" decoding="async" />
+    <img class="about__tower" src="/hero/cloud-tower.webp" alt="" aria-hidden="true" width="1200" height="1558" loading="lazy" decoding="async" />
   </figure>
 </section>
 
 <style>
   .about {
-    position: relative; overflow-x: clip; display: grid; gap: var(--space-l) var(--space-xl);
+    position: relative; display: grid; gap: var(--space-l) var(--space-xl);
     padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
     grid-template-columns: minmax(0, 1fr); align-items: center;
   }
@@ -49,28 +47,25 @@ const ed = webpSize(readFileSync(join(process.cwd(), 'public', ED_SRC)));
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
   .about__caps li { border-top: var(--rule-hair); padding-block: var(--space-3); }
 
-  /* Ed stands free on the page (no frame), sunk into a bank of hero clouds drawn in front of his robes */
-  /* 82% wide so the cloud bank's overhang stays inside the section's overflow clip: no hard cut edges */
+  /* Ed flies free on the page (no frame). He emerges from behind the cloud tower at the column's right edge,
+     which bleeds off the side of the page and is drawn in front of him. At rest it sits beside his hem. */
   .about__figure { position: relative; margin: 0 auto; width: 82%; max-width: 26rem; }
-  /* the painting's ribbons run off its right edge: feather that edge so they trail away instead of stopping dead */
+  /* one sleeve ribbon still touches the painting's right edge (about 70px of it): a narrow feather lets it trail off */
   .about__ed {
     position: relative; z-index: 1; display: block; width: 100%; height: auto;
-    mask-image: linear-gradient(to left, transparent, #000 9%);
+    mask-image: linear-gradient(to left, transparent, #000 6%);
   }
-  .about__cloud { position: absolute; height: auto; pointer-events: none; transform-origin: 50% 100%; }
 
-  /* Cloud bank: retune here. Each cloud is width / bottom / left-or-right, as % of the figure.
-     At rest the bank sits low and to the sides, catching only the tips of his trailing ribbons; he has flown
-     clear of it. Keep left and right overhang under ~9% or the section clip will slice a cloud. */
-  .about__cloud--back  { z-index: 2; width: 40%; bottom: -12%; left: 34%; }
-  .about__cloud--left  { z-index: 3; width: 56%; bottom: -16%; left: -9%; }
-  .about__cloud--right { z-index: 3; width: 52%; bottom: -9%; right: -8%; }
-  /* room below for the overhanging bank, so it never sits on the next section */
-  .about__figure { margin-bottom: 12%; }
+  /* Cloud tower: retune here (rest position, as % of the figure). The fly-in starts it further left, over Ed. */
+  .about__tower {
+    position: absolute; z-index: 2; pointer-events: none; height: auto; max-width: none;
+    width: 50%; right: -30%; bottom: -2%; opacity: 0.9;
+  }
 
   @media (min-width: 60rem) {
     .about { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
     .about__figure { max-width: none; }
+    .about__tower { width: 58%; right: -48%; bottom: -4%; }
   }
   @media (max-width: 48rem) {
     /* phones: tucked top-right beside the heading, clear of the bio */

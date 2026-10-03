@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import WorkPlates from '../components/WorkPlates.astro';
+import CloudPassage from '../components/CloudPassage.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { site } from '../data/site';
@@ -9,6 +10,7 @@ import { site } from '../data/site';
 <BaseLayout title={`${site.name}, ${site.role} in ${site.location}`} description="Product design portfolio of Edwyn Chen, Melbourne. Case studies in product design, design systems and accessibility.">
   <Hero />
   <WorkPlates />
+  <CloudPassage />
   <About />
   <Contact />
 </BaseLayout>

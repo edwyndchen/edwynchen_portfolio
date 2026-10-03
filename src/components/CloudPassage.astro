@@ -1,0 +1,51 @@
+---
+// Work -> About: a deep, soft band of cloud the case studies scroll down into. Purely decorative.
+// The cloud-bank painting runs off its own frame (left, right and bottom edges are cut flat), so each bank is
+// wider than the viewport and both the banks and the band are feathered top and bottom: no flat edge ever shows.
+---
+<div class="passage" aria-hidden="true" data-cloud-passage>
+  <img class="passage__bank passage__bank--far" src="/hero/cloud-bank.webp" alt="" width="2400" height="693" loading="lazy" decoding="async" />
+  <img class="passage__puff passage__puff--a" src="/hero/cloud-n6.webp" alt="" width="1100" height="232" loading="lazy" decoding="async" />
+  <img class="passage__puff passage__puff--b" src="/hero/cloud-n4.webp" alt="" width="1100" height="297" loading="lazy" decoding="async" />
+  <img class="passage__bank passage__bank--near" src="/hero/cloud-bank.webp" alt="" width="2400" height="693" loading="lazy" decoding="async" />
+  <img class="passage__puff passage__puff--c" src="/hero/cloud-n7.webp" alt="" width="1100" height="425" loading="lazy" decoding="async" />
+  <img class="passage__puff passage__puff--d" src="/hero/cloud-n5.webp" alt="" width="1100" height="438" loading="lazy" decoding="async" />
+</div>
+
+<style>
+  .passage {
+    position: relative; height: 30vh; min-height: 13rem; overflow: clip; pointer-events: none;
+    /* fades in from the page ground and back out into About */
+    mask-image: linear-gradient(to bottom, transparent, #000 24%, #000 66%, transparent);
+  }
+  .passage img { position: absolute; display: block; height: auto; max-width: none; }
+
+  /* Cloud passage: retune here. Banks are vw wide (always wider than the screen, so their cut sides stay off it);
+     top is % of the band. Puffs are the small hero sprites drifting in the gaps. */
+  .passage__bank {
+    /* the painting's own flat top and bottom rows are feathered away too */
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 62%, transparent 92%);
+  }
+  .passage__bank--far  { width: 150vw; left: -12vw; top: -4%; opacity: 0.55; }
+  .passage__bank--near { width: 175vw; left: -55vw; top: 26%; }
+  .passage__puff--a { width: 34vw; left: 4%;  top: 18%; opacity: 0.7; }
+  .passage__puff--b { width: 30vw; left: 62%; top: 10%; opacity: 0.6; }
+  .passage__puff--c { width: 40vw; left: 30%; top: 52%; }
+  .passage__puff--d { width: 30vw; left: 74%; top: 46%; opacity: 0.85; }
+
+  @media (min-width: 48rem) {
+    .passage { height: 48vh; min-height: 20rem; }
+    .passage__bank--far  { width: 120vw; left: -8vw; top: -6%; }
+    .passage__bank--near { width: 130vw; left: -24vw; top: 22%; }
+    .passage__puff--a { width: 22vw; }
+    .passage__puff--b { width: 18vw; }
+    .passage__puff--c { width: 24vw; }
+    .passage__puff--d { width: 18vw; }
+  }
+</style>
+
+<script>
+  import { initCloudPassage } from '../scripts/cloud-passage';
+  const el = document.querySelector<HTMLElement>('[data-cloud-passage]');
+  if (el) initCloudPassage(el);
+</script>
