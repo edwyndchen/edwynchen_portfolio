@@ -1,8 +1,11 @@
 ---
 interface Props { plant: 'waratah' | 'wattle' | 'banksia' | 'gum'; side?: 'left' | 'right'; class?: string }
 const { plant, side = 'right', class: className } = Astro.props;
+// intrinsic sizes of the optimised WebPs, so the browser reserves the right box
+const sizes = { waratah: [700, 500], wattle: [700, 721], banksia: [700, 562], gum: [900, 758] } as const;
+const [width, height] = sizes[plant];
 ---
-<img class:list={['flora', `flora--${side}`, className]} src={`/flora/${plant}.webp`} alt="" width="700" height="525" loading="lazy" decoding="async" />
+<img class:list={['flora', `flora--${side}`, className]} src={`/flora/${plant}.webp`} alt="" width={width} height={height} loading="lazy" decoding="async" />
 
 <style>
   .flora { position: absolute; width: clamp(110px, 16vw, 240px); height: auto; pointer-events: none; z-index: 0; }

@@ -14,9 +14,10 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .footer { border-top: var(--rule-soft); padding-block: var(--space-l); margin-top: var(--space-xl); }
-  .footer__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-s); }
+  .footer { border-top: var(--rule-soft); padding-block: var(--space-m); }
+  .footer__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs) var(--space-m); }
   .footer p { margin: 0; }
-  .footer__made { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--step--1); }
-  .footer__cross { width: 1rem; height: 1rem; color: var(--wattle-gold); }
+  .footer__made { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--step--1); white-space: nowrap; }
+  /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
+  .footer :global(.footer__cross) { width: 1.6rem; height: 1.6rem; color: var(--wattle-gold); flex: none; }
 </style>

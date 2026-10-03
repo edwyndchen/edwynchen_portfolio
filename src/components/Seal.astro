@@ -19,7 +19,8 @@ const { size = 44 } = Astro.props;
     font-family: 'Noto Serif SC', serif; font-weight: 700;
     font-size: calc(var(--size) * 0.58); line-height: 1;
   }
-  .seal__cross {
+  /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
+  .seal :global(.seal__cross) {
     position: absolute; right: 7%; bottom: 7%;
     width: 26%; height: 26%;
   }

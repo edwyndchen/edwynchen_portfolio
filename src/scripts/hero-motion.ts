@@ -23,7 +23,7 @@ export function initHero(root: HTMLElement): () => void {
   let onMove: ((e: PointerEvent) => void) | undefined;
 
   const ctx = gsap.context(() => {
-    gsap.from('[data-reveal]', { y: 24, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
+    gsap.fromTo('[data-reveal]', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
 
     gsap
       .timeline({ repeat: -1, repeatDelay: 2.5 })
@@ -33,6 +33,7 @@ export function initHero(root: HTMLElement): () => void {
       .to('[data-tram]', { opacity: 0, duration: 0.8 }, 10.2);
 
     scene.querySelectorAll<HTMLElement>('.hero__cloud').forEach((c, i) => {
+      if (c.offsetWidth === 0) return; // hidden on mobile: no endless tween for nothing
       const layer = c.parentElement as HTMLElement;
       const depth = Number((c.closest('[data-depth]') as HTMLElement).dataset.depth);
       const tween = gsap.fromTo(
