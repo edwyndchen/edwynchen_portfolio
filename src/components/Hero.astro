@@ -8,13 +8,54 @@ import { site } from '../data/site';
     <p class="hero__line" data-reveal>I design products that make complicated things easy to use. Most recently, bounce rate down 52% on the Punters form guide.</p>
     <a class="hero__cta" href="#work" data-reveal>View work</a>
   </div>
-  <div class="hero__scene" aria-hidden="true"></div>
+  <div class="hero__scene" aria-hidden="true">
+    <div class="hero__layer" data-depth="0.04" data-scroll="0">
+      <img class="hero__fill" src="/hero/far.webp" alt="" width="2400" height="1021" decoding="async" fetchpriority="high" />
+      <img class="hero__cloud" src="/hero/cloud-n6.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;width:26%" />
+      <img class="hero__cloud" src="/hero/cloud-n4.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;width:15%" />
+      <svg class="hero__cross" viewBox="0 0 100 100"><g fill="currentColor">
+        <circle cx="50" cy="8" r="4"/><circle cx="44" cy="92" r="4.6"/><circle cx="14" cy="46" r="4"/><circle cx="80" cy="36" r="3.4"/><circle cx="62" cy="62" r="2.2"/>
+      </g></svg>
+    </div>
+    <div class="hero__layer" data-depth="0.12" data-scroll="0.15">
+      <img class="hero__cloud" src="/hero/cloud-n5.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;width:15%" />
+      <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:32%;left:0;width:12%" />
+    </div>
+    <div class="hero__layer" data-depth="0.22" data-scroll="0.3">
+      <img class="hero__fill" src="/hero/peaks.webp" alt="" width="2400" height="1021" decoding="async" />
+    </div>
+    <div class="hero__layer" data-depth="0.35" data-scroll="0.45">
+      <img class="hero__cloud" src="/hero/cloud-n4.webp" alt="" decoding="async" loading="lazy" style="top:54%;left:0;width:18%" />
+      <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;width:13%" />
+    </div>
+    <div class="hero__layer" data-depth="0.5" data-scroll="0.65">
+      <img class="hero__fill" src="/hero/mid.webp" alt="" width="2400" height="1021" decoding="async" />
+      <img class="hero__tram" data-tram src="/hero/tram.webp" alt="" decoding="async" />
+    </div>
+    <div class="hero__layer" data-depth="1" data-scroll="1.1">
+      <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:4%;left:0;width:30%" />
+      <img class="hero__cloud" src="/hero/cloud-n2.webp" alt="" decoding="async" loading="lazy" style="top:14%;left:0;width:22%" />
+      <img class="hero__cloud" src="/hero/cloud-n3.webp" alt="" decoding="async" loading="lazy" style="top:26%;left:0;width:19%" />
+    </div>
+  </div>
 </section>
 
 <style>
   .hero { overflow: clip; }
   .hero__copy { padding-top: clamp(3rem, 8vh, 7rem); padding-bottom: var(--space-l); }
-  .hero__scene { position: relative; width: 100%; aspect-ratio: 3120 / 1328; }
+  .hero__scene { position: relative; width: 100%; aspect-ratio: 3120 / 1328; overflow: hidden; background: var(--porcelain); }
+  /* layers are slightly oversized so parallax never reveals an edge */
+  .hero__layer { position: absolute; inset: -3% -3%; will-change: transform; }
+  .hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero__cloud { position: absolute; height: auto; }
+  .hero__tram { position: absolute; left: 31%; top: 77%; width: 3.6%; height: auto; opacity: 0; }
+  .hero__cross { position: absolute; top: 6%; left: 46%; width: 3%; color: var(--wattle-gold); opacity: 0.8; }
+  @media (prefers-reduced-motion: reduce) { .hero__tram { opacity: 1; left: 47%; } }
+  @media (max-width: 48rem) {
+    .hero__scene { aspect-ratio: 4 / 3; }
+    .hero__fill { object-fit: cover; object-position: 60% 50%; }
+    .hero__layer .hero__cloud:nth-of-type(n + 3) { display: none; }
+  }
   .hero__kicker { color: var(--gold-text); margin-bottom: var(--space-s); }
   .hero h1 { font-size: var(--step-4); max-width: 12ch; }
   .hero__line { font-size: var(--step-1); max-width: 34ch; margin-top: var(--space-m); }
@@ -24,3 +65,9 @@ import { site } from '../data/site';
   }
   .hero__cta:hover { background: var(--cobalt); color: var(--porcelain); }
 </style>
+
+<script>
+  import { initHero } from '../scripts/hero-motion';
+  const el = document.querySelector<HTMLElement>('[data-hero]');
+  if (el) initHero(el);
+</script>
