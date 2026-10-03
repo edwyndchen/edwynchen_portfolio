@@ -16,15 +16,15 @@ const shown = metrics.slice(0, 4);
 
 <style>
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-l) var(--space-m); list-style: none; padding: 0; margin: 0; }
-  .stats li { border-top: 2px solid var(--cobalt); padding-top: var(--space-s); min-width: 0; }
-  .stats__value { display: block; font-family: var(--font-display); font-size: clamp(2.25rem, 1.8rem + 2vw, 3.5rem); line-height: 1; color: var(--cobalt); white-space: nowrap; }
-  .stats__label { display: block; margin-top: var(--space-xs); max-width: 24ch; }
+  .stats li { border-top: 1px solid var(--border-strong); padding-top: var(--space-s); min-width: 0; }
+  .stats__value { display: block; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1; color: var(--cobalt); white-space: nowrap; }
+  .stats__label { display: block; margin-top: var(--space-xs); max-width: 24ch; color: var(--text-secondary); }
   /* phones: value and label side by side, so four results don't become a long column of giant numbers */
   @media (max-width: 30rem) {
     /* subgrid keeps every label on one shared left edge, sized by the widest value */
     .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 0 var(--space-m); }
     .stats li { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; border-top-width: 1px; padding-block: var(--space-s); }
-    .stats li:last-child { border-bottom: 1px solid var(--cobalt); }
+    .stats li:last-child { border-bottom: 1px solid var(--border-strong); }
     .stats__value { font-size: 2rem; }
     .stats__label { margin-top: 0; }
   }

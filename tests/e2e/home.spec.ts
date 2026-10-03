@@ -30,3 +30,23 @@ test('home has no axe violations', async ({ page }) => {
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(results.violations).toEqual([]);
 });
+
+test('hero copy: name, role line, intro, no eyebrow', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#hero-title')).toHaveText('Edwyn Chen');
+  await expect(page.locator('.hero__role')).toHaveText("I'm a product designer and design systems specialist.");
+  await expect(page.locator('.hero__line')).toContainText('bounce rate down 52%');
+  await expect(page.locator('.hero__copy .label')).toHaveCount(0);
+});
+
+test('nav brand is the wordmark with an accessible name', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Edwyn Chen, home' })).toBeVisible();
+  await expect(page.locator('.nav__brand svg.logo')).toHaveCount(1);
+});
+
+test('footer has the Southern Cross and no "Made in Melbourne"', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('footer')).not.toContainText('Made in Melbourne');
+  await expect(page.locator('footer svg[aria-hidden="true"]')).toHaveCount(1);
+});

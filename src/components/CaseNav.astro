@@ -10,9 +10,10 @@ const { prev, next } = Astro.props;
 
 <style>
   .casenav { display: flex; justify-content: space-between; gap: var(--space-l); border-top: var(--rule); padding-block: var(--space-m) var(--space-2xl); margin-top: var(--space-2xl); }
-  .casenav a { display: grid; gap: 0.35rem; align-content: start; text-decoration: none; font-family: var(--font-display); font-size: var(--step-2); line-height: 1.1; min-height: 44px; color: var(--cobalt-ink); }
+  .casenav a { display: grid; gap: 0.35rem; align-content: start; text-decoration: none; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--step-2); line-height: var(--lh-snug); min-height: 44px; color: var(--cobalt); }
+  .casenav a:hover { color: var(--action-primary-hover); }
   .casenav a:hover > span:last-child, .casenav a:focus-visible > span:last-child { text-decoration: underline; text-decoration-thickness: 1px; }
-  .casenav .label { font-family: var(--font-body); font-size: var(--step--1); line-height: 1.6; color: var(--gold-text); }
+  .casenav .label { color: var(--text-secondary); }
   .casenav a[rel='prev'] .label::before { content: '\2190\00a0'; }
   .casenav a[rel='next'] .label::after { content: '\00a0\2192'; }
   .casenav a[rel='next'] { text-align: right; }

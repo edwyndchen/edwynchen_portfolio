@@ -12,7 +12,7 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
     {studies.map((s, i) => (
       <li data-reveal-on-scroll>
         <Plate as="article" class="work__plate">
-          {s.data.cover && <img class="work__cover" src={s.data.cover} alt={s.data.coverAlt} width="800" height="450" loading="lazy" />}
+          {s.data.cover && <div class="work__media"><img class="work__cover" src={s.data.cover} alt={s.data.coverAlt} width="800" height="450" loading="lazy" /></div>}
           <p class="label work__meta"><span class="work__num">{String(i + 1).padStart(2, '0')}</span> {s.data.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
           <h3><a href={`/work/${s.id}/`}>{s.data.title}</a></h3>
           <p class="work__outcome">{s.data.outcome}</p>
@@ -35,18 +35,22 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
     .work__list > li:nth-child(even) { translate: 0 var(--space-xl); }
   }
   /* Plate renders the element, so its passed class needs :global to be styled from here */
-  .work :global(.work__plate) { position: relative; transition: box-shadow 0.25s var(--ease-settle); }
-  .work__cover { width: 100%; height: auto; margin-bottom: var(--space-m); mix-blend-mode: multiply; }
-  .work__meta { margin-bottom: 0; }
+  .work :global(.work__plate) { position: relative; transition: box-shadow var(--dur-slow) var(--ease-standard); }
+  .work :global(.work__plate:hover) { box-shadow: var(--shadow-md); }
+  .work__media { overflow: hidden; margin-bottom: var(--space-m); }
+  .work__cover { width: 100%; height: auto; mix-blend-mode: multiply; transition: transform var(--dur-slow) var(--ease-entrance); }
+  .work :global(.work__plate:hover) .work__cover { transform: scale(1.03); }
+  .work__meta { margin-bottom: 0; color: var(--text-secondary); }
   .work__num { color: var(--gold-text); margin-right: 0.5rem; }
-  .work h3 { font-size: var(--step-2); margin: var(--space-xs) 0 var(--space-s); }
-  .work h3 a { color: var(--cobalt-ink); text-decoration: none; }
+  .work h3 { font-size: var(--fluid-display-md); margin: var(--space-xs) 0 var(--space-s); }
+  .work h3 a { color: var(--cobalt); text-decoration: none; }
   .work h3 a::after { content: ''; position: absolute; inset: 0; }
-  .work :global(.work__plate:hover) h3 a, .work h3 a:focus-visible { text-decoration: underline; }
-  .work__outcome { margin: 0; max-width: 46ch; }
+  .work :global(.work__plate:hover) h3 a { color: var(--action-primary-hover); }
+  .work h3 a:focus-visible { text-decoration: underline; }
+  .work__outcome { margin: 0; max-width: 46ch; color: var(--text-secondary); }
   /* focus ring around the whole plate (the stretched link covers it), clear of the double keyline */
   @supports selector(:has(*)) {
     .work h3 a:focus-visible { outline: none; }
-    .work :global(.work__plate:has(a:focus-visible)) { box-shadow: 0 0 0 4px var(--porcelain), 0 0 0 6px var(--cobalt); }
+    .work :global(.work__plate:has(a:focus-visible)) { box-shadow: 0 0 0 2px var(--porcelain), 0 0 0 4px var(--focus-ring); }
   }
 </style>

@@ -4,12 +4,12 @@ import { site } from '../data/site';
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="hero__copy wrap">
     <div class="hero__name">
-      <p class="label hero__kicker" data-reveal>{site.role}, {site.location}</p>
       <h1 id="hero-title" data-reveal>{site.name}</h1>
+      <p class="hero__role" data-reveal>I'm a product designer and design systems specialist.</p>
     </div>
     <div class="hero__pitch">
       <p class="hero__line" data-reveal>I design products that make complicated things easy to use. Most recently, bounce rate down 52% on the Punters form guide.</p>
-      <a class="hero__cta" href="#work" data-reveal>View work</a>
+      <a class="button hero__cta" href="#work" data-reveal>View work</a>
     </div>
   </div>
   <div class="hero__scene" aria-hidden="true">
@@ -51,17 +51,16 @@ import { site } from '../data/site';
     padding-top: clamp(2.5rem, 7vh, 6rem); padding-bottom: clamp(1.5rem, 4vh, 3rem);
   }
   @media (min-width: 60rem) { .hero__copy { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
-  .hero__kicker { color: var(--gold-text); margin-bottom: var(--space-s); }
   .hero h1 { font-size: var(--step-4); max-width: 12ch; }
-  .hero__pitch { padding-bottom: 0.4em; }
-  .hero__line { font-size: var(--step-1); line-height: 1.45; max-width: 34ch; margin-bottom: var(--space-m); }
-  .hero__cta {
-    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0 1.5rem;
-    border: var(--rule); font-weight: 600; text-decoration: none; letter-spacing: 0.04em;
-    transition: background-color 0.25s var(--ease-settle), color 0.25s var(--ease-settle);
+  /* the role reads as a quiet serif subtitle, the DS italic voice, one size under the section headings */
+  .hero__role {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-medium);
+    font-size: var(--fluid-display-md); line-height: var(--lh-snug); color: var(--ink);
+    max-width: 24ch; margin: var(--space-s) 0 0;
   }
-  .hero__cta::after { content: '\2193'; font-weight: 400; transition: transform 0.25s var(--ease-settle); }
-  .hero__cta:hover { background: var(--cobalt); color: var(--porcelain); }
+  .hero__pitch { padding-bottom: 0.4em; }
+  .hero__line { font-size: var(--text-lg); line-height: var(--lh-relaxed); color: var(--text-secondary); max-width: 38ch; margin-bottom: var(--space-m); }
+  .hero__cta::after { content: '\2193'; font-weight: 400; transition: transform var(--dur-med) var(--ease-standard); }
   .hero__cta:hover::after { transform: translateY(2px); }
 
   .hero__scene {
@@ -75,7 +74,7 @@ import { site } from '../data/site';
   .hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .hero__cloud { position: absolute; height: auto; }
   .hero__tram { position: absolute; left: 31%; top: 77%; width: 3.6%; height: auto; opacity: 0; }
-  .hero__cross { position: absolute; top: 6%; left: 46%; width: 3%; color: var(--wattle-gold); opacity: 0.8; }
+  .hero__cross { position: absolute; top: 6%; left: 46%; width: 3%; color: #B8862B; /* artwork keeps its painted gold */ opacity: 0.8; }
   @media (prefers-reduced-motion: reduce) { .hero__tram { opacity: 1; left: 47%; } .hero__cloud { left: var(--rest) !important; /* beats inline left:0 */ } }
   @media (max-width: 48rem) {
     /* Layers keep the art's aspect (2400/1021) and overflow the scene, so %-positioned items stay on

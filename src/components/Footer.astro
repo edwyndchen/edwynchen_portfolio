@@ -6,18 +6,15 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="wrap footer__inner">
     <p class="label">© {year} {site.name}</p>
-    <p class="footer__made">
-      Made in Melbourne
-      <SouthernCross class="footer__cross" />
-    </p>
+    <SouthernCross class="footer__cross" />
   </div>
 </footer>
 
 <style>
-  .footer { border-top: var(--rule-soft); padding-block: var(--space-m); }
-  .footer__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs) var(--space-m); }
-  .footer p { margin: 0; }
-  .footer__made { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--step--1); white-space: nowrap; }
+  /* DS footer: deep navy ground, ivory and dim-blue text */
+  .footer { background: var(--surface-invert); color: var(--text-on-invert); padding-block: var(--space-7); }
+  .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); }
+  .footer p { margin: 0; color: var(--text-invert-dim); }
   /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
-  .footer :global(.footer__cross) { width: 1.6rem; height: 1.6rem; color: var(--wattle-gold); flex: none; }
+  .footer :global(.footer__cross) { width: 1.75rem; height: 1.75rem; color: var(--wattle-gold); flex: none; }
 </style>

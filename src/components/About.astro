@@ -33,17 +33,17 @@ import Flora from './Flora.astro';
   /* Plate renders the element, so its passed class needs :global to be styled from here */
   .about :global(.about__portrait), .about__text { position: relative; z-index: 1; }
   .about :global(.about__portrait) { aspect-ratio: 4 / 5; display: grid; place-items: center; overflow: hidden; }
-  /* until Ed's portrait arrives the frame holds its shape around a quiet seal character */
+  /* until Ed's portrait arrives the frame holds its shape around a quiet 陳 in brush calligraphy */
   .about :global(.about__portrait)::before {
-    content: '\9648'; grid-area: 1 / 1;
-    font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: clamp(5rem, 10vw, 9rem); line-height: 1;
-    color: var(--cobalt-wash);
+    content: '\9673'; grid-area: 1 / 1;
+    font-family: var(--font-cjk); font-weight: 400; font-size: clamp(5.5rem, 11vw, 10rem); line-height: 1;
+    color: var(--blue-200);
   }
   .about :global(.about__portrait) img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: cover; position: relative; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
-  .about h3 { font-family: var(--font-body); color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
+  .about h3 { color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
-  .about__caps li { border-top: var(--rule-soft); padding-block: 0.5rem; }
+  .about__caps li { border-top: var(--rule-hair); padding-block: var(--space-3); }
   @media (max-width: 48rem) {
     .about { grid-template-columns: minmax(0, 1fr); }
     .about :global(.about__portrait) { width: min(72%, 17rem); }

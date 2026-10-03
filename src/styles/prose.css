@@ -1,10 +1,15 @@
-.prose { max-width: var(--measure); }
-.prose h2 { font-size: var(--step-2); margin: clamp(3rem, 2.4rem + 2.4vw, 4.75rem) 0 var(--space-s); }
+/* case study body: DS body-lg Manrope, DS h2/h3 in Cormorant */
+.prose { max-width: var(--measure); font-size: var(--text-lg); line-height: var(--lh-relaxed); }
+.prose h2 { font-size: var(--fluid-display-lg); line-height: var(--lh-snug); margin: clamp(3rem, 2.4rem + 2.4vw, 4.75rem) 0 var(--space-s); }
 .prose > :first-child { margin-top: 0; }
-.prose h3 { font-size: var(--step-1); margin: var(--space-l) 0 var(--space-xs); }
+.prose h3 { font-size: var(--fluid-display-sm); margin: var(--space-l) 0 var(--space-xs); }
 .prose ul, .prose ol { padding-left: 1.2em; }
 .prose li { margin-bottom: 0.4em; }
 .prose li::marker { color: var(--cobalt); }
-.prose strong { font-weight: 600; }
-.prose img { margin: var(--space-l) 0; border: var(--rule-soft); }
-.prose blockquote { margin: var(--space-l) 0; padding-left: var(--space-m); border-left: 2px solid var(--cobalt); font-family: var(--font-display); font-size: var(--step-1); }
+.prose strong { font-weight: var(--fw-semibold); }
+.prose img { margin: var(--space-l) 0; border: var(--rule-hair); box-shadow: var(--shadow-sm); }
+.prose blockquote {
+  margin: var(--space-l) 0; padding-left: var(--space-m); border-left: 1px solid var(--border-strong);
+  font-family: var(--font-display); font-style: italic; font-weight: var(--fw-medium);
+  font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--ink);
+}

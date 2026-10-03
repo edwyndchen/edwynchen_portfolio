@@ -1,45 +1,49 @@
 ---
-import Seal from './Seal.astro';
+import Logo from './Logo.astro';
 import { site } from '../data/site';
 ---
-<header class="nav">
+<header class="nav" data-nav>
   <div class="wrap nav__inner">
-    <a class="nav__brand" href="/">
-      <Seal size={36} />
-      <span>{site.name}</span>
+    <a class="nav__brand" href="/" aria-label={`${site.name}, home`}>
+      <Logo />
     </a>
     <nav aria-label="Main">
       <ul class="nav__links">
-        {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {site.nav.map((item) => <li><a class="label" href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
   </div>
 </header>
 
 <style>
+  /* DS nav: transparent over the top of the page, gains the ivory backing and a hairline once scrolled */
   .nav {
     position: sticky; top: 0; z-index: 50;
-    background: color-mix(in srgb, var(--porcelain) 92%, transparent);
-    backdrop-filter: blur(8px);
-    border-bottom: var(--rule-soft);
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
   }
-  .nav__inner { display: flex; align-items: center; justify-content: space-between; min-height: 4rem; }
-  .nav__brand {
-    min-height: 44px;
-    display: inline-flex; align-items: center; gap: 0.75rem;
-    font-family: var(--font-display); font-size: 1.25rem; color: var(--cobalt-ink); text-decoration: none;
-    white-space: nowrap;
-  }
-  .nav__links { display: flex; gap: clamp(0.85rem, 3vw, 2.5rem); list-style: none; margin: 0; padding: 0; }
+  .nav.is-scrolled { background: var(--surface-page); border-bottom-color: var(--border-hairline); }
+  .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 4.5rem; }
+  .nav__brand { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-brand); }
+  .nav__brand:hover { color: var(--action-primary-hover); }
+  .nav__links { display: flex; gap: clamp(1rem, 3vw, 2.5rem); list-style: none; margin: 0; padding: 0; }
   .nav__links a {
-    display: inline-block; padding: 0.75rem 0; min-height: 44px;
-    font-size: var(--step--1); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--cobalt-ink); text-decoration: none;
+    display: inline-flex; align-items: center; min-height: 44px;
+    color: var(--text-brand); text-decoration: none;
   }
-  .nav__links a:hover { color: var(--cobalt); text-decoration: underline; }
+  .nav__links a:hover { color: var(--action-primary-hover); }
+  .nav__links a:active { color: var(--action-primary-active); }
   @media (max-width: 26rem) {
-    .nav__brand { gap: 0.5rem; font-size: 1.05rem; }
-    .nav__brand :global(.seal) { --size: 30px !important; }
-    .nav__links a { letter-spacing: 0.1em; }
+    .nav__links a { letter-spacing: 0.12em; }
   }
 </style>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  if (nav) {
+    const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+</script>
