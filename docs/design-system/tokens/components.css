@@ -1,0 +1,102 @@
+/* ============================================================
+   COMPONENT TOKENS — the third tier.
+   Every component reads ONLY these. Each points at a SEMANTIC
+   token (never a primitive), so re-pointing a semantic alias
+   re-themes every component that uses it, seamlessly.
+   ============================================================ */
+:root {
+  /* ---------- Button ---------- */
+  --button-font:              var(--font-sans);
+  --button-weight:            var(--fw-semibold); /* @kind font */
+  --button-radius:            var(--radius-sm); /* @kind radius */
+  --button-primary-bg:        var(--action-primary);
+  --button-primary-bg-hover:  var(--action-primary-hover);
+  --button-primary-fg:        var(--text-on-brand);
+  --button-secondary-fg:      var(--text-brand);
+  --button-secondary-border:  var(--border-strong);
+  --button-secondary-bg-hover:     var(--surface-brand-soft);
+  --button-secondary-border-hover: var(--action-primary-hover);
+  --button-ghost-fg:          var(--text-brand);
+  --button-ghost-bg-hover:    var(--surface-brand-soft);
+  --button-seal-bg:           var(--action-seal);
+  --button-seal-bg-hover:     var(--action-seal-hover);
+  --button-seal-fg:           var(--text-on-brand);
+  --button-inverse-bg:        var(--surface-page);
+  --button-inverse-bg-hover:  var(--surface-raised);
+  --button-inverse-fg:        var(--surface-invert);
+
+  /* ---------- Eyebrow ---------- */
+  --eyebrow-font:         var(--font-sans);
+  --eyebrow-size:         var(--text-label); /* @kind font */
+  --eyebrow-weight:       var(--fw-semibold); /* @kind font */
+  --eyebrow-tracking:     var(--ls-label); /* @kind font */
+  --eyebrow-fg-brand:     var(--text-brand);
+  --eyebrow-fg-muted:     var(--text-secondary);
+  --eyebrow-fg-invert:    var(--text-invert-dim);
+  --eyebrow-fg-seal:      var(--text-seal);
+
+  /* ---------- Seal (chop) ---------- */
+  --seal-font:        var(--font-cjk);
+  --seal-radius:      var(--radius-xs); /* @kind radius */
+  --seal-fg-seal:     var(--text-seal);
+  --seal-fg-ink:      var(--text-primary);
+  --seal-fg-brand:    var(--text-brand);
+
+  /* ---------- Logo ---------- */
+  --logo-color:       var(--text-brand);
+
+  /* ---------- WorkCard ---------- */
+  --card-bg:            var(--surface-raised);
+  --card-radius:        var(--radius-card); /* @kind radius */
+  --card-border:        var(--border-strong);
+  --card-border-quiet:  var(--border-hairline);
+  --card-frame-border:  var(--border-default);
+  --card-shadow:        var(--shadow-sm); /* @kind shadow */
+  --card-shadow-hover:  var(--shadow-md); /* @kind shadow */
+  --card-title-fg:      var(--text-primary);
+  --card-body-fg:       var(--text-secondary);
+  --card-eyebrow-fg:    var(--text-secondary);
+  --card-action-fg:     var(--text-brand);
+  --card-media-bg:      var(--surface-scroll);
+
+  /* ---------- Blockquote ---------- */
+  --quote-font:              var(--font-display);
+  --quote-fg:                var(--text-primary);
+  --quote-fg-invert:         var(--text-on-invert);
+  --quote-mark-fg:           var(--text-seal);
+  --quote-cite-fg:           var(--text-secondary);
+  --quote-cite-fg-invert:    var(--text-invert-dim);
+
+  /* ---------- CaseStudyFrame ---------- */
+  --frame-placeholder-fg:    var(--text-muted);
+
+  /* ---------- MotifDivider ---------- */
+  --divider-fg:            var(--text-brand);
+  --divider-fg-invert:     var(--text-invert-dim);
+  --divider-rule:          var(--border-default);
+  --divider-rule-invert:   var(--border-invert);
+
+  /* ---------- Badge ---------- */
+  --badge-radius-pill:   var(--radius-round); /* @kind radius */
+  --badge-radius-tag:    var(--radius-sm); /* @kind radius */
+  --badge-cobalt-fg:     var(--text-brand);
+  --badge-cobalt-border: var(--border-default);
+  --badge-cobalt-bg:     var(--surface-brand-soft);
+  --badge-seal-fg:       var(--seal-600);
+  --badge-seal-border:   var(--seal-400);
+  --badge-seal-bg:       rgba(166, 52, 43, 0.08);
+  --badge-celadon-fg:    var(--celadon-500);
+  --badge-celadon-border: var(--celadon-300);
+  --badge-celadon-bg:    rgba(111, 138, 111, 0.1);
+  --badge-neutral-fg:    var(--text-secondary);
+  --badge-neutral-border: var(--border-ink);
+  --badge-neutral-bg:    transparent;
+
+  /* ---------- RevealImage ---------- */
+  --reveal-radius:           var(--radius-image); /* @kind radius */
+  --reveal-bg:               var(--surface-scroll);
+  --reveal-bg-dark:          var(--blue-900);
+  --reveal-shadow:           var(--shadow-sm); /* @kind shadow */
+  --reveal-caption-fg:       var(--text-on-invert);
+  --reveal-caption-sub-fg:   var(--blue-100);
+}

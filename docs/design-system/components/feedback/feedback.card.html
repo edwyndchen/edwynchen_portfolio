@@ -1,0 +1,34 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Feedback — Badge · RevealImage" subtitle="Category markers and the hover-reveal gallery tile" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:var(--paper-50);font-family:var(--font-sans);padding:26px 28px}
+.h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);margin:0 0 12px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const { Badge, RevealImage } = window.EdwynChenPorcelainDesignSystem_58116c;
+function Tile({t,c,tone}){return <RevealImage ratio="4 / 3" tone={tone} title={t} caption={c}>
+  <div style={{position:'absolute',inset:0,display:'grid',placeItems:'center',color:tone==='dark'?'var(--blue-300)':'var(--blue-400)',fontFamily:'var(--font-cjk)',fontSize:40,opacity:.5}}>青花</div>
+</RevealImage>;}
+function Demo(){return (
+  <>
+    <p className="h">Badges</p>
+    <div className="row">
+      <Badge>UI / UX</Badge><Badge tone="seal" variant="tag">New</Badge>
+      <Badge tone="celadon">Wellness</Badge><Badge tone="neutral">Archive</Badge>
+    </div>
+    <p className="h">RevealImage — hover a tile</p>
+    <div className="grid">
+      <Tile t="Porcelain Vases" c="Project Cover" tone="light"/>
+      <Tile t="Porcelain Tiles" c="Project Covers" tone="dark"/>
+      <Tile t="Heritage Gallery" c="Cultural" tone="light"/>
+    </div>
+  </>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script></body></html>

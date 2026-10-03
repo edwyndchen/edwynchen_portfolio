@@ -107,3 +107,13 @@ All prompts saved to `porcelain-portfolio/docs/image-prompts.md` so images can b
 ## 8. Out of scope
 
 Live deployment, custom domain, writing the Punters Home Page case study, dark mode, a blog/journal.
+
+## 9. Design system adoption (Ed, 2026-10-03)
+
+Ed supplied his own "Edwyn Chen — Porcelain Design System" (copied to `docs/design-system/`). It supersedes the palette and typography in section 2:
+
+- **Colours:** DS tokens. Cobalt `--blue-700 #2B4C86` (brand, headings, links, actions), ink `--ink-900 #1B1C1A` (body), paper `--paper-50 #FAF8F2` (page), navy `--blue-950 #16233F` (footer/dark sections), gilt gold scale for accents (`--gold-600` text, `--gold-400` fill). Seal red is not used (brief is white, cobalt and gold). Artwork keeps its own painted cobalts.
+- **Type:** Cormorant Garamond (display), Manrope (headers, body, labels), Ma Shan Zheng (Chinese characters). DS type scale, line heights, label tracking.
+- **Details:** square corners, cool-tinted soft shadows, DS motion easings, transparent nav gaining an ivory backing on scroll, logo wordmark in the nav (replaces the 陈 seal).
+- **Deliberately not adopted:** em dashes (Ed's voice principles win), ornamental corner frames on cards (Ed rejected them), real porcelain photography and red seal stamps (conflict with the brief).
+- **Check-in changes:** hero has no eyebrow: "Edwyn Chen" / "I'm a product designer and design systems specialist." / existing intro line kept. Footer shows only the Southern Cross (no words). About placeholder uses traditional 陳 in Ma Shan Zheng.

@@ -1,0 +1,54 @@
+<!-- @dsCard group="Type" viewport="700x200" name="Display — Cormorant Garamond" subtitle="Exhibition headlines, high-contrast garalde serif" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css">
+<style>
+  body{margin:0;background:var(--paper-50);color:var(--text-primary);padding:24px 28px;font-family:var(--font-display)}
+  .lbl{font-family:var(--font-sans);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 6px}
+  .h1{font-size:52px;font-weight:500;line-height:1.04;letter-spacing:-.01em;margin:0}
+  /* Never italicise a single word — the accent word takes colour/underline, not italic */
+  .h1 .accent{font-style:normal}
+  .h2{font-size:30px;font-weight:500;margin:14px 0 0}
+  .meta{font-family:var(--font-sans);font-size:11px;color:var(--text-secondary);margin-top:14px}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio } = window;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#2b4c86",
+  "emphasis": "Colour"
+}/*EDITMODE-END*/;
+
+function Card(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  // Emphasis never uses single-word italic — only colour, underline, or none.
+  const accentStyle = { fontStyle: 'normal' };
+  if (t.emphasis !== 'None') accentStyle.color = t.accentColor;
+  if (t.emphasis === 'Underline') {
+    accentStyle.textDecoration = 'underline';
+    accentStyle.textDecorationColor = t.accentColor;
+    accentStyle.textUnderlineOffset = '6px';
+    accentStyle.textDecorationThickness = '2px';
+  }
+  return (
+    <>
+      <p className="lbl">Display · Cormorant Garamond</p>
+      <h1 className="h1">Design with <span className="accent" style={accentStyle}>Clarity.</span><br/>Crafted with Intention.</h1>
+      <div className="h2">Designing Meaningful Experiences</div>
+      <p className="meta">weights 400–600 · roman &amp; italic · tracking −0.01em · line-height 1.04–1.2</p>
+      <TweaksPanel>
+        <TweakSection label="Accent word" />
+        <TweakColor label="Colour" value={t.accentColor}
+          options={['#2b4c86', '#1b1c1a', '#a6342b', '#6f8a6f']}
+          onChange={(v) => setTweak('accentColor', v)} />
+        <TweakRadio label="Emphasis" value={t.emphasis}
+          options={['Colour', 'Underline', 'None']}
+          onChange={(v) => setTweak('emphasis', v)} />
+      </TweaksPanel>
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

@@ -1,0 +1,59 @@
+<!-- @dsCard group="Components" viewport="700x470" name="Core — Button · Logo · Eyebrow · Seal" subtitle="Actions, brand marks, labels and the seal chop" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:var(--paper-50);font-family:var(--font-sans);padding:26px 28px}
+.grp{margin-bottom:22px}.grp:last-child{margin-bottom:0}
+.h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);margin:0 0 12px}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head><body><div id="root"></div>
+<script type="text/babel">
+const { Button, Logo, Eyebrow, Seal } = window.EdwynChenPorcelainDesignSystem_58116c;
+function Demo(){return (
+  <>
+    <div className="grp"><p className="h">Button variants — all size md</p>
+      <div className="row">
+        <Button variant="primary">Primary</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="seal">Seal</Button>
+        <Button variant="ghost">Ghost</Button>
+        <span style={{display:'inline-flex',background:'var(--ink-800)',padding:'10px',borderRadius:'8px'}}><Button variant="inverse">Inverse</Button></span>
+      </div>
+    </div>
+    <div className="grp"><p className="h">States</p>
+      <div className="row">
+        <Button variant="primary" arrow>With arrow</Button>
+        <Button variant="primary" disabled>Disabled</Button>
+      </div>
+    </div>
+    <div className="grp"><p className="h">Sizes — sm · md · lg</p>
+      <div className="row">
+        <Button variant="primary" size="sm">Small</Button>
+        <Button variant="primary" size="md">Medium</Button>
+        <Button variant="primary" size="lg">Large</Button>
+      </div>
+    </div>
+    <div className="grp"><p className="h">Logo — mark · medallion · wordmark</p>
+      <div className="row">
+        <Logo variant="mark" size={40}/>
+        <Logo variant="medallion" size={38}/>
+        <Logo variant="wordmark" size={30}/>
+        <Logo variant="mark" size={40} color="var(--seal-500)"/>
+      </div>
+    </div>
+    <div className="grp"><p className="h">Eyebrow &amp; Seal</p>
+      <div className="row">
+        <Eyebrow>Digital Designer</Eyebrow>
+        <Eyebrow tone="muted" rule>Selected Work</Eyebrow>
+        <Seal characters="观然" size={52}/>
+        <Seal characters="匠心如一" size={52}/>
+        <Seal characters="青" tone="cobalt" size={52}/>
+      </div>
+    </div>
+  </>
+);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script></body></html>
