@@ -1,0 +1,31 @@
+{
+  "name": "porcelain-portfolio",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "import:case-studies": "node scripts/import-case-studies.mjs",
+    "optimise:art": "node scripts/optimise-art.mjs",
+    "shots": "node scripts/screenshots.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdoc": "^2.0.9",
+    "@astrojs/netlify": "^8.2.6",
+    "@astrojs/react": "^7.0.0",
+    "@keystatic/astro": "^6.0.0",
+    "@keystatic/core": "^0.6.9",
+    "astro": "^7.3.5",
+    "gsap": "^3.15.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "sharp": "^0.35.5",
+    "vitest": "^5.0.3"
+  }
+}
