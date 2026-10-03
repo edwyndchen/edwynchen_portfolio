@@ -1,0 +1,22 @@
+---
+interface Props { metrics: { value: string; label: string }[] }
+const { metrics } = Astro.props;
+const shown = metrics.slice(0, 4);
+---
+{shown.length > 0 && (
+  <ul class="stats" aria-label="Results">
+    {shown.map((m) => (
+      <li data-stat>
+        <span class="stats__value">{m.value}</span>
+        <span class="stats__label">{m.label}</span>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-m); list-style: none; padding: 0; margin: 0; }
+  .stats li { border-top: 2px solid var(--cobalt); padding-top: var(--space-s); }
+  .stats__value { display: block; font-family: var(--font-display); font-size: var(--step-3); line-height: 1; color: var(--cobalt); }
+  .stats__label { display: block; margin-top: var(--space-xs); max-width: 24ch; }
+</style>

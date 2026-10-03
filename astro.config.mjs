@@ -7,5 +7,6 @@ import netlify from '@astrojs/netlify';
 export default defineConfig({
   site: 'https://example.netlify.app',
   adapter: netlify(),
+  devToolbar: { enabled: false },
   integrations: [react(), markdoc(), keystatic()],
 });

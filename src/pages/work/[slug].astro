@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Plate from '../../components/Plate.astro';
+import AtAGlance from '../../components/AtAGlance.astro';
+import StatPanels from '../../components/StatPanels.astro';
+import CaseNav from '../../components/CaseNav.astro';
+import { neighbours, sortCaseStudies } from '../../lib/case-studies';
+import { site } from '../../data/site';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const sorted = sortCaseStudies(await getCollection('caseStudies'));
+  return sorted.map((entry) => ({ params: { slug: entry.id }, props: { entry, ...neighbours(sorted, entry.id) } }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+<BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
+  <article>
+    <header class="wrap case-head">
+      <Plate>
+        <p class="label case-head__kicker">{d.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
+        <h1>{d.title}</h1>
+        <p class="case-head__dek">{d.dek}</p>
+      </Plate>
+      {d.cover && <img class="case-head__cover" src={d.cover} alt={d.coverAlt} width="1600" height="900" />}
+    </header>
+
+    <div class="wrap case-summary">
+      <StatPanels metrics={d.metrics} />
+      <AtAGlance data={d} />
+    </div>
+
+    <div class="wrap prose case-body">
+      <Content />
+    </div>
+  </article>
+  <CaseNav prev={prev} next={next} />
+</BaseLayout>
+
+<style>
+  .case-head { padding-top: var(--space-xl); }
+  .case-head h1 { font-size: var(--step-4); margin: var(--space-s) 0; }
+  .case-head__kicker { color: var(--gold-text); margin: 0; }
+  .case-head__dek { font-size: var(--step-1); margin: 0; }
+  .case-head__cover { margin-top: var(--space-l); width: 100%; height: auto; mix-blend-mode: multiply; }
+  .case-summary { display: grid; gap: var(--space-xl); padding-block: var(--space-xl); }
+</style>

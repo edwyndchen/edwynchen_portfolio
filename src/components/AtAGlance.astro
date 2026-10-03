@@ -1,0 +1,22 @@
+---
+interface Props { data: { role: string; timeline: string; team: string; platforms: string; context: string; outcome: string } }
+const { data } = Astro.props;
+const rows = [
+  ['Role', data.role], ['Timeline', data.timeline], ['Team', data.team],
+  ['Platforms', data.platforms], ['Context', data.context], ['Outcome', data.outcome],
+].filter(([, v]) => v);
+---
+<section class="glance" aria-labelledby="glance-title">
+  <h2 id="glance-title" class="label">At a glance</h2>
+  <dl>
+    {rows.map(([k, v]) => (<div><dt class="label">{k}</dt><dd>{v}</dd></div>))}
+  </dl>
+</section>
+
+<style>
+  .glance h2 { font-family: var(--font-body); margin-bottom: var(--space-m); color: var(--gold-text); }
+  dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-m) var(--space-l); margin: 0; }
+  dl div { border-top: var(--rule-soft); padding-top: var(--space-xs); }
+  dt { margin-bottom: 0.25rem; }
+  dd { margin: 0; }
+</style>

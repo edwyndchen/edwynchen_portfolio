@@ -1,0 +1,15 @@
+---
+interface Item { id: string; data: { title: string } }
+interface Props { prev: Item; next: Item }
+const { prev, next } = Astro.props;
+---
+<nav class="casenav wrap" aria-label="More case studies">
+  <a href={`/work/${prev.id}/`} rel="prev"><span class="label">Previous</span><span>{prev.data.title}</span></a>
+  <a href={`/work/${next.id}/`} rel="next"><span class="label">Next</span><span>{next.data.title}</span></a>
+</nav>
+
+<style>
+  .casenav { display: flex; justify-content: space-between; gap: var(--space-m); border-top: var(--rule); padding-top: var(--space-m); margin-top: var(--space-xl); }
+  .casenav a { display: grid; gap: 0.25rem; text-decoration: none; font-family: var(--font-display); font-size: var(--step-1); min-height: 44px; }
+  .casenav a[rel='next'] { text-align: right; }
+</style>

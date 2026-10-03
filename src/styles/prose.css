@@ -1,0 +1,9 @@
+.prose { max-width: var(--measure); }
+.prose h2 { font-size: var(--step-2); margin: var(--space-xl) 0 var(--space-m); }
+.prose h3 { font-size: var(--step-1); margin: var(--space-l) 0 var(--space-s); }
+.prose ul, .prose ol { padding-left: 1.2em; }
+.prose li { margin-bottom: 0.4em; }
+.prose li::marker { color: var(--cobalt); }
+.prose strong { font-weight: 600; }
+.prose img { margin: var(--space-l) 0; border: var(--rule-soft); }
+.prose blockquote { margin: var(--space-l) 0; padding-left: var(--space-m); border-left: 2px solid var(--cobalt); font-family: var(--font-display); font-size: var(--step-1); }
