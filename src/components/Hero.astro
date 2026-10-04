@@ -52,7 +52,8 @@ import { site } from '../data/site';
     display: grid; gap: var(--space-m) var(--space-xl); align-items: end;
     padding-top: clamp(2.5rem, 7vh, 6rem); padding-bottom: clamp(1.5rem, 4vh, 3rem);
   }
-  @media (min-width: 60rem) { .hero__copy { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+  /* one column: name, the line, then the button under it */
+  .hero__copy { justify-items: start; }
   .hero h1 { font-size: var(--step-4); max-width: 12ch; }
   /* the role reads as a quiet serif subtitle, the DS italic voice, one size under the section headings */
   .hero__role {
@@ -61,6 +62,7 @@ import { site } from '../data/site';
     max-width: 30ch; margin: var(--space-s) 0 0;
   }
   .hero__pitch { padding-bottom: 0.4em; }
+  @media (min-width: 60rem) { .hero__pitch { margin-top: var(--space-s); } }
   .hero__cta::after { content: '\2193'; font-weight: 400; transition: transform var(--dur-med) var(--ease-standard); }
   .hero__cta:hover::after { transform: translateY(2px); }
 

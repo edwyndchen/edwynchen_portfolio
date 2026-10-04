@@ -23,24 +23,24 @@ Or use the `porcelain-portfolio` entry in `/Users/ed/Claude/Cowork/.claude/launc
 
 ## State at handoff
 
-Committed and green up to `361c7a5` (unit 59, e2e 152 + skipped). Built:
+Committed up to the latest commit on `main` (unit 60, e2e 164; two case-study tests can time out under full-suite load and pass alone). Built:
 
-- Home: hero (7 parallax layers), staggered case study plates, About, Contact, navy footer.
-- About transition (Task 10e, signed off in principle; tuning ongoing): cloud walls part over a pinned stage. Two columns from 48rem (tablets up): Ed descends centred then glides right while the text rises in. Phones: the stage is one screen (heading, bio, Ed), the text is never faded, the walls part and clear first, then Ed drops a short way below the bio; the "What I do" list follows the pin. The right wall was repainted with short tails (`docs/image-prompts.md`).
-- Fabric wind: one image warped through an feTurbulence filter scaled by a stillness map (face and both hands fully still, torso 80% still). Retune in `src/scripts/fabric-wind.ts`, or live: `npm run dev`, open `/?wind`, use the sliders, "Copy settings".
-- 陳 renders in Cactus Classical Serif (Ed picked it; Ma Shan Zheng has no traditional 陳). A CDP test checks the font that actually draws it.
-- Case study pages (4), Keystatic-editable, with Contact at the end.
-- Workshop (`/workshop/`, Keystatic collection `workshop`): cards with status, date, skills, optional link; a write-up gives an entry its own page. Skill toggles filter the cards. New entries default to Draft (shown in dev only). Two drafts seeded from existing briefs (HYROX Lap Timer, Our Attachments) for Ed to edit, add images and publish.
-- Contact: two columns, Netlify form (name, email, message, honeypot). JS sends in place with inline errors; without JS it lands on `/thanks/`. Only works once deployed on Netlify.
-- Footer: Acknowledgement of Country (Wurundjeri Woi-wurrung people of the Kulin Nation), then © and the Southern Cross.
-- Review round 1 done (`docs/review/round-1/findings.md`): section A applied, section B items are Ed's calls (see below).
+- Colours: "Kiln cobalt", the blue ramp sampled from the painted art (primary `#3231b0`), in the site tokens and the design system.
+- Hero: one line ("Melbourne-based product designer making the world more accessible and beautiful, one screen at a time."), View work under it. Clouds: 8 new (v1-v4 long bands, v5-v8 soft billows, few curls), recoloured pale; 2 gentlest old ones kept; 20% faster. `npm run hero` rebuilds them and no longer touches the hand-cropped right About wall.
+- Nav: Work, About, Contact | Workshop (outlined button). Phones: brush mark, Menu (disclosure), Workshop.
+- About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with stillness map (tune at `/?wind` in dev).
+- Workshop (`/workshop/`): lattice header, painting-workshop copy ("Paint still wet"; statuses On the easel / Fired / Sketch; "Brushes and tools"), placeholder frames until images are added. Two draft entries (HYROX Lap Timer, Our Attachments) for Ed to edit and publish.
+- Case studies: full-width hero (Keystatic `hero` image, falls back to the cover), On this page quick links, a "Section image" Keystatic block after Problem, Outcomes and Process (placeholder frame until filled).
+- Contact: two columns with a Netlify form (works once deployed). `/thanks/` for no-JS.
+- Footer: summary, LinkedIn/Behance (show once set in `src/data/site.ts`), copyright line with Privacy policy, Terms of use, Back to top; Acknowledgement of Country band below with the Aboriginal flag. `/privacy/` and `/terms/` drafted in plain English (Ed to review; not legal advice).
+- Page transition: new pages paint in with brush strokes (cross-document view transition; Chrome/Safari; none with reduced motion). Mask sprite and CSS built by `npm run transition` (`scripts/brush-reveal.mjs`).
+- Note: `art/` is git-ignored (large sources and build scripts live there, untracked).
 
 ## Next steps
 
-1. Ed reviews the new About on his phone/tablet, the wind (via `/?wind`), Workshop, contact form and footer.
-2. Round 1 section B decisions still open: pause-motion control (WCAG 2.2.2, needed), desktop pin length, case-study body layout, Punters/EonX/Pay By Account cover repaints, copy edits ("X, not Y" lines), flora size, Flinders Street linework, footer ©.
-3. Review round 2 (plan Task 11) once B is settled: screenshots now include tablet (`npm run shots -- round-2`).
-4. Handoff README (plan Task 12). Deploy (Netlify + Keystatic GitHub mode) only when Ed asks.
+1. Ed reviews this round. Waiting on Ed: LinkedIn and Behance URLs; real images for Workshop entries and case study hero/section images (upload in Keystatic); Torres Strait Islander flag (check permission with the Torres Strait Island Regional Council first, then add to the slot in `Footer.astro`).
+2. Open from review round 1: pause-motion control (WCAG 2.2.2), copy edits, cover repaints, flora size, Flinders Street linework.
+3. Review round 2 (plan Task 11), handoff README, deploy when Ed asks.
 
 ## Open items for Ed
 
