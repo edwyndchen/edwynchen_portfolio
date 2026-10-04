@@ -5,7 +5,6 @@ import PlaceholderFrame from '../../components/PlaceholderFrame.astro';
 import CaseToc from '../../components/CaseToc.astro';
 import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
-import StatPanels from '../../components/StatPanels.astro';
 import CaseNav from '../../components/CaseNav.astro';
 import Contact from '../../components/Contact.astro';
 import { neighbours, sortCaseStudies } from '../../lib/case-studies';
@@ -36,7 +35,7 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
         : <PlaceholderFrame id="case-hero" ratio="16 / 9" hint="Add a hero image in Keystatic" />}
     </div>
 
-    <!-- 2. the blue band: what this case is, at a glance; its section tabs sit on the band's bottom edge -->
+    <!-- 2. the blue band: what this case is, at a glance -->
     <header class="case-band">
       <div class="wrap case-band__inner">
         <div class="case-band__intro">
@@ -52,16 +51,15 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
           )}
         </div>
         <div class="case-band__facts">
-          <StatPanels metrics={d.metrics} />
           <AtAGlance data={d} />
         </div>
       </div>
     </header>
-    <CaseToc headings={headings} />
 
-    <!-- 3. the story -->
+    <!-- 3. the story, with its On this page links beside it -->
     <div class="wrap case-body">
       <Flora plant="banksia" side="right" class="flora--case" />
+      <CaseToc headings={headings} />
       <div class="prose">
         <Content />
       </div>
@@ -88,8 +86,7 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
     --cobalt: var(--paper-0); --border-strong: var(--blue-200); --border-hairline: rgba(255, 255, 255, 0.28);
     --focus-ring: var(--paper-0);
     background: var(--surface-brand); color: var(--text-primary);
-    /* room at the bottom for the tab row, which sits on the band's edge */
-    padding-block: var(--space-xl) calc(var(--space-xl) + 3rem);
+    padding-block: var(--space-xl);
   }
   .case-band__inner { display: grid; gap: var(--space-xl); }
   @media (min-width: 60rem) { .case-band__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: var(--space-2xl); } }
@@ -104,13 +101,15 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
   .case-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--paper-0); }
   .case-band__facts { display: grid; gap: var(--space-xl); align-content: start; }
 
-  .case-body { position: relative; padding-top: var(--space-xl); }
-  .case-body :global(.prose) { margin-inline: auto; }
+  .case-body { position: relative; padding-top: var(--space-2xl); display: grid; gap: var(--space-l); }
+  @media (min-width: 60rem) { .case-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
   /* the banksia grows in the right margin beside the start of the story; on narrow screens it sits above it */
-  .case-body :global(.flora--case) { position: relative; display: block; margin: 0 0 var(--space-s) auto; }
-  @media (min-width: 75rem) {
-    .case-body :global(.flora--case) { position: absolute; top: var(--space-xl); right: 0; margin: 0; width: clamp(120px, 11vw, 180px); }
+  .case-body :global(.flora--case) { position: relative; grid-column: 1 / -1; justify-self: end; margin: 0 0 calc(var(--space-l) * -1); }
+  /* wide screens: it grows in the margin right of the 68ch text column, beside the start of the story */
+  @media (min-width: 80rem) {
+    .case-body :global(.flora--case) { position: absolute; top: var(--space-2xl); right: 0; margin: 0; width: clamp(110px, 9vw, 150px); }
   }
-  /* headings land below the nav and the stuck tab row */
-  .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; }
+  /* headings land below the sticky nav (and the phone link strip) */
+  .case-body :global(.prose h2) { scroll-margin-top: 6rem; }
+  @media (max-width: 59.99rem) { .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }
 </style>

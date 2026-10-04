@@ -3,10 +3,10 @@ export const site = {
   role: 'Product designer',
   location: 'Melbourne',
   email: 'edchen0203@gmail.com',
-  summary: 'Product designer with a passion for accessibility and design systems.',
-  // Not supplied yet. Components render these links only when non-empty.
-  linkedin: '' as string,
-  behance: '' as string,
+  summary: 'Product designer making the world more accessible and beautiful one screen at a time.',
+  linkedin: 'https://www.linkedin.com/in/edwynchen/' as string,
+  behance: 'https://www.behance.net/edwynchen' as string,
+  // Not supplied yet. Components render this link only when non-empty.
   resume: '' as string,
   nav: [
     { label: 'Work', href: '/#work' },

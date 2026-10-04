@@ -1,61 +1,64 @@
 ---
-// The case study's section tabs: anchor links set on the bottom edge of the blue band. The row sticks under the nav
-// while you read (turning solid cobalt once it leaves the band), and the tab for the section you are in is marked
-// (aria-current) and drawn in paper, as if it opens onto the page.
+// "On this page": anchor links to the case study's sections. A sticky column beside the story on desktop, a sticky
+// strip under the nav on phones. The current section is marked as you read (aria-current), by the script below.
 interface Props { headings: { depth: number; slug: string; text: string }[] }
 const items = Astro.props.headings.filter((h) => h.depth === 2);
 ---
 {items.length > 1 && (
-  <nav class="tabs" aria-label="On this page" data-toc>
-    <div class="wrap tabs__inner">
-      <ol>
-        {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
-      </ol>
-    </div>
+  <nav class="toc" aria-label="On this page" data-toc>
+    <p class="label toc__title">On this page</p>
+    <ol>
+      {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
   </nav>
 )}
 
 <style>
-  .tabs {
-    position: sticky; top: 4.5rem; z-index: 20; margin-top: -3rem; height: 3rem;
-    transition: background-color var(--dur-med) var(--ease-standard);
+  .toc__title { color: var(--gold-text); margin: 0 0 var(--space-s); }
+  .toc ol { list-style: none; margin: 0; padding: 0; }
+  .toc a {
+    display: flex; align-items: center; min-height: 40px; padding-left: var(--space-s);
+    color: var(--text-secondary); text-decoration: none; font-size: var(--text-sm);
+    border-left: 2px solid var(--border-hairline);
+    transition: color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
   }
-  .tabs.is-stuck { background: var(--surface-brand); box-shadow: var(--shadow-sm); }
-  .tabs__inner { height: 100%; overflow-x: auto; scrollbar-width: none; }
-  .tabs__inner::-webkit-scrollbar { display: none; }
-  .tabs ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; height: 100%; width: max-content; }
-  .tabs a {
-    display: flex; align-items: center; height: 100%; min-height: 44px; padding: 0 var(--space-m);
-    font-size: var(--text-sm); font-weight: var(--fw-semibold); text-decoration: none; white-space: nowrap;
-    color: var(--paper-0); background: rgba(255, 255, 255, 0.1);
-    transition: background-color var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard);
+  .toc a:hover { color: var(--text-brand); border-left-color: var(--border-default); }
+  .toc a[aria-current='true'] { color: var(--text-brand); font-weight: var(--fw-semibold); border-left-color: var(--action-primary); }
+  @media (min-width: 60rem) {
+    .toc { position: sticky; top: 6rem; align-self: start; }
   }
-  .tabs a:hover { background: rgba(255, 255, 255, 0.2); color: var(--paper-0); }
-  .tabs a:focus-visible { outline: 2px solid var(--paper-0); outline-offset: -4px; }
-  .tabs a[aria-current='true'] { background: var(--surface-page); color: var(--text-brand); }
-  .tabs a[aria-current='true']:focus-visible { outline-color: var(--focus-ring); }
+  /* phones and tablets: a strip of links that scrolls sideways, held under the nav */
+  @media (max-width: 59.99rem) {
+    .toc {
+      position: sticky; top: 4.5rem; z-index: 5; margin-inline: calc(var(--gutter) * -1); padding: var(--space-2) var(--gutter);
+      background: var(--surface-page); border-bottom: 1px solid var(--border-hairline);
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc__title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .toc ol { display: flex; gap: var(--space-2); width: max-content; }
+    .toc a { min-height: 44px; padding: 0 var(--space-s); border-left: 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .toc a[aria-current='true'] { border-bottom-color: var(--action-primary); }
+  }
 </style>
 
 <script>
   const toc = document.querySelector<HTMLElement>('[data-toc]');
   if (toc) {
-    const row = toc.querySelector<HTMLElement>('.tabs__inner')!;
     const links = new Map([...toc.querySelectorAll<HTMLAnchorElement>('a')].map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
     const heads = [...links.keys()].map((id) => document.getElementById(id)).filter((h): h is HTMLElement => Boolean(h));
-    const band = document.querySelector<HTMLElement>('.case-band');
-    const mark = (id: string | undefined) => {
+    const mark = (id: string) => {
       for (const [k, a] of links) if (k === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-      const a = id ? links.get(id) : undefined;
-      if (a && row.scrollWidth > row.clientWidth) row.scrollTo({ left: a.offsetLeft - 16, behavior: 'auto' });
+      // keep the current link in view in the phone strip
+      const a = links.get(id);
+      if (a && toc.scrollWidth > toc.clientWidth) toc.scrollTo({ left: a.offsetLeft - 16, behavior: 'auto' });
     };
+    // the current section is the last heading that has passed the top third of the screen
     const update = () => {
-      // stuck once the band's bottom edge has passed under the row
-      toc.classList.toggle('is-stuck', Boolean(band && band.getBoundingClientRect().bottom <= toc.getBoundingClientRect().bottom + 1));
-      // current section: the last heading past the top third of the screen (none while still in the band)
       const line = window.innerHeight * 0.33;
-      let current: string | undefined;
+      let current = heads[0]?.id;
       for (const h of heads) if (h.getBoundingClientRect().top <= line) current = h.id;
-      mark(current);
+      if (current) mark(current);
     };
     let raf = 0;
     window.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });

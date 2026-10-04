@@ -11,9 +11,9 @@ import SouthernCross from './SouthernCross.astro';
         <div class="scroll__art" aria-hidden="true">
           <SouthernCross class="scroll__cross" />
           <img class="scroll__range" src="/hero/contact-range.webp" alt="" width="1800" height="715" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--a" src="/hero/cloud-n3.webp" alt="" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--b" src="/hero/cloud-n5.webp" alt="" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--c" src="/hero/cloud-v2.webp" alt="" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--a" src="/hero/contact-cloud-s4.webp" alt="" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--b" src="/hero/contact-cloud-r2.webp" alt="" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--c" src="/hero/contact-cloud-r3.webp" alt="" loading="lazy" decoding="async" />
         </div>
   <div class="contact__grid">
     <div class="contact__intro">
@@ -21,7 +21,8 @@ import SouthernCross from './SouthernCross.astro';
       <p>Keen to hear about it. Send a note here, or email me directly.</p>
       <ul class="contact__links">
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-        {site.linkedin && <li><a href={site.linkedin}>LinkedIn</a></li>}
+        {site.linkedin && <li><a href={site.linkedin} rel="me">LinkedIn</a></li>}
+        {site.behance && <li><a href={site.behance} rel="me">Behance</a></li>}
         {site.resume && <li><a href={site.resume}>Resume</a></li>}
       </ul>
     </div>
@@ -64,18 +65,19 @@ import SouthernCross from './SouthernCross.astro';
   .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
   /* the scroll: rods wider than the paper, with knobbed ends; a pale silk mount; the paper itself */
   .scroll { position: relative; }
+  /* painted wooden rods (Seedream, see image-prompts.md): a turned knob at each end, the plain rod repeating between
+     them (clipped to the padding, so it never shows past a knob). Wider than the mount, as on a real scroll. */
   .scroll__rod {
-    display: block; position: relative; z-index: 2; height: 18px; margin-inline: -14px;
-    background: linear-gradient(to bottom, var(--blue-800), var(--blue-950) 70%);
-    border-radius: 9px;
+    --knob: 44px;
+    display: block; position: relative; z-index: 2; height: 27px; margin-inline: calc(var(--knob) * -0.6);
+    padding-inline: calc(var(--knob) - 6px);
+    background:
+      url(/scroll/rod-left.webp) left center / auto 100% no-repeat,
+      url(/scroll/rod-right.webp) right center / auto 100% no-repeat,
+      url(/scroll/rod-mid.webp) center / auto 100% repeat-x;
+    background-clip: border-box, border-box, content-box;
+    background-origin: border-box, border-box, content-box;
   }
-  /* turned porcelain knobs on the rod ends: white glaze, a cobalt band, a pale ring */
-  .scroll__rod::before, .scroll__rod::after {
-    content: ''; position: absolute; top: 50%; translate: 0 -50%; width: 30px; height: 30px; border-radius: 50%;
-    background: radial-gradient(circle at 38% 35%, var(--paper-0) 0 30%, var(--blue-100) 31% 42%, var(--blue-700) 43% 62%, var(--paper-0) 63% 72%, var(--blue-300) 73%);
-  }
-  .scroll__rod::before { left: -16px; }
-  .scroll__rod::after { right: -16px; }
   .scroll__mount { padding: 12px; background: var(--blue-50); border-inline: 1px solid var(--border-hairline); }
   .scroll__paper { position: relative; overflow: hidden; background: var(--paper-100); box-shadow: inset 0 0 0 1px var(--border-hairline); padding: clamp(1.5rem, 1rem + 3vw, 4rem); padding-bottom: clamp(9rem, 22vw, 18rem); }
   /* the painting on the paper: the sky with its stars up top, the range and clouds along the foot */
@@ -85,17 +87,16 @@ import SouthernCross from './SouthernCross.astro';
   .scroll__cloud--a { width: clamp(120px, 16%, 220px); left: 4%; bottom: clamp(4rem, 12vw, 10rem); }
   .scroll__cloud--b { width: clamp(100px, 12%, 170px); left: 34%; bottom: clamp(3rem, 9vw, 7.5rem); }
   .scroll__cloud--c { width: clamp(140px, 20%, 280px); right: 3%; bottom: clamp(2rem, 6vw, 5rem); }
-  /* the Southern Cross hangs in the open sky above the range */
-  .scroll__art :global(.scroll__cross) { position: absolute; top: 44%; left: 30%; width: clamp(3.5rem, 7vw, 6rem); height: auto; color: var(--wattle-gold); }
-  @media (max-width: 59.99rem) { .scroll__art :global(.scroll__cross) { top: var(--space-m); left: auto; right: var(--space-m); width: 3rem; } }
+  /* the Southern Cross hangs in the open sky above the range, in cobalt (gold vanished on the paper) */
+  .scroll__art :global(.scroll__cross) { position: absolute; top: 44%; left: 30%; width: clamp(3.5rem, 7vw, 6rem); height: auto; color: var(--blue-700); }
+  /* narrow screens: beside the short link lines, clear of the heading */
+  @media (max-width: 59.99rem) { .scroll__art :global(.scroll__cross) { top: 15.5rem; left: auto; right: 10%; width: 3.25rem; } }
   .contact__grid { position: relative; z-index: 1; display: grid; gap: var(--space-xl); align-items: start; }
   @media (min-width: 60rem) {
     .contact__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-2xl); }
   }
   @media (max-width: 47.99rem) {
-    .scroll__rod { margin-inline: -6px; }
-    .scroll__rod::before { left: -10px; } .scroll__rod::after { right: -10px; }
-    .scroll__rod::before, .scroll__rod::after { width: 24px; height: 24px; }
+    .scroll__rod { --knob: 34px; height: 21px; margin-inline: calc(var(--knob) * -0.3); }
     .scroll__mount { padding: 8px; }
     .scroll__cloud--b { display: none; }
   }

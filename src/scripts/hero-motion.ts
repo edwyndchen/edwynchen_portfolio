@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { whilePlaying } from './motion';
 
 export function parallaxOffset(pointer: number, depth: number, maxShift = 28): number {
   const p = Math.max(-1, Math.min(1, pointer));
@@ -40,12 +41,15 @@ export function initHero(root: HTMLElement): () => void {
 
     gsap.fromTo('[data-reveal]', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
 
-    gsap
+    // the endless ones (tram, clouds, twinkle) answer to the Pause motion switch
+    const endless: gsap.core.Animation[] = [];
+    const tram = gsap
       .timeline({ repeat: -1, repeatDelay: 2.5 })
       .set('[data-tram]', { left: '31%', opacity: 0 })
       .to('[data-tram]', { opacity: 1, duration: 0.8 })
       .to('[data-tram]', { left: '58%', duration: 11, ease: 'none' }, 0)
       .to('[data-tram]', { opacity: 0, duration: 0.8 }, 10.2);
+    endless.push(tram);
 
     scene.querySelectorAll<HTMLElement>('.hero__cloud').forEach((c, i) => {
       if (c.offsetWidth === 0) return; // hidden on mobile: no endless tween for nothing
@@ -57,9 +61,11 @@ export function initHero(root: HTMLElement): () => void {
         { x: () => layer.clientWidth - c.offsetLeft, duration: cloudDuration(depth, i), ease: 'none', repeat: -1, invalidateOnRefresh: true },
       );
       tween.progress((i * 0.37) % 1);
+      endless.push(tween);
     });
 
-    gsap.to('.hero__cross circle', { opacity: 0.35, duration: 2.4, stagger: { each: 0.5, repeat: -1, yoyo: true }, ease: 'sine.inOut' });
+    endless.push(gsap.to('.hero__cross circle', { opacity: 0.35, duration: 2.4, stagger: { each: 0.5, repeat: -1, yoyo: true }, ease: 'sine.inOut' }));
+    const offMotion = whilePlaying(() => endless.forEach((t) => t.resume()), () => endless.forEach((t) => t.pause()));
 
     const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]')];
     // One scrubbed timeline per layer: phase 1 (page top -> scene top reaches viewport top) collapses the
@@ -105,6 +111,7 @@ export function initHero(root: HTMLElement): () => void {
     }
 
     return () => {
+      offMotion();
       if (onMove) scene.removeEventListener('pointermove', onMove);
       ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
     };

@@ -23,24 +23,24 @@ Or use the `porcelain-portfolio` entry in `/Users/ed/Claude/Cowork/.claude/launc
 
 ## State at handoff
 
-Committed up to the latest commit on `main` (unit 61, e2e 172). Built:
+Committed up to the latest commit on `main` (unit 61, e2e 175). Built:
 
 - Colours: "Kiln cobalt", the blue ramp sampled from the painted art (primary `#3231b0`), in the site tokens and the design system.
 - Hero: one line ("Melbourne-based product designer making the world more accessible and beautiful, one screen at a time."), View work under it. Clouds: 8 new (v1-v4 long bands, v5-v8 soft billows, few curls), recoloured pale; 2 gentlest old ones kept; 20% faster. `npm run hero` rebuilds them and no longer touches the hand-cropped right About wall.
-- Nav: Work, About, Contact | Workshop (plain link after a hairline). Phones: brush mark and a Menu holding all four.
-- About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with a stillness map per outfit (tune at `/?wind` in dev). Ed is a button: a puff of cloud and a costume change (hanfu, Pig festival wear, Aquarius water bearer), `src/scripts/outfit-swap.ts`.
+- Nav: Work, About, Contact | Workshop (plain link after a hairline), then a Pause motion button (stops every endless animation and the page transition; remembered via localStorage; `src/scripts/motion.ts`). Phones: brush mark, Menu holding all four links, Pause motion.
+- About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with a stillness map per outfit (tune at `/?wind` in dev). Ed is a button: a puff of cloud and a costume change through three different outfits and poses (hanfu; Tang-style festival jacket with pig mask and piglet; Song-style robe pouring a vase), `src/scripts/outfit-swap.ts`.
 - Workshop (`/workshop/`): lattice header titled Workshop, statuses On the easel / Fired / Sketch, "Brushes and tools" filter, placeholder frames until images are added. The waratah, gum and wattle live here now (none on the home page). Two draft entries (HYROX Lap Timer, Our Attachments) for Ed to edit and publish.
-- Case studies: image across the top (Keystatic `hero`, falls back to the cover), then a cobalt band (title, tags, `overview` field, results, at a glance) with section tabs on its bottom edge that stick under the nav. Problem has a Section image block; Outcomes and Process have Gallery (carousel) blocks with four placeholder slides.
-- Contact: a hanging scroll (rods, silk mount, pale range, clouds, Southern Cross) holding the heading, links and the Netlify form (works once deployed). `/thanks/` for no-JS.
-- Footer: summary, LinkedIn/Behance (show once set in `src/data/site.ts`), copyright line with Privacy policy, Terms of use, Back to top; Acknowledgement of Country band below with the Aboriginal flag. `/privacy/` and `/terms/` drafted in plain English (Ed to review; not legal advice).
+- Case studies: image across the top (Keystatic `hero`, falls back to the cover), then a cobalt band (title, tags, `overview` field, at a glance; no Results), then the story with the On this page column (sticky; a strip on phones). Problem has a Section image block; Outcomes and Process have Gallery (carousel) blocks with four placeholder slides.
+- Contact: a hanging scroll (painted wooden rods, silk mount, pale range and clouds from `npm run range`, cobalt Southern Cross) holding the heading, links and the Netlify form (works once deployed). `/thanks/` for no-JS.
+- Footer: "Product designer making the world more accessible and beautiful one screen at a time.", LinkedIn and Behance, copyright line with Privacy policy, Terms of use, Back to top; Acknowledgement of Country band below with the Aboriginal and Torres Strait Islander flags (the latter's copyright: Torres Strait Island Regional Council). `/privacy/` and `/terms/` drafted in plain English (Ed to review; not legal advice).
 - Page transition, two stages: brush strokes paint the old page cobalt, then paint the new page in (cross-document view transition; Chrome/Safari; none with reduced motion). Sprites and CSS built by `npm run transition` (`scripts/brush-reveal.mjs`).
 - Dev gotcha: after adding imports or `markdoc.config.mjs` changes, restart the dev server (Vite's "Outdated Optimize Dep" breaks Keystatic until then). Screenshots: block Google Fonts in Playwright scripts, they hang from here.
 - Note: `art/` is git-ignored (large sources and build scripts live there, untracked).
 
 ## Next steps
 
-1. Ed reviews this round. Waiting on Ed: LinkedIn and Behance URLs; real images for Workshop entries and case study hero/section images (upload in Keystatic); Torres Strait Islander flag (check permission with the Torres Strait Island Regional Council first, then add to the slot in `Footer.astro`).
-2. Open from review round 1: pause-motion control (WCAG 2.2.2), copy edits, cover repaints, flora size, Flinders Street linework.
+1. Ed reviews this round. Waiting on Ed: real images for Workshop entries and case study hero/section/gallery images (upload in Keystatic); resume link.
+2. Open from review round 1: copy edits, cover repaints, Flinders Street linework.
 3. Review round 2 (plan Task 11), handoff README, deploy when Ed asks.
 
 ## Open items for Ed

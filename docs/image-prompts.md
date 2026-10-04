@@ -58,3 +58,9 @@ Nano Banana 2 off Ed's final portrait (uploaded `a41400c8`). Festival wear with 
 ## Contact scroll range, 2026-10-04
 
 `public/hero/contact-range.webp`: the hero's peaks and outer peaks layers combined and lifted 62% towards paper-100 (no new generation).
+
+## About costume change v2 and scroll rods, 2026-10-05
+
+Ed: three completely different outfits and poses. Nano Banana 2 off portrait `a41400c8`: Tang-style festival jacket with pig mask and piglet `c3f27e06` (A), `86f5f69a` (B, used, cutout `9e5c738b`); Song-style layered robe pouring a vase over the shoulder `98c46691` (A), `4fe8a026` (B, used, cutout `26974e28`). Recoloured (`recolor.mjs … 1.3`) and centred on the portrait's 1100x1538 canvas.
+Scroll rods, Seedream 5.0 Pro: `fd318044` (A), `c494b96d` (B, used), sliced into `public/scroll/rod-{left,mid,right}.webp`.
+Hero clouds v3 (more swirls), Seedream off `7fe457e1`: xiangyun `9e43e9ac`, `f2874f32`, `1b4c06ad`, `4a097d4c` (s1-s4), ruyi `8ea99bb1`, `1ad95269`, `b21d1457`, `8f5c35ca` (r1-r4). Built by `npm run hero`; the scroll's pale copies by `npm run range`.

@@ -51,7 +51,9 @@ test('footer: summary, Southern Cross, legal links and back to top on the copyri
   await page.goto('/');
   const footer = page.locator('footer');
   await expect(footer).not.toContainText('Made in Melbourne');
-  await expect(footer).toContainText('Product designer with a passion for accessibility and design systems.');
+  await expect(footer).toContainText('Product designer making the world more accessible and beautiful one screen at a time.');
+  await expect(footer.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', 'https://www.linkedin.com/in/edwynchen/');
+  await expect(footer.getByRole('link', { name: /Behance/ })).toHaveAttribute('href', 'https://www.behance.net/edwynchen');
   await expect(footer.locator('.footer__cross')).toHaveAttribute('aria-hidden', 'true');
   const base = footer.locator('.footer__base');
   await expect(base).toContainText('© ');

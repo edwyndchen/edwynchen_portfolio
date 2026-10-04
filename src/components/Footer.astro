@@ -39,7 +39,8 @@ const socials = [
   <div class="wrap country__inner">
     <ul class="country__flags" aria-label="Flags">
       <li><img src="/flags/aboriginal.svg" alt="Australian Aboriginal flag" width="60" height="36" /></li>
-      <!-- Torres Strait Islander flag: add once its use is cleared with the Torres Strait Island Regional Council -->
+      <!-- copyright: Torres Strait Island Regional Council; shown here as part of the Acknowledgement -->
+      <li><img src="/flags/torres-strait-islander.svg" alt="Torres Strait Islander flag" width="72" height="36" /></li>
     </ul>
     <div>
       <h2 id="country-title" class="label">Acknowledgement of Country</h2>
@@ -74,7 +75,7 @@ const socials = [
   .country { background: var(--surface-page); border-top: 4px solid var(--surface-invert); }
   .country__inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-m) var(--space-l); padding-block: var(--space-l); }
   .country__flags { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-s); }
-  .country__flags img { display: block; width: 60px; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
+  .country__flags img { display: block; width: auto; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
   .country h2 { color: var(--gold-text); margin: 0 0 var(--space-2); }
   .country p { margin: 0; max-width: 70ch; font-size: var(--text-sm); color: var(--text-primary); }
 </style>

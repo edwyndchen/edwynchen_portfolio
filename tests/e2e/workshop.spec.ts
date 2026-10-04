@@ -127,6 +127,7 @@ test('Acknowledgement of Country sits below the footer, headed, with the Aborigi
   await expect(country).toContainText('Wurundjeri Woi-wurrung people of the Kulin Nation');
   await expect(country).toContainText('Elders, past and present');
   await expect(country.getByRole('img', { name: 'Australian Aboriginal flag' })).toBeVisible();
+  await expect(country.getByRole('img', { name: 'Torres Strait Islander flag' })).toBeVisible();
   // it comes after the footer
   expect(await page.evaluate(() => {
     const f = document.querySelector('footer')!, c = document.querySelector('.country')!;

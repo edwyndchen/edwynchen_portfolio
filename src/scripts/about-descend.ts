@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isMotionPaused, whilePlaying } from './motion';
 
 /**
  * Work -> About, retune here. Timeline positions are fractions of the pinned scroll; pin lengths are % of the
@@ -106,7 +107,7 @@ export function initAboutDescend(root: HTMLElement): () => void {
             root.dataset.pinStart = String(Math.round(st.start));
             root.dataset.pinEnd = String(Math.round(st.end));
           },
-          onLeave: () => float.play(),
+          onLeave: () => playFloat(),
         },
       });
       // phase 1: the walls part, easing in and out so the first scroll does not throw them open
@@ -126,7 +127,11 @@ export function initAboutDescend(root: HTMLElement): () => void {
 
       // idle, once landed: a slow ±6px float on its own transform channel (y), so it never fights the scrub
       const float = gsap.fromTo(ed, { y: 6 }, { y: -6, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
-      if (tl.scrollTrigger && tl.scrollTrigger.progress >= 1) float.play();
+      const landed = () => Boolean(tl.scrollTrigger && tl.scrollTrigger.progress >= 1);
+      // the float is endless, so it answers to the Pause motion switch
+      const playFloat = () => { if (!isMotionPaused()) float.play(); };
+      const offMotion = whilePlaying(() => { if (landed()) float.play(); }, () => float.pause());
+      if (landed()) playFloat();
 
       // the jump is intercepted, so keyboard focus has to be moved by hand (without undoing the scroll)
       const focusAbout = () => {
@@ -158,6 +163,7 @@ export function initAboutDescend(root: HTMLElement): () => void {
       }
 
       return () => {
+        offMotion();
         ScrollTrigger.removeEventListener('refreshInit', placeBox);
         ScrollTrigger.removeEventListener('refreshInit', noteFocus);
         ScrollTrigger.removeEventListener('refresh', keepFocus);

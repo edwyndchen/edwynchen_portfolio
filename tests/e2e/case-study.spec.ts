@@ -2,34 +2,20 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 const SLUGS = ['form-guide-redesign', 'punters-design-system', 'eonx-design-system', 'pay-by-account'];
-const WITH_METRICS = ['form-guide-redesign', 'punters-design-system', 'eonx-design-system'];
 
 for (const slug of SLUGS) {
   test(`case study ${slug} renders the template`, async ({ page }) => {
     await page.goto(`/work/${slug}/`);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.getByRole('heading', { name: 'At a glance' })).toBeVisible();
-    if (WITH_METRICS.includes(slug)) {
-      await expect(page.locator('[data-stat]').first()).toBeVisible();
-    } else {
-      await expect(page.locator('[data-stat]')).toHaveCount(0);
-    }
     await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'More case studies' }).getByRole('link', { name: /Next/ })).toHaveAttribute('href', /\/work\/.+\//);
   });
 
-  test(`case study ${slug}: results are headed, and the outcome is not repeated beside them`, async ({ page }) => {
+  test(`case study ${slug}: no Results panel in the band (the numbers live in the overview and Outcomes)`, async ({ page }) => {
     await page.goto(`/work/${slug}/`);
-    const outcomeRow = page.locator('.glance dt', { hasText: /^Outcome$/ });
-    if (WITH_METRICS.includes(slug)) {
-      const results = page.getByRole('region', { name: 'Results' });
-      await expect(results.getByRole('heading', { level: 2, name: 'Results' })).toBeVisible();
-      await expect(results.locator('[data-stat]').first()).toBeVisible();
-      await expect(outcomeRow).toHaveCount(0);
-    } else {
-      await expect(page.getByRole('heading', { name: 'Results' })).toHaveCount(0);
-      await expect(outcomeRow).toHaveCount(1);
-    }
+    await expect(page.locator('.case-band [data-stat]')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Results' })).toHaveCount(0);
   });
 
   test(`case study ${slug} ends with a way to get in touch`, async ({ page }) => {
@@ -51,7 +37,7 @@ for (const slug of SLUGS) {
   });
 }
 
-test('case study: image across the top, then the blue band with title, tags, overview, results and at a glance', async ({ page }) => {
+test('case study: image across the top, then the blue band with title, tags, overview and at a glance', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const vw = page.viewportSize()!.width;
   const hero = (await page.locator('.case-hero').boundingBox())!;
@@ -63,25 +49,20 @@ test('case study: image across the top, then the blue band with title, tags, ove
   await expect(band.getByRole('heading', { level: 1 })).toHaveText('Form Guide Redesign');
   await expect(band.locator('.case-band__tags li').first()).toHaveText(/Product design/i);
   await expect(band.getByRole('heading', { name: 'Overview' })).toBeVisible();
-  await expect(band.getByRole('heading', { name: 'Results' })).toBeVisible();
   await expect(band.getByRole('heading', { name: 'At a glance' })).toBeVisible();
   // the overview lives in the band now, not in the story below
   await expect(page.locator('.prose h2', { hasText: /^Overview$/ })).toHaveCount(0);
 });
 
-test("case study tabs sit on the band's bottom edge, jump to their section and mark it", async ({ page }) => {
+test('case study quick links: one per section beside the story, they jump there and mark where you are', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  const tabs = page.getByRole('navigation', { name: 'On this page' });
-  await expect(tabs.getByRole('link')).toHaveText(['My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
-  const band = (await page.locator('.case-band').boundingBox())!;
-  const row = (await tabs.boundingBox())!;
-  expect(Math.abs(row.y + row.height - (band.y + band.height))).toBeLessThanOrEqual(2);
-  await tabs.getByRole('link', { name: 'Outcomes' }).click();
+  const toc = page.getByRole('navigation', { name: 'On this page' });
+  await expect(toc.getByRole('link')).toHaveText(['My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
+  await toc.getByRole('link', { name: 'Outcomes' }).click();
   await expect(page).toHaveURL(/#outcomes$/);
   await expect(page.locator('#outcomes')).toBeInViewport();
-  await expect.poll(() => tabs.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
+  await expect.poll(() => toc.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
 });
-
 test('Problem has an image; Outcomes and Process have carousels', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const after = await page.evaluate(() =>

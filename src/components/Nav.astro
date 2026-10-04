@@ -19,6 +19,12 @@ const inWorkshop = here.startsWith(site.workshop.href);
         <li class="nav__rule" aria-hidden="true"></li>
         <li><a class="label nav__workshop" href={site.workshop.href} aria-current={inWorkshop ? 'page' : undefined}>{site.workshop.label}</a></li>
       </ul>
+      <!-- Pause motion (WCAG 2.2.2): stops every endless animation on the site; remembered between visits -->
+      <button class="nav__motion" type="button" aria-pressed="false" data-motion-toggle>
+        <svg class="nav__motion-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 3h2.5v10H4zM9.5 3H12v10H9.5z" fill="currentColor" /></svg>
+        <svg class="nav__motion-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 2.5v11L13 8z" fill="currentColor" /></svg>
+        <span class="visually-hidden">Pause motion</span>
+      </button>
     </nav>
   </div>
 </header>
@@ -47,6 +53,16 @@ const inWorkshop = here.startsWith(site.workshop.href);
   /* a hairline between the page links and the Workshop, which is a place of its own */
   .nav__rule { align-self: center; width: 1px; height: 1.25rem; background: var(--border-default); }
   .nav__links a[aria-current='page'] { text-decoration: underline; text-underline-offset: 0.45em; text-decoration-thickness: 1px; }
+  .nav__motion {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; cursor: pointer;
+    color: var(--text-brand); background: none; border: 1px solid var(--border-default); border-radius: 50%;
+    transition: background-color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
+  }
+  .nav__motion:hover { background: var(--surface-brand-soft); border-color: var(--border-strong); }
+  .nav__motion svg { width: 14px; height: 14px; }
+  .nav__motion .nav__motion-play { display: none; }
+  .nav__motion[aria-pressed='true'] .nav__motion-pause { display: none; }
+  .nav__motion[aria-pressed='true'] .nav__motion-play { display: block; }
   .nav__menu { display: none; background: none; border: 0; padding: 0 var(--space-2); font: inherit; cursor: pointer; }
   .nav__menu::after { content: ''; width: 0.5rem; height: 0.5rem; margin-left: 0.5rem; border: solid currentColor; border-width: 0 1.5px 1.5px 0; translate: 0 -2px; rotate: 45deg; transition: rotate var(--dur-med) var(--ease-standard); }
   .nav__menu[aria-expanded='true']::after { rotate: 225deg; translate: 0 2px; }
@@ -71,7 +87,19 @@ const inWorkshop = here.startsWith(site.workshop.href);
 </style>
 
 <script>
+  import { isMotionPaused, setMotionPaused } from '../scripts/motion';
   const nav = document.querySelector<HTMLElement>('[data-nav]');
+  // Pause motion toggle: pressed = paused
+  const motion = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+  if (motion) {
+    const sync = () => {
+      const paused = isMotionPaused();
+      motion.setAttribute('aria-pressed', String(paused));
+      motion.title = paused ? 'Play motion' : 'Pause motion';
+    };
+    sync();
+    motion.addEventListener('click', () => { setMotionPaused(!isMotionPaused()); sync(); });
+  }
   if (nav) {
     const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
     update();
