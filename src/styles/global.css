@@ -2,7 +2,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 4.5rem; }
-/* decorative art (cloud passage, About's cloud tower) may bleed off the page sides: clip at the screen edge, not per section */
+/* decorative art (About's cloud walls, flora) may bleed off the page sides: clip at the screen edge, not per section */
 main { overflow-x: clip; }
 body {
   margin: 0;

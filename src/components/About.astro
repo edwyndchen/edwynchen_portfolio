@@ -4,39 +4,64 @@ import { join } from 'node:path';
 import Flora from './Flora.astro';
 import { webpSize } from '../lib/image-size';
 
-// read the portrait's real pixel size at build, so swapping the file never leaves stale width/height
+// read every painting's real pixel size at build, so swapping a file never leaves stale width/height
+const size = (src: string) => webpSize(readFileSync(join(process.cwd(), 'public', src)));
 const ED_SRC = '/images/ed-porcelain.webp';
-const ed = webpSize(readFileSync(join(process.cwd(), 'public', ED_SRC)));
+const ed = size(ED_SRC);
+const WALL_L = '/hero/cloud-wall-left.webp';
+const WALL_R = '/hero/cloud-wall-right.webp';
+const wallL = size(WALL_L);
+const wallR = size(WALL_R);
 ---
-<section id="about" class="about wrap" aria-labelledby="about-title" data-about>
-  <Flora plant="gum" side="left" class="flora--about" />
-  <div class="about__text" data-reveal-on-scroll>
-    <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
-    <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
-    <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
-    <h3 class="label">What I do</h3>
-    <ul class="about__caps">
-      <li>Product and UX design</li>
-      <li>Design systems</li>
-      <li>Accessibility</li>
-      <li>Prototyping</li>
-      <li>Illustration and brand</li>
-    </ul>
+<section id="about" class="about" aria-labelledby="about-title" data-about>
+  <!-- Work -> About: two cloud walls that part for Ed's descent. Shown only when motion runs (JS adds .is-staged). -->
+  <div class="about__walls" aria-hidden="true" data-about-walls>
+    <img class="about__wall about__wall--left" src={WALL_L} alt="" width={wallL.width} height={wallL.height} loading="lazy" decoding="async" />
+    <img class="about__wall about__wall--right" src={WALL_R} alt="" width={wallR.width} height={wallR.height} loading="lazy" decoding="async" />
   </div>
-  <figure class="about__figure">
-    <img class="about__ed" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
-    <img class="about__tower" src="/hero/cloud-tower.webp" alt="" aria-hidden="true" width="1200" height="1558" loading="lazy" decoding="async" />
-  </figure>
+  <div class="about__inner wrap">
+    <div class="about__text">
+      <Flora plant="gum" side="left" class="flora--about" />
+      <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
+      <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
+      <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
+      <h3 class="label">What I do</h3>
+      <ul class="about__caps">
+        <li>Product and UX design</li>
+        <li>Design systems</li>
+        <li>Accessibility</li>
+        <li>Prototyping</li>
+        <li>Illustration and brand</li>
+      </ul>
+    </div>
+    <figure class="about__figure">
+      <!-- .about__ed is the one box the choreography moves. Inside, the painting twice, stacked exactly: the still
+           copy (the real image) and, when motion runs, a wind copy above it that only the fabric shows through -->
+      <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
+        <img class="about__ed-still" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
+        <img class="about__ed-wind" src={ED_SRC} alt="" aria-hidden="true" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
+      </div>
+      <!-- the wind: slow, low-frequency noise nudging the pixels a few px; JS breathes its frequency -->
+      <svg class="about__wind-defs" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="ed-wind" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="7" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+    </figure>
+  </div>
 </section>
 
 <style>
-  .about {
+  .about { position: relative; }
+  .about__inner {
     position: relative; display: grid; gap: var(--space-l) var(--space-xl);
     padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
     grid-template-columns: minmax(0, 1fr); align-items: center;
   }
-  /* the gum branch hangs above the heading on the text side, clear of Ed and of the letters */
-  :global(.flora--about) { top: calc(var(--space-2xl) - 11.5rem); }
+  /* the gum branch hangs above the heading, anchored to the text block (so it rises and fades in with it on the
+     staged desktop layout) and drawn behind the letters */
+  :global(.flora.flora--about) { top: -11.5rem; z-index: -1; }
   .about__text { position: relative; z-index: 1; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
   .about__mark {
@@ -47,34 +72,78 @@ const ed = webpSize(readFileSync(join(process.cwd(), 'public', ED_SRC)));
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
   .about__caps li { border-top: var(--rule-hair); padding-block: var(--space-3); }
 
-  /* Ed flies free on the page (no frame). He emerges from behind the cloud tower at the column's right edge,
-     which bleeds off the side of the page and is drawn in front of him. At rest it sits beside his hem. */
-  .about__figure { position: relative; margin: 0 auto; width: 82%; max-width: 26rem; }
-  /* one sleeve ribbon still touches the painting's right edge (about 70px of it): a narrow feather lets it trail off */
+  /* Ed flies free on the page (no frame, no edge mask: the painting carries its own margins). Sized from the
+     image's real ratio: as wide as the column allows, never taller than the screen leaves room for. */
+  .about__figure { position: relative; z-index: 1; margin: 0 auto; width: 82%; max-width: 24rem; }
   .about__ed {
-    position: relative; z-index: 1; display: block; width: 100%; height: auto;
-    mask-image: linear-gradient(to left, transparent, #000 6%);
+    position: relative; margin-inline: auto; aspect-ratio: var(--ratio);
+    /* the painting's real ratio (from the file, at build): as wide as the column, never taller than the screen allows */
+    width: min(100%, (100vh - 10rem) * var(--ratio));
+  }
+  .about__ed img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .about__wind-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* Wind in the fabric: retune here, per portrait. Two soft holes in the wind copy (% of the painting's box) keep
+     the head, face, stylus hand, tablet and tablet hand on the still copy, so they never warp. The still copy is
+     masked the other way, so the cloth shows only its moving self (no doubled outlines). Off by default: JS adds
+     .is-windy only when motion is allowed. */
+  .about__ed {
+    --hole-a: ellipse 30% 22% at 22% 19%; /* head, face, stylus and its hand */
+    --hole-b: ellipse 15% 12% at 45% 45%; /* tablet and the hand holding it */
+  }
+  .about__ed .about__ed-wind { display: none; }
+  .about__ed.is-windy .about__ed-wind {
+    display: block; filter: url(#ed-wind);
+    mask-image: radial-gradient(var(--hole-a), transparent 70%, #000 92%), radial-gradient(var(--hole-b), transparent 70%, #000 95%);
+    mask-composite: intersect;
+  }
+  .about__ed.is-windy .about__ed-still {
+    mask-image: radial-gradient(var(--hole-a), #000 85%, transparent 100%), radial-gradient(var(--hole-b), #000 88%, transparent 100%);
+    mask-composite: add;
   }
 
-  /* Cloud tower: retune here (rest position, as % of the figure). The fly-in starts it further left, over Ed. */
-  .about__tower {
-    position: absolute; z-index: 2; pointer-events: none; height: auto; max-width: none;
-    width: 50%; right: -30%; bottom: -2%; opacity: 0.9;
+  /* Cloud walls: retune here. --inner is where each wall's billowing inner edge sits, as a fraction of its own
+     width (the rest of the painting runs off its outer, top and bottom sides). JS places the box and moves the walls;
+     closed, each inner edge reaches past the centre by --overlap (a fraction of the wall's width, because the billows
+     are ragged in proportion to the painting: 0.14 covers the deepest bay of one wall with the body of the other). */
+  .about__walls {
+    display: none; position: absolute; z-index: 2; inset-inline: 0; top: -10vh; height: 120vh;
+    overflow: clip; pointer-events: none;
+    /* the box clips the paintings' flat top and bottom rows: feather them away into the page */
+    mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
   }
+  .about.is-staged .about__walls { display: block; }
+  .about__wall {
+    --w: max(160vh, 120vw); /* tall enough to overfill the box; wide enough that, closed, the outer cut side stays off-screen (right wall: 0.43w >= 50vw) */
+    --overlap: 0.14;
+    position: absolute; top: 50%; translate: 0 -50%;
+    width: var(--w); max-width: none; height: auto;
+  }
+  .about__wall--left  { --inner: 0.62; left: calc(50% + (var(--overlap) - var(--inner)) * var(--w)); }
+  .about__wall--right { --inner: 0.43; left: calc(50% - (var(--overlap) + var(--inner)) * var(--w)); }
 
   @media (min-width: 60rem) {
-    .about { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
-    .about__figure { max-width: none; }
-    .about__tower { width: 58%; right: -48%; bottom: -4%; }
+    .about__inner { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .about__figure { width: 100%; max-width: none; }
+    /* the stage is one screen tall, content centred under the sticky nav, so the pin can hold it whole */
+    .about.is-staged .about__inner { min-height: 100vh; padding-block: 7rem 2rem; align-content: center; }
+  }
+  /* short desktop screens: the gum branch would sit under the sticky nav for the whole pin, so it sits this one out */
+  @media (min-width: 60rem) and (max-height: 47.5rem) {
+    .about.is-staged :global(.flora--about) { display: none; }
   }
   @media (max-width: 48rem) {
     /* phones: tucked top-right beside the heading, clear of the bio */
-    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: calc(var(--space-2xl) - 2rem); }
+    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: -2rem; }
   }
 </style>
 
 <script>
-  import { initAboutRise } from '../scripts/about-rise';
+  import { initAboutDescend } from '../scripts/about-descend';
+  import { initFabricWind } from '../scripts/fabric-wind';
   const el = document.querySelector<HTMLElement>('[data-about]');
-  if (el) initAboutRise(el);
+  if (el) initAboutDescend(el);
+  const ed = el?.querySelector<HTMLElement>('.about__ed');
+  const turb = el?.querySelector<SVGFETurbulenceElement>('#ed-wind feTurbulence');
+  if (ed && turb) initFabricWind(ed, turb);
 </script>

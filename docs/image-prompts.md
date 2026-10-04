@@ -39,6 +39,6 @@ Final hero = approved option A (`7fe457e1`) split into depth layers via Seedream
 - Flora, one species each: waratah `268ebda7`, wattle `85f775bc`, banksia `8b663646`, gum branch `2b8b9cd0`.
 - Covers: form guide horse `cc3601d9`, EonX lattice `be5eec04`, Pay By Account coin `29e8a24f`, Punters pattern-book page `a8b707a0` (re-roll; v1 `b1bd6669` rejected: physical tiles with shadows and a Japanese-looking wave).
 
-## Portrait (About transition), approved by Ed, 2026-10-04
+## Portrait (About transition) — approved by Ed, 2026-10-04
 
-Source: Ed's own hanfu illustration (uploaded media `b8e16570`). Restyled with Nano Banana (`7df1eddf`, option 3 of 4), then re-posed flying with no clouds and trailing ribbons (`6c4a3243`, Ed chose B), background removed (`b189cd43`), trimmed and saved as `public/images/ed-porcelain.webp`. Raw files in `art/portrait/`.
+Final: pose 2 "dramatic descent" (`ff95fb9b`, Nano Banana, refs: Ed's illustration `b8e16570`, porcelain style `7df1eddf`, Chang'e painting `e40be9ce`), generated as a small centred figure so nothing touches the frame. Background removed (`432db29d`), recoloured to the hero blues with `node art/portrait/recolor.mjs <in> <out> 1.3`, mirrored horizontally (Ed: "flipped the wrong side"), trimmed, saved as `public/images/ed-porcelain.webp`. Earlier rejected attempts are kept in `art/portrait/`.

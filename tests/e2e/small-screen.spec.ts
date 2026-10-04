@@ -15,9 +15,13 @@ test('no horizontal overflow at 1440px with motion running', async ({ page }) =>
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  for (const sel of ['[data-cloud-passage]', '#about']) {
-    await page.locator(sel).scrollIntoViewIfNeeded();
-    await page.waitForTimeout(600);
+  // step through the pinned About stage, where the cloud walls travel off the sides
+  for (const f of [0.6, 1.2, 1.8, 2.6]) {
+    await page.evaluate((f) => {
+      const about = document.querySelector('#about') as HTMLElement;
+      window.scrollTo(0, about.getBoundingClientRect().top + window.scrollY + window.innerHeight * f);
+    }, f);
+    await page.waitForTimeout(800);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
   }
