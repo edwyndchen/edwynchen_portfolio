@@ -5,25 +5,24 @@ import { site } from '../data/site';
   <div class="hero__copy wrap">
     <div class="hero__name">
       <h1 id="hero-title" data-reveal>{site.name}</h1>
-      <p class="hero__role" data-reveal>I'm a product designer and design systems specialist.</p>
+      <p class="hero__role" data-reveal>Melbourne-based product designer making the world more accessible and beautiful, one screen at a time.</p>
     </div>
     <div class="hero__pitch">
-      <p class="hero__line" data-reveal>I design products that make complicated things easy to use. Most recently, bounce rate down 52% on the Punters form guide.</p>
       <a class="button hero__cta" href="#work" data-reveal>View work</a>
     </div>
   </div>
   <div class="hero__scene" aria-hidden="true">
     <div class="hero__layer" data-depth="0.04" data-scroll="0">
       <img class="hero__fill" src="/hero/far.webp" alt="" width="2400" height="1021" decoding="async" fetchpriority="high" />
-      <img class="hero__cloud" src="/hero/cloud-n6.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:26%" />
-      <img class="hero__cloud" src="/hero/cloud-n4.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;--rest:60%;width:15%" />
+      <img class="hero__cloud" src="/hero/cloud-v1.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:26%" />
+      <img class="hero__cloud" src="/hero/cloud-v3.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;--rest:60%;width:16%" />
       <svg class="hero__cross" viewBox="0 0 100 100"><g fill="currentColor">
         <circle cx="50" cy="8" r="4"/><circle cx="44" cy="92" r="4.6"/><circle cx="14" cy="46" r="4"/><circle cx="80" cy="36" r="3.4"/><circle cx="62" cy="62" r="2.2"/>
       </g></svg>
     </div>
     <div class="hero__layer" data-depth="0.12" data-scroll="0.15">
       <img class="hero__cloud" src="/hero/cloud-n5.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:30%;width:15%" />
-      <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:32%;left:0;--rest:78%;width:12%" />
+      <img class="hero__cloud" src="/hero/cloud-v4.webp" alt="" decoding="async" loading="lazy" style="top:32%;left:0;--rest:78%;width:14%" />
     </div>
     <div class="hero__layer" data-depth="0.22" data-scroll="0.3">
       <img class="hero__fill" src="/hero/peaks.webp" alt="" width="2400" height="1021" decoding="async" />
@@ -32,7 +31,7 @@ import { site } from '../data/site';
       <img class="hero__fill" src="/hero/peaks-front.webp" alt="" width="2400" height="1021" decoding="async" />
     </div>
     <div class="hero__layer" data-depth="0.35" data-scroll="0.45">
-      <img class="hero__cloud" src="/hero/cloud-n4.webp" alt="" decoding="async" loading="lazy" style="top:54%;left:0;--rest:8%;width:18%" />
+      <img class="hero__cloud" src="/hero/cloud-v2.webp" alt="" decoding="async" loading="lazy" style="top:54%;left:0;--rest:8%;width:20%" />
       <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;--rest:55%;width:13%" />
     </div>
     <div class="hero__layer" data-depth="0.5" data-scroll="0.65">
@@ -40,9 +39,9 @@ import { site } from '../data/site';
       <img class="hero__tram" data-tram src="/hero/tram.webp" alt="" decoding="async" />
     </div>
     <div class="hero__layer" data-depth="1" data-scroll="1.1">
-      <img class="hero__cloud" src="/hero/cloud-n7.webp" alt="" decoding="async" loading="lazy" style="top:4%;left:0;--rest:2%;width:30%" />
-      <img class="hero__cloud" src="/hero/cloud-n2.webp" alt="" decoding="async" loading="lazy" style="top:14%;left:0;--rest:40%;width:22%" />
-      <img class="hero__cloud" src="/hero/cloud-n3.webp" alt="" decoding="async" loading="lazy" style="top:26%;left:0;--rest:72%;width:19%" />
+      <img class="hero__cloud" src="/hero/cloud-v5.webp" alt="" decoding="async" loading="lazy" style="top:3%;left:0;--rest:2%;width:20%" />
+      <img class="hero__cloud" src="/hero/cloud-v8.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:40%;width:16%" />
+      <img class="hero__cloud" src="/hero/cloud-v6.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;--rest:74%;width:15%" />
     </div>
   </div>
 </section>
@@ -59,10 +58,9 @@ import { site } from '../data/site';
   .hero__role {
     font-family: var(--font-display); font-style: italic; font-weight: var(--fw-medium);
     font-size: var(--fluid-display-md); line-height: var(--lh-snug); color: var(--ink);
-    max-width: 24ch; margin: var(--space-s) 0 0;
+    max-width: 30ch; margin: var(--space-s) 0 0;
   }
   .hero__pitch { padding-bottom: 0.4em; }
-  .hero__line { font-size: var(--text-lg); line-height: var(--lh-relaxed); color: var(--text-secondary); max-width: 38ch; margin-bottom: var(--space-m); }
   .hero__cta::after { content: '\2193'; font-weight: 400; transition: transform var(--dur-med) var(--ease-standard); }
   .hero__cta:hover::after { transform: translateY(2px); }
 

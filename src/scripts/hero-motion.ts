@@ -20,8 +20,11 @@ export function collapsePercent(depth: number, c = 10): number {
   return Math.round((depth - 0.5) * -c * 100) / 100 || 0;
 }
 
+/** Clouds cross 20% faster than the first cut (Ed, 2026-10-04): every duration divided by this. */
+export const CLOUD_SPEED = 1.2;
+
 export function cloudDuration(depth: number, index: number): number {
-  return 200 - depth * 110 + (index % 3) * 15;
+  return (200 - depth * 110 + (index % 3) * 15) / CLOUD_SPEED;
 }
 
 export function initHero(root: HTMLElement): () => void {

@@ -31,26 +31,42 @@ test('home has no axe violations', async ({ page }) => {
   expect(results.violations).toEqual([]);
 });
 
-test('hero copy: name, role line, intro, no eyebrow', async ({ page }) => {
+test('hero copy: name, one line on what drives him, no intro paragraph, no eyebrow', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#hero-title')).toHaveText('Edwyn Chen');
-  await expect(page.locator('.hero__role')).toHaveText("I'm a product designer and design systems specialist.");
-  await expect(page.locator('.hero__line')).toContainText('bounce rate down 52%');
+  await expect(page.locator('.hero__role')).toHaveText('Melbourne-based product designer making the world more accessible and beautiful, one screen at a time.');
+  await expect(page.locator('.hero__line')).toHaveCount(0);
   await expect(page.locator('.hero__copy .label')).toHaveCount(0);
 });
 
 test('nav brand is the wordmark (the brush mark alone on phones) with an accessible name', async ({ page, isMobile }) => {
   await page.goto('/');
-  await expect(page.getByRole('link', { name: 'Edwyn Chen, home' })).toBeVisible();
+  await expect(page.locator('header').getByRole('link', { name: 'Edwyn Chen, home' })).toBeVisible();
   // exactly one of the two drawings shows: the full wordmark, or on phones (four nav links) the mark alone
   await expect(page.locator('.nav__brand svg.logo:visible')).toHaveCount(1);
   await expect(page.locator(isMobile ? '.nav__brand svg.logo--mark' : '.nav__brand svg.nav__logo')).toBeVisible();
 });
 
-test('footer has the Southern Cross and no "Made in Melbourne"', async ({ page }) => {
+test('footer: summary, Southern Cross, legal links and back to top on the copyright line', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('footer')).not.toContainText('Made in Melbourne');
-  await expect(page.locator('footer svg[aria-hidden="true"]')).toHaveCount(1);
+  const footer = page.locator('footer');
+  await expect(footer).not.toContainText('Made in Melbourne');
+  await expect(footer).toContainText('Product designer with a passion for accessibility and design systems.');
+  await expect(footer.locator('.footer__cross')).toHaveAttribute('aria-hidden', 'true');
+  const base = footer.locator('.footer__base');
+  await expect(base).toContainText('© ');
+  await expect(base.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy/');
+  await expect(base.getByRole('link', { name: 'Terms of use' })).toHaveAttribute('href', '/terms/');
+  await base.getByRole('link', { name: /Back to top/ }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test('privacy and terms pages exist and read plainly', async ({ page }) => {
+  for (const [path, h] of [['/privacy/', 'Privacy policy'], ['/terms/', 'Terms of use']]) {
+    await page.goto(path);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(h);
+    await expect(page.locator('.legal__updated')).toContainText('Last updated');
+  }
 });
 
 test('hovering a case study plate changes its rim, nothing lifts or zooms', async ({ page, isMobile }) => {

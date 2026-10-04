@@ -21,9 +21,10 @@ describe('scrollShift', () => {
 
 describe('cloudDuration', () => {
   test('back clouds are slower than front clouds', () => expect(cloudDuration(0.04, 0)).toBeGreaterThan(cloudDuration(1, 0)));
-  test('very slow: every crossing takes at least 80 seconds', () => {
-    for (const d of [0.04, 0.12, 0.35, 1]) for (const i of [0, 1, 2]) expect(cloudDuration(d, i)).toBeGreaterThanOrEqual(80);
+  test('slow: every crossing takes at least a minute', () => {
+    for (const d of [0.04, 0.12, 0.35, 1]) for (const i of [0, 1, 2]) expect(cloudDuration(d, i)).toBeGreaterThanOrEqual(60);
   });
+  test('20% faster than the first cut', () => expect(cloudDuration(0.5, 0)).toBeCloseTo((200 - 55) / 1.2));
 });
 
 describe('spreadPercent', () => {
