@@ -19,6 +19,12 @@ for (const [vpName, viewport] of Object.entries(viewports)) {
   const page = await context.newPage();
   for (const [name, path] of Object.entries(pages)) {
     await page.goto(base + path, { waitUntil: 'networkidle' });
+    // Load every lazy image (mid-page ones never enter the viewport in a full-page capture), then settle at the top.
+    await page.evaluate(() => document.querySelectorAll('img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; }));
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => Promise.all([...document.images].map((img) => img.decode().catch(() => {}))));
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `docs/review/${round}/${name}-${vpName}.png`, fullPage: true });
     console.log(`✓ ${name}-${vpName}`);
   }

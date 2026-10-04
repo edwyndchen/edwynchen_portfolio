@@ -9,7 +9,8 @@ const [width, height] = sizes[plant];
 
 <style>
   .flora { position: absolute; width: clamp(110px, 16vw, 240px); height: auto; pointer-events: none; z-index: 0; }
-  .flora--right { right: calc(var(--gutter) * -0.5); }
-  .flora--left { left: calc(var(--gutter) * -0.5); }
-  @media (max-width: 48rem) { .flora { width: 96px; opacity: 0.9; } }
+  /* flush with the column edge, never past it: the paintings are trimmed tight, so any overhang is a flat crop */
+  .flora--right { right: 0; }
+  .flora--left { left: 0; }
+  @media (max-width: 48rem) { .flora { width: 96px; } }
 </style>

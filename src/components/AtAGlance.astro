@@ -1,9 +1,11 @@
 ---
-interface Props { data: { role: string; timeline: string; team: string; platforms: string; context: string; outcome: string } }
+interface Props { data: { role: string; timeline: string; team: string; platforms: string; context: string; outcome: string; metrics?: unknown[] } }
 const { data } = Astro.props;
+// the Results panels above already carry the numbers, so the outcome row only shows when there are none
+const outcome = data.metrics?.length ? '' : data.outcome;
 const rows = [
   ['Role', data.role], ['Timeline', data.timeline], ['Team', data.team],
-  ['Platforms', data.platforms], ['Context', data.context], ['Outcome', data.outcome],
+  ['Platforms', data.platforms], ['Context', data.context], ['Outcome', outcome],
 ].filter(([, v]) => v);
 ---
 <section class="glance" aria-labelledby="glance-title">

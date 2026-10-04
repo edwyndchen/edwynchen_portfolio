@@ -4,17 +4,22 @@ const { metrics } = Astro.props;
 const shown = metrics.slice(0, 4);
 ---
 {shown.length > 0 && (
-  <ul class="stats" aria-label="Results">
-    {shown.map((m) => (
-      <li data-stat>
-        <span class="stats__value">{m.value}</span>
-        <span class="stats__label">{m.label}</span>
-      </li>
-    ))}
-  </ul>
+  <section class="results" aria-labelledby="results-title">
+    <h2 id="results-title" class="label">Results</h2>
+    <ul class="stats">
+      {shown.map((m) => (
+        <li data-stat>
+          <span class="stats__value">{m.value}</span>
+          <span class="stats__label">{m.label}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
 )}
 
 <style>
+  /* same quiet gold label as the At a glance heading below it */
+  .results h2 { margin-bottom: var(--space-m); color: var(--gold-text); }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-l) var(--space-m); list-style: none; padding: 0; margin: 0; }
   .stats li { border-top: 1px solid var(--border-strong); padding-top: var(--space-s); min-width: 0; }
   .stats__value { display: block; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1; color: var(--cobalt); white-space: nowrap; }

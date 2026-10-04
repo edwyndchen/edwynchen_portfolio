@@ -25,15 +25,16 @@ export function cloudDuration(depth: number, index: number): number {
 }
 
 export function initHero(root: HTMLElement): () => void {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
   const scene = root.querySelector<HTMLElement>('.hero__scene');
   if (!scene) return () => {};
   gsap.registerPlugin(ScrollTrigger);
 
-  let onMove: ((e: PointerEvent) => void) | undefined;
-  let removeRefresh: (() => void) | undefined;
+  // matchMedia, not a one-off check: switching reduced motion on mid-session reverts every tween to the static
+  // scene (and switching it off starts them again)
+  const mm = gsap.matchMedia(root);
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    let onMove: ((e: PointerEvent) => void) | undefined;
 
-  const ctx = gsap.context(() => {
     gsap.fromTo('[data-reveal]', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
 
     gsap
@@ -86,7 +87,6 @@ export function initHero(root: HTMLElement): () => void {
     // layout changes (resize, fonts, images) move the scene, so the phase split is recomputed on every refresh
     const onRefreshInit = () => builders.forEach((b) => b());
     ScrollTrigger.addEventListener('refreshInit', onRefreshInit);
-    removeRefresh = () => ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
 
     if (window.matchMedia('(pointer: fine)').matches) {
       onMove = (e: PointerEvent) => {
@@ -100,11 +100,12 @@ export function initHero(root: HTMLElement): () => void {
       };
       scene.addEventListener('pointermove', onMove);
     }
-  }, root);
 
-  return () => {
-    if (onMove) scene.removeEventListener('pointermove', onMove);
-    removeRefresh?.();
-    ctx.revert();
-  };
+    return () => {
+      if (onMove) scene.removeEventListener('pointermove', onMove);
+      ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
+    };
+  });
+
+  return () => mm.revert();
 }

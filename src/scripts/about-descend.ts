@@ -114,6 +114,17 @@ export function initAboutDescend(root: HTMLElement): () => void {
       const float = gsap.fromTo(ed, { y: 6 }, { y: -6, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
       if (tl.scrollTrigger && tl.scrollTrigger.progress >= 1) float.play();
 
+      // the jump is intercepted, so keyboard focus has to be moved by hand (without undoing the scroll)
+      const focusAbout = () => {
+        root.setAttribute('tabindex', '-1');
+        root.focus({ preventScroll: true });
+      };
+      // a refresh (late images, resize) briefly unwraps the pin, which moves the section and drops its focus: put it back
+      let hadFocus = false;
+      const noteFocus = () => { hadFocus = document.activeElement === root; };
+      const keepFocus = () => { if (hadFocus && document.activeElement !== root) root.focus({ preventScroll: true }); };
+      ScrollTrigger.addEventListener('refreshInit', noteFocus);
+      ScrollTrigger.addEventListener('refresh', keepFocus);
       // a desktop nav link to #about lands where the stage is finished, not on the closed walls at the pin start
       const onClick = (e: MouseEvent) => {
         const a = (e.target as Element).closest?.('a[href="#about"], a[href="/#about"]');
@@ -121,17 +132,24 @@ export function initAboutDescend(root: HTMLElement): () => void {
         e.preventDefault();
         window.scrollTo({ top: tl.scrollTrigger.end, behavior: 'smooth' });
         history.pushState(null, '', '#about');
+        focusAbout();
       };
       document.addEventListener('click', onClick);
       if (desktop && location.hash === '#about' && tl.scrollTrigger) {
         const st = tl.scrollTrigger;
-        requestAnimationFrame(() => window.scrollTo(0, st.end));
+        requestAnimationFrame(() => {
+          window.scrollTo(0, st.end);
+          focusAbout();
+        });
       }
 
       return () => {
         ScrollTrigger.removeEventListener('refreshInit', placeBox);
+        ScrollTrigger.removeEventListener('refreshInit', noteFocus);
+        ScrollTrigger.removeEventListener('refresh', keepFocus);
         document.removeEventListener('click', onClick);
         root.classList.remove('is-staged');
+        root.removeAttribute('tabindex');
         box.style.top = '';
         delete root.dataset.pinStart;
         delete root.dataset.pinEnd;

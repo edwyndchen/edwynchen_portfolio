@@ -132,6 +132,28 @@ test('desktop nav link to About lands on the finished layout, not the closed clo
   await expect(page.locator('#about-title')).toBeInViewport();
 });
 
+test('desktop nav link to About moves keyboard focus to the About section', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop pin (the jump is intercepted in JS)');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  await expect(page.locator('#about')).toHaveAttribute('data-pin-end', /\d/);
+  const link = page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'About' });
+  await link.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#about')).toBeFocused();
+  // the next Tab continues from About, not from the nav
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => Boolean(document.activeElement?.closest('#about, #contact, footer')))).toBe(true);
+});
+
+test('desktop: arriving on /#about lands on the finished layout with focus in About', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop pin');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/#about');
+  await expect(page.locator('#about')).toBeFocused();
+  await expect(page.locator('#about-title')).toBeInViewport();
+});
+
 test('reduced motion: no pin, no walls, Ed at rest and the text visible', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
@@ -183,6 +205,12 @@ test('陳 mark beside the heading uses the brush font and is hidden from screen 
   await expect(mark).toHaveAttribute('aria-hidden', 'true');
   await expect(mark).toHaveCSS('font-family', /Ma Shan Zheng/);
 });
+
+// Pending Ed's font choice (review round 1, B1). The CSS check above passes even though Ma Shan Zheng has only the
+// simplified 陈, so the traditional 陳 silently falls back to a system glyph. Once a traditional-capable brush font is
+// chosen, replace this with a real glyph check (e.g. document.fonts.check() for that family and the character, or
+// compare the rendered width against a forced fallback) and keep the CSS assertion above.
+test.fixme('陳 mark renders in the brush font itself, not a fallback glyph', async () => {});
 
 test('old portrait frame and placeholder are gone', async ({ page }) => {
   await page.goto('/');

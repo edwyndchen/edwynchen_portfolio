@@ -54,6 +54,8 @@ const wallR = size(WALL_R);
 
 <style>
   .about { position: relative; }
+  /* the nav link moves focus here (JS sets tabindex=-1); the section itself needs no ring */
+  .about:focus { outline: none; }
   .about__inner {
     position: relative; display: grid; gap: var(--space-l) var(--space-xl);
     padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
@@ -66,7 +68,7 @@ const wallR = size(WALL_R);
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
   .about__mark {
     font-family: var(--font-cjk); font-weight: 400; font-size: 1.1em; line-height: 1;
-    color: var(--blue-300); margin-inline-start: 0.3em;
+    color: var(--blue-400); margin-inline-start: 0.3em; /* 3.22:1, clears large-text 3:1 */
   }
   .about h3 { color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }

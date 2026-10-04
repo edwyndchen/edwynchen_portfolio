@@ -12,7 +12,7 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
     {studies.map((s, i) => (
       <li data-reveal-on-scroll>
         <Plate as="article" class="work__plate">
-          {s.data.cover && <div class="work__media"><img class="work__cover" src={s.data.cover} alt={s.data.coverAlt} width="800" height="450" loading="lazy" /></div>}
+          {s.data.cover && <div class="work__media"><img class="work__cover" src={s.data.cover} alt="" width="800" height="450" loading="lazy" /></div>}
           <p class="label work__meta"><span class="work__num">{String(i + 1).padStart(2, '0')}</span> {s.data.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
           <h3><a href={`/work/${s.id}/`}>{s.data.title}</a></h3>
           <p class="work__outcome">{s.data.outcome}</p>
@@ -35,11 +35,11 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
     .work__list > li:nth-child(even) { translate: 0 var(--space-xl); }
   }
   /* Plate renders the element, so its passed class needs :global to be styled from here */
-  .work :global(.work__plate) { position: relative; transition: box-shadow var(--dur-slow) var(--ease-standard); }
-  .work :global(.work__plate:hover) { box-shadow: var(--shadow-md); }
+  /* hover and focus deepen the inner keyline to cobalt: the plate's rim answers, nothing lifts or zooms */
+  .work :global(.work__plate) { position: relative; transition: outline-color var(--dur-med) var(--ease-standard); }
+  .work :global(.work__plate:hover), .work :global(.work__plate:focus-within) { outline-color: var(--cobalt); }
   .work__media { overflow: hidden; margin-bottom: var(--space-m); }
-  .work__cover { width: 100%; height: auto; mix-blend-mode: multiply; transition: transform var(--dur-slow) var(--ease-entrance); }
-  .work :global(.work__plate:hover) .work__cover { transform: scale(1.03); }
+  .work__cover { width: 100%; height: auto; mix-blend-mode: multiply; }
   .work__meta { margin-bottom: 0; color: var(--text-secondary); }
   .work__num { color: var(--gold-text); margin-right: 0.5rem; }
   .work h3 { font-size: var(--fluid-display-md); margin: var(--space-xs) 0 var(--space-s); }

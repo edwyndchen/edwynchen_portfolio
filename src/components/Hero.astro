@@ -70,8 +70,9 @@ import { site } from '../data/site';
     /* 16% extra sky above the painting so layers spread upward on load never get their peaks cut flat */
     position: relative; width: 100%; aspect-ratio: 3120 / 1540; overflow: hidden; background: var(--porcelain);
     /* the art's paper edge dissolves into the glaze instead of ending on a hard line */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 7%, var(--cobalt-ink) 94%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 7%, var(--cobalt-ink) 94%, transparent);
+    /* (a long top fade, so the cooler sky never meets the paper on a visible line) */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 18%, var(--cobalt-ink) 94%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 18%, var(--cobalt-ink) 94%, transparent);
   }
   /* layers keep the painting's aspect, sit on the bottom of the scene and are slightly oversized so parallax never reveals an edge */
   .hero__layer { position: absolute; inset: auto -3% -3% -3%; height: 91.4%; /* 106% width at the painting aspect, inside the 1540-tall scene */ will-change: transform; }

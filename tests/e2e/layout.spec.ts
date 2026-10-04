@@ -22,3 +22,12 @@ test('body background is porcelain', async ({ page }) => {
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(bg).toBe('rgb(250, 248, 242)'); // DS --surface-page #FAF8F2
 });
+
+test('every nav link is at least 44px wide and tall', async ({ page }) => {
+  await page.goto('/');
+  for (const a of await page.locator('.nav__links a').all()) {
+    const box = (await a.boundingBox())!;
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+});

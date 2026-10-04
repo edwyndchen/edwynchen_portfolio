@@ -108,3 +108,19 @@ test('reduced motion: layers do not fan out', async ({ page }) => {
   await page.waitForTimeout(500);
   expect(Math.abs((await farTop(page)) - a)).toBeLessThan(1);
 });
+
+test('reduced motion switched on mid-session stops the hero motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const tram = page.locator('[data-tram]');
+  await page.waitForTimeout(1500);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(300);
+  // every tween reverted: the tram is parked and visible (the static CSS), and stays put
+  await expect(tram).toHaveCSS('opacity', '1');
+  const a = await tram.boundingBox();
+  await page.waitForTimeout(1200);
+  const b = await tram.boundingBox();
+  expect(a?.x).toBe(b?.x);
+  await expect(page.locator('#hero-title')).toHaveCSS('opacity', '1');
+});

@@ -50,3 +50,18 @@ test('footer has the Southern Cross and no "Made in Melbourne"', async ({ page }
   await expect(page.locator('footer')).not.toContainText('Made in Melbourne');
   await expect(page.locator('footer svg[aria-hidden="true"]')).toHaveCount(1);
 });
+
+test('hovering a case study plate changes its rim, nothing lifts or zooms', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'hover');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const plate = page.locator('.work__plate').first();
+  const rest = await plate.evaluate((el) => getComputedStyle(el).outlineColor);
+  await plate.scrollIntoViewIfNeeded();
+  await plate.hover();
+  await expect.poll(() => plate.evaluate((el) => getComputedStyle(el).outlineColor)).not.toBe(rest);
+  await expect(plate.locator('.work__cover')).toHaveCSS('transform', 'none');
+  const shadow = await plate.evaluate((el) => getComputedStyle(el).boxShadow);
+  await page.mouse.move(0, 0);
+  await expect.poll(() => plate.evaluate((el) => getComputedStyle(el).boxShadow)).toBe(shadow);
+});

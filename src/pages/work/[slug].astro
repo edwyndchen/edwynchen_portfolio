@@ -6,6 +6,7 @@ import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
 import StatPanels from '../../components/StatPanels.astro';
 import CaseNav from '../../components/CaseNav.astro';
+import Contact from '../../components/Contact.astro';
 import { neighbours, sortCaseStudies } from '../../lib/case-studies';
 import { site } from '../../data/site';
 import '../../styles/prose.css';
@@ -43,11 +44,20 @@ const d = entry.data;
     </div>
   </article>
   <CaseNav prev={prev} next={next} />
+  <Contact />
 </BaseLayout>
 
 <style>
-  .case-head { padding-top: var(--space-xl); position: relative; overflow-x: clip; }
-  :global(.flora--case) { top: var(--space-l); }
+  .case-head { padding-top: var(--space-xl); position: relative; overflow-x: clip; display: grid; grid-template-columns: minmax(0, 1fr); }
+  /* the banksia sits beside the title plate, never behind it: in flow, above the plate's right side on phones... */
+  .case-head :global(.flora--case) { position: relative; justify-self: end; margin-bottom: var(--space-s); }
+  /* ...and in its own column to the right of the plate on desktop */
+  @media (min-width: 60rem) {
+    .case-head { grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-xl); align-items: center; }
+    .case-head :global(.flora--case) { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    .case-head > :global(.plate) { grid-column: 1; grid-row: 1; }
+    .case-head__cover { grid-column: 1 / -1; }
+  }
   .case-head > :global(.plate), .case-head__cover { position: relative; z-index: 1; }
   .case-head h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); }
   .case-head__kicker { color: var(--gold-text); margin: 0; }
