@@ -23,17 +23,18 @@ Or use the `porcelain-portfolio` entry in `/Users/ed/Claude/Cowork/.claude/launc
 
 ## State at handoff
 
-Committed up to the latest commit on `main` (unit 60, e2e 164; two case-study tests can time out under full-suite load and pass alone). Built:
+Committed up to the latest commit on `main` (unit 61, e2e 172). Built:
 
 - Colours: "Kiln cobalt", the blue ramp sampled from the painted art (primary `#3231b0`), in the site tokens and the design system.
 - Hero: one line ("Melbourne-based product designer making the world more accessible and beautiful, one screen at a time."), View work under it. Clouds: 8 new (v1-v4 long bands, v5-v8 soft billows, few curls), recoloured pale; 2 gentlest old ones kept; 20% faster. `npm run hero` rebuilds them and no longer touches the hand-cropped right About wall.
-- Nav: Work, About, Contact | Workshop (outlined button). Phones: brush mark, Menu (disclosure), Workshop.
-- About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with stillness map (tune at `/?wind` in dev).
-- Workshop (`/workshop/`): lattice header, painting-workshop copy ("Paint still wet"; statuses On the easel / Fired / Sketch; "Brushes and tools"), placeholder frames until images are added. Two draft entries (HYROX Lap Timer, Our Attachments) for Ed to edit and publish.
-- Case studies: full-width hero (Keystatic `hero` image, falls back to the cover), On this page quick links, a "Section image" Keystatic block after Problem, Outcomes and Process (placeholder frame until filled).
-- Contact: two columns with a Netlify form (works once deployed). `/thanks/` for no-JS.
+- Nav: Work, About, Contact | Workshop (plain link after a hairline). Phones: brush mark and a Menu holding all four.
+- About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with a stillness map per outfit (tune at `/?wind` in dev). Ed is a button: a puff of cloud and a costume change (hanfu, Pig festival wear, Aquarius water bearer), `src/scripts/outfit-swap.ts`.
+- Workshop (`/workshop/`): lattice header titled Workshop, statuses On the easel / Fired / Sketch, "Brushes and tools" filter, placeholder frames until images are added. The waratah, gum and wattle live here now (none on the home page). Two draft entries (HYROX Lap Timer, Our Attachments) for Ed to edit and publish.
+- Case studies: image across the top (Keystatic `hero`, falls back to the cover), then a cobalt band (title, tags, `overview` field, results, at a glance) with section tabs on its bottom edge that stick under the nav. Problem has a Section image block; Outcomes and Process have Gallery (carousel) blocks with four placeholder slides.
+- Contact: a hanging scroll (rods, silk mount, pale range, clouds, Southern Cross) holding the heading, links and the Netlify form (works once deployed). `/thanks/` for no-JS.
 - Footer: summary, LinkedIn/Behance (show once set in `src/data/site.ts`), copyright line with Privacy policy, Terms of use, Back to top; Acknowledgement of Country band below with the Aboriginal flag. `/privacy/` and `/terms/` drafted in plain English (Ed to review; not legal advice).
-- Page transition: new pages paint in with brush strokes (cross-document view transition; Chrome/Safari; none with reduced motion). Mask sprite and CSS built by `npm run transition` (`scripts/brush-reveal.mjs`).
+- Page transition, two stages: brush strokes paint the old page cobalt, then paint the new page in (cross-document view transition; Chrome/Safari; none with reduced motion). Sprites and CSS built by `npm run transition` (`scripts/brush-reveal.mjs`).
+- Dev gotcha: after adding imports or `markdoc.config.mjs` changes, restart the dev server (Vite's "Outdated Optimize Dep" breaks Keystatic until then). Screenshots: block Google Fonts in Playwright scripts, they hang from here.
 - Note: `art/` is git-ignored (large sources and build scripts live there, untracked).
 
 ## Next steps
