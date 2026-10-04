@@ -1,9 +1,20 @@
 ---
 import { site } from '../data/site';
-import Flora from './Flora.astro';
+import SouthernCross from './SouthernCross.astro';
 ---
 <section id="contact" class="contact wrap" aria-labelledby="contact-title">
-  <Flora plant="wattle" side="right" class="flora--contact" />
+  <!-- a hanging scroll: a rod above and below, a silk mount, and paper with mountains, clouds and the Southern Cross -->
+  <div class="scroll">
+    <span class="scroll__rod" aria-hidden="true"></span>
+    <div class="scroll__mount">
+      <div class="scroll__paper">
+        <div class="scroll__art" aria-hidden="true">
+          <SouthernCross class="scroll__cross" />
+          <img class="scroll__range" src="/hero/contact-range.webp" alt="" width="1800" height="715" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--a" src="/hero/cloud-n3.webp" alt="" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--b" src="/hero/cloud-n5.webp" alt="" loading="lazy" decoding="async" />
+          <img class="scroll__cloud scroll__cloud--c" src="/hero/cloud-v2.webp" alt="" loading="lazy" decoding="async" />
+        </div>
   <div class="contact__grid">
     <div class="contact__intro">
       <h2 id="contact-title">Have a project or a role in mind?</h2>
@@ -43,16 +54,50 @@ import Flora from './Flora.astro';
       </div>
     </form>
   </div>
+      </div>
+    </div>
+    <span class="scroll__rod" aria-hidden="true"></span>
+  </div>
 </section>
 
 <style>
-  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); position: relative; overflow-x: clip; }
-  :global(.flora--contact) { top: var(--space-l); }
+  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
+  /* the scroll: rods wider than the paper, with knobbed ends; a pale silk mount; the paper itself */
+  .scroll { position: relative; }
+  .scroll__rod {
+    display: block; position: relative; z-index: 2; height: 18px; margin-inline: -14px;
+    background: linear-gradient(to bottom, var(--blue-800), var(--blue-950) 70%);
+    border-radius: 9px;
+  }
+  /* turned porcelain knobs on the rod ends: white glaze, a cobalt band, a pale ring */
+  .scroll__rod::before, .scroll__rod::after {
+    content: ''; position: absolute; top: 50%; translate: 0 -50%; width: 30px; height: 30px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, var(--paper-0) 0 30%, var(--blue-100) 31% 42%, var(--blue-700) 43% 62%, var(--paper-0) 63% 72%, var(--blue-300) 73%);
+  }
+  .scroll__rod::before { left: -16px; }
+  .scroll__rod::after { right: -16px; }
+  .scroll__mount { padding: 12px; background: var(--blue-50); border-inline: 1px solid var(--border-hairline); }
+  .scroll__paper { position: relative; overflow: hidden; background: var(--paper-100); box-shadow: inset 0 0 0 1px var(--border-hairline); padding: clamp(1.5rem, 1rem + 3vw, 4rem); padding-bottom: clamp(9rem, 22vw, 18rem); }
+  /* the painting on the paper: the sky with its stars up top, the range and clouds along the foot */
+  .scroll__art { position: absolute; inset: 0; pointer-events: none; }
+  .scroll__range { position: absolute; left: 0; bottom: 0; width: 100%; height: auto; }
+  .scroll__cloud { position: absolute; height: auto; }
+  .scroll__cloud--a { width: clamp(120px, 16%, 220px); left: 4%; bottom: clamp(4rem, 12vw, 10rem); }
+  .scroll__cloud--b { width: clamp(100px, 12%, 170px); left: 34%; bottom: clamp(3rem, 9vw, 7.5rem); }
+  .scroll__cloud--c { width: clamp(140px, 20%, 280px); right: 3%; bottom: clamp(2rem, 6vw, 5rem); }
+  /* the Southern Cross hangs in the open sky above the range */
+  .scroll__art :global(.scroll__cross) { position: absolute; top: 44%; left: 30%; width: clamp(3.5rem, 7vw, 6rem); height: auto; color: var(--wattle-gold); }
+  @media (max-width: 59.99rem) { .scroll__art :global(.scroll__cross) { top: var(--space-m); left: auto; right: var(--space-m); width: 3rem; } }
   .contact__grid { position: relative; z-index: 1; display: grid; gap: var(--space-xl); align-items: start; }
   @media (min-width: 60rem) {
     .contact__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-2xl); }
-    /* the form fills the right column, so the wattle grows in the space under the links on the left */
-    .contact :global(.flora--contact) { top: auto; bottom: var(--space-2xl); left: 0; right: auto; }
+  }
+  @media (max-width: 47.99rem) {
+    .scroll__rod { margin-inline: -6px; }
+    .scroll__rod::before { left: -10px; } .scroll__rod::after { right: -10px; }
+    .scroll__rod::before, .scroll__rod::after { width: 24px; height: 24px; }
+    .scroll__mount { padding: 8px; }
+    .scroll__cloud--b { display: none; }
   }
   .contact h2 { font-size: var(--step-3); max-width: 14ch; margin: 0; }
   .contact__intro > p { margin: var(--space-m) 0 var(--space-s); max-width: 36ch; }
@@ -83,11 +128,6 @@ import Flora from './Flora.astro';
   .contact__done { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); }
   .contact__done:focus { outline: none; }
 
-  /* on a phone the wattle sits above the heading, not over it */
-  @media (max-width: 48rem) {
-    .contact { padding-top: calc(var(--space-xl) + 5rem); }
-    :global(.flora--contact) { top: var(--space-l); }
-  }
 </style>
 
 <script>

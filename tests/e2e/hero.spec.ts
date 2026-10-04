@@ -9,7 +9,7 @@ test('hero scene loads every layer and cloud', async ({ page }) => {
     await expect(img).toHaveCount(1);
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
   }
-  expect(await page.locator('.hero__scene .hero__cloud').count()).toBe(9);
+  expect(await page.locator('.hero__scene .hero__cloud').count()).toBe(11);
   await expect(page.locator('.hero__scene svg.hero__cross')).toHaveCount(1);
   await expect(page.locator('.hero__scene')).toHaveAttribute('aria-hidden', 'true');
 });
@@ -48,7 +48,7 @@ test('reduced motion: clouds are spread across the scene, not stacked', async ({
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const clouds = page.locator('.hero__scene .hero__cloud');
-  expect(await clouds.count()).toBe(9);
+  expect(await clouds.count()).toBe(11);
   const xs: number[] = [];
   for (let i = 0; i < 9; i++) {
     const box = await clouds.nth(i).boundingBox(); // null when hidden (extra clouds are hidden on mobile)

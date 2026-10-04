@@ -24,11 +24,8 @@ test('body background is porcelain', async ({ page }) => {
   expect(bg).toBe('rgb(250, 248, 242)'); // DS --surface-page #FAF8F2
 });
 
-test('every visible nav control is at least 44px wide and 40px+ tall (links and menu 44)', async ({ page }) => {
+test('every visible nav control is at least 44px wide and tall', async ({ page }) => {
   await page.goto('/');
-  const workshop = (await page.locator('.nav__workshop').boundingBox())!;
-  expect(workshop.width).toBeGreaterThanOrEqual(44);
-  expect(workshop.height).toBeGreaterThanOrEqual(40);
   for (const a of await page.locator('.nav__links a:visible, .nav__menu:visible').all()) {
     const box = (await a.boundingBox())!;
     expect(box.width).toBeGreaterThanOrEqual(44);

@@ -1,99 +1,133 @@
-// Builds the page-transition mask: a horizontal sprite of FRAMES frames in which broad brush strokes sweep across
-// the screen, alternating direction, until it is fully painted. White = new page shows. The CSS steps through it.
-// node scripts/brush-reveal.mjs  ->  public/transitions/brush-reveal.png
+// Builds the two-stage page transition: brush strokes paint the old page over in cobalt, then a second set of
+// strokes paints the new page in over the cobalt. Each stage is a horizontal sprite of frames (a mask) that the CSS
+// steps through; this script also writes that CSS, since steps() needs the literal frame count.
+// npm run transition  ->  public/transitions/brush-{cover,reveal}.png + src/styles/brush-transition.css
 import sharp from 'sharp';
+import { writeFileSync } from 'node:fs';
 
 const FRAMES = 24, W = 360, H = 240;
-// each stroke: a band across the screen (y and thickness as fractions of H), the way it travels, a slight tilt
-const strokes = [
-  { y: 0.1, t: 0.3, dir: 1, tilt: 0.08 },
-  { y: 0.34, t: 0.32, dir: -1, tilt: -0.06 },
-  { y: 0.58, t: 0.32, dir: 1, tilt: 0.07 },
-  { y: 0.84, t: 0.34, dir: -1, tilt: -0.05 },
-  { y: 0.22, t: 0.26, dir: 1, tilt: -0.04 },
-  { y: 0.7, t: 0.28, dir: -1, tilt: 0.05 },
-];
-const START = (i) => i * 0.14; // stagger: the last stroke lands on the final frame
-const DUR = 0.3; // each stroke's share of the whole transition
-const ease = (x) => 1 - (1 - x) ** 2.4;
-// seeded random, so the sprite is the same every build
-let seed = 7;
-const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-// every stroke is a brush of BRISTLES hairs: each hair has its own length and wobble, so the edges and the tail
-// break up like dry paint instead of ending on a clean line
 const BRISTLES = 22;
-const hairs = strokes.map(() => Array.from({ length: BRISTLES }, (_, j) => ({
-  off: (j / (BRISTLES - 1) - 0.5) + (rnd() - 0.5) * 0.04, // across the band, -0.5..0.5
-  reach: 0.78 + rnd() * 0.22 - Math.abs(j / (BRISTLES - 1) - 0.5) * 0.35, // outer hairs run out of paint sooner
-  lag: rnd() * 0.08,
-  w: 1.3 + rnd() * 1.1,
-  phase: rnd() * 6,
-})));
+const ease = (x) => 1 - (1 - x) ** 2.4;
 
-function hairPath(s, h, progress) {
-  const n = 28, len = 1.62 * Math.max(0, progress * h.reach - h.lag);
-  if (len <= 0) return '';
-  const pts = [];
-  for (let k = 0; k <= n; k++) {
-    const u = (k / n) * len - 0.18; // starts off-screen, overshoots the far edge
-    const x = (s.dir > 0 ? u : 1 - u) * W;
-    const cy = s.y + s.tilt * (u - 0.5) + 0.02 * Math.sin(u * 8 + s.y * 9);
-    const y = (cy + h.off * s.t + 0.006 * Math.sin(u * 23 + h.phase)) * H;
-    pts.push(`${x.toFixed(1)} ${y.toFixed(1)}`);
+// each stroke: a band across the screen (y and thickness as fractions of H), the way it travels, a slight tilt
+const STAGES = {
+  // stage 1, the cover: strokes run right-to-left first, a different hand from the reveal
+  cover: {
+    seed: 23,
+    strokes: [
+      { y: 0.86, t: 0.32, dir: -1, tilt: 0.06 },
+      { y: 0.6, t: 0.32, dir: 1, tilt: -0.07 },
+      { y: 0.34, t: 0.32, dir: -1, tilt: 0.05 },
+      { y: 0.1, t: 0.3, dir: 1, tilt: -0.08 },
+      { y: 0.74, t: 0.28, dir: 1, tilt: 0.04 },
+      { y: 0.22, t: 0.26, dir: -1, tilt: -0.05 },
+    ],
+  },
+  // stage 2, the reveal
+  reveal: {
+    seed: 7,
+    strokes: [
+      { y: 0.1, t: 0.3, dir: 1, tilt: 0.08 },
+      { y: 0.34, t: 0.32, dir: -1, tilt: -0.06 },
+      { y: 0.58, t: 0.32, dir: 1, tilt: 0.07 },
+      { y: 0.84, t: 0.34, dir: -1, tilt: -0.05 },
+      { y: 0.22, t: 0.26, dir: 1, tilt: -0.04 },
+      { y: 0.7, t: 0.28, dir: -1, tilt: 0.05 },
+    ],
+  },
+};
+const START = (i) => i * 0.14; // stagger
+const DUR = 0.3; // each stroke's share of the stage
+
+async function build(name, { seed: s0, strokes }) {
+  // seeded random, so the sprite is the same every build
+  let seed = s0;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  // every stroke is a brush of BRISTLES hairs: each hair has its own length and wobble, so the edges and the tail
+  // break up like dry paint instead of ending on a clean line
+  const hairs = strokes.map(() => Array.from({ length: BRISTLES }, (_, j) => ({
+    off: (j / (BRISTLES - 1) - 0.5) + (rnd() - 0.5) * 0.04,
+    reach: 0.78 + rnd() * 0.22 - Math.abs(j / (BRISTLES - 1) - 0.5) * 0.35, // outer hairs run out of paint sooner
+    lag: rnd() * 0.08,
+    w: 1.3 + rnd() * 1.1,
+    phase: rnd() * 6,
+  })));
+  const hairPath = (st, h, progress) => {
+    const n = 28, len = 1.62 * Math.max(0, progress * h.reach - h.lag);
+    if (len <= 0) return '';
+    const pts = [];
+    for (let k = 0; k <= n; k++) {
+      const u = (k / n) * len - 0.18; // starts off-screen, overshoots the far edge
+      const x = (st.dir > 0 ? u : 1 - u) * W;
+      const cy = st.y + st.tilt * (u - 0.5) + 0.02 * Math.sin(u * 8 + st.y * 9);
+      const y = (cy + h.off * st.t + 0.006 * Math.sin(u * 23 + h.phase)) * H;
+      pts.push(`${x.toFixed(1)} ${y.toFixed(1)}`);
+    }
+    return `<path d="M${pts.join(' L')}" stroke="#fff" stroke-width="${((st.t * H) / BRISTLES * h.w * 1.6).toFixed(2)}" stroke-linecap="round" fill="none"/>`;
+  };
+
+  const frames = [];
+  for (let f = 0; f < FRAMES; f++) {
+    const p = f / (FRAMES - 1);
+    let body = '';
+    strokes.forEach((st, i) => {
+      const local = Math.max(0, Math.min(1, (p - START(i)) / DUR));
+      if (local <= 0) return;
+      for (const h of hairs[i]) body += hairPath(st, h, ease(local));
+    });
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#000"/>${body}</svg>`;
+    frames.push(await sharp(Buffer.from(svg)).extractChannel('red').raw().toBuffer({ resolveWithObject: true }));
   }
-  return `<path d="M${pts.join(' L')}" stroke="#fff" stroke-width="${((s.t * H) / BRISTLES * h.w * 1.6).toFixed(2)}" stroke-linecap="round" fill="none"/>`;
-}
-
-const frames = [];
-for (let f = 0; f < FRAMES; f++) {
-  const p = f / (FRAMES - 1);
-  let body = '';
-  if (f === FRAMES - 1) body = `<rect width="${W}" height="${H}" fill="#fff"/>`;
-  else strokes.forEach((s, i) => {
-    const local = Math.max(0, Math.min(1, (p - START(i)) / DUR));
-    if (local <= 0) return;
-    for (const h of hairs[i]) body += hairPath(s, h, ease(local));
+  // strokes overlap, so the screen is full before the timeline ends: stop at the first fully painted frame
+  const full = frames.findIndex(({ data }) => data.reduce((n, v) => n + (v > 127 ? 1 : 0), 0) >= W * H * 0.995);
+  if (full > 0) frames.length = full + 1;
+  frames[frames.length - 1].data.fill(255); // the last frame is fully painted
+  const N = frames.length;
+  // the cover stage hides the old page where paint lands (paint = transparent); the reveal shows the new page there
+  const sprite = Buffer.alloc(W * N * H * 4);
+  frames.forEach(({ data }, f) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const v = data[y * W + x];
+      sprite[(y * W * N + f * W + x) * 4 + 3] = name === 'cover' ? 255 - v : v;
+    }
   });
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#000"/>${body}</svg>`;
-  frames.push(await sharp(Buffer.from(svg)).extractChannel('red').raw().toBuffer({ resolveWithObject: true }));
+  await sharp(sprite, { raw: { width: W * N, height: H, channels: 4 } }).png({ compressionLevel: 9, palette: true }).toFile(`public/transitions/brush-${name}.png`);
+  console.log(`public/transitions/brush-${name}.png`, W * N, 'x', H, `(${N} frames)`);
+  return N;
 }
-// strokes overlap, so the screen is full before the timeline ends: stop at the first fully painted frame
-const full = frames.findIndex(({ data }) => data.reduce((n, v) => n + (v > 127 ? 1 : 0), 0) >= W * H * 0.995);
-if (full > 0) frames.length = full + 1;
-frames[frames.length - 1].data.fill(255); // the last frame is the whole new page
-const N = frames.length;
-// assemble: white channel becomes alpha
-const sprite = Buffer.alloc(W * N * H * 4);
-frames.forEach(({ data }, f) => {
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const v = data[y * W + x];
-    const o = (y * W * N + f * W + x) * 4;
-    sprite[o] = sprite[o + 1] = sprite[o + 2] = 0; sprite[o + 3] = v;
-  }
-});
-await sharp(sprite, { raw: { width: W * N, height: H, channels: 4 } }).png({ compressionLevel: 9, palette: true }).toFile('public/transitions/brush-reveal.png');
-// the frame count drives the CSS (mask size, steps), and steps() takes only a literal number, so the whole
-// transition stylesheet is written here
-const { writeFileSync } = await import('node:fs');
-writeFileSync('src/styles/brush-transition.css', `/* Generated by scripts/brush-reveal.mjs (${N} frames): edit the script, not this file.
-   Page changes paint the new page in with brush strokes: a cross-document view transition whose new snapshot is
-   revealed through the brush sprite. Browsers without view transitions just navigate. Reduced motion: none. */
+
+const cover = await build('cover', STAGES.cover);
+const reveal = await build('reveal', STAGES.reveal);
+const T1 = 0.6, HOLD = 0.08, T2 = 0.7; // seconds: cover, a beat of solid cobalt, reveal
+
+writeFileSync('src/styles/brush-transition.css', `/* Generated by scripts/brush-reveal.mjs: edit the script, not this file.
+   Page changes, in two strokes of the brush: the old page is painted over in cobalt, then the new page is painted in
+   over the cobalt. A cross-document view transition: the cobalt is the root group's ground, the old snapshot is
+   wiped away through the cover sprite, the new one shown through the reveal sprite. Browsers without view
+   transitions just navigate. Reduced motion: none. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; }
   /* the nav stays put while the page under it is painted */
   .nav { view-transition-name: site-nav; }
   ::view-transition-group(site-nav) { animation: none; }
-  ::view-transition-old(root) { animation: none; }
+  ::view-transition-group(root) { background: var(--surface-brand); animation-duration: ${(T1 + HOLD + T2).toFixed(2)}s; }
+  ::view-transition-old(root), ::view-transition-new(root) {
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    animation-timing-function: linear; animation-fill-mode: both;
+  }
+  ::view-transition-old(root) {
+    -webkit-mask-image: url(/transitions/brush-cover.png); mask-image: url(/transitions/brush-cover.png);
+    -webkit-mask-size: ${cover * 100}% 100%; mask-size: ${cover * 100}% 100%;
+    animation: brush-step ${T1}s steps(${cover}, jump-none) both;
+  }
   ::view-transition-new(root) {
     -webkit-mask-image: url(/transitions/brush-reveal.png); mask-image: url(/transitions/brush-reveal.png);
-    -webkit-mask-size: ${N * 100}% 100%; mask-size: ${N * 100}% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-    animation: brush-paint 0.95s steps(${N}, jump-none) both;
+    -webkit-mask-size: ${reveal * 100}% 100%; mask-size: ${reveal * 100}% 100%;
+    animation: brush-step ${T2}s steps(${reveal}, jump-none) ${(T1 + HOLD).toFixed(2)}s both;
   }
 }
-@keyframes brush-paint {
+@keyframes brush-step {
   from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
   to { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
 }
 `);
-console.log('public/transitions/brush-reveal.png', W * N, 'x', H, `(${N} frames)`);

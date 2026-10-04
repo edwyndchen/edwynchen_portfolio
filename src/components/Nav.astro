@@ -13,11 +13,12 @@ const inWorkshop = here.startsWith(site.workshop.href);
     <nav class="nav__main" aria-label="Main">
       <!-- phones: the page links fold behind this button (a disclosure); from 40rem up they sit in a row -->
       <button class="nav__menu label" type="button" aria-expanded="false" aria-controls="nav-links" data-nav-menu>Menu</button>
+      <!-- the page links, then (after a hairline on wide screens) the Workshop, a place of its own; same link style -->
       <ul class="nav__links" id="nav-links">
         {site.nav.map((item) => <li><a class="label" href={item.href}>{item.label}</a></li>)}
+        <li class="nav__rule" aria-hidden="true"></li>
+        <li><a class="label nav__workshop" href={site.workshop.href} aria-current={inWorkshop ? 'page' : undefined}>{site.workshop.label}</a></li>
       </ul>
-      <span class="nav__rule" aria-hidden="true"></span>
-      <a class="nav__workshop label" href={site.workshop.href} aria-current={inWorkshop ? 'page' : undefined}>{site.workshop.label}</a>
     </nav>
   </div>
 </header>
@@ -44,15 +45,8 @@ const inWorkshop = here.startsWith(site.workshop.href);
   .nav__links a:hover { color: var(--action-primary-hover); }
   .nav__links a:active { color: var(--action-primary-active); }
   /* a hairline between the page links and the Workshop, which is a place of its own */
-  .nav__rule { width: 1px; height: 1.25rem; background: var(--border-default); }
-  /* DS secondary button, compact: the Workshop door */
-  .nav__workshop {
-    display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--space-s);
-    color: var(--text-brand); text-decoration: none; border: 1px solid var(--border-strong);
-    transition: background-color var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard);
-  }
-  .nav__workshop:hover { background: var(--surface-brand-soft); color: var(--action-primary-hover); }
-  .nav__workshop[aria-current='page'] { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-brand); }
+  .nav__rule { align-self: center; width: 1px; height: 1.25rem; background: var(--border-default); }
+  .nav__links a[aria-current='page'] { text-decoration: underline; text-underline-offset: 0.45em; text-decoration-thickness: 1px; }
   .nav__menu { display: none; background: none; border: 0; padding: 0 var(--space-2); font: inherit; cursor: pointer; }
   .nav__menu::after { content: ''; width: 0.5rem; height: 0.5rem; margin-left: 0.5rem; border: solid currentColor; border-width: 0 1.5px 1.5px 0; translate: 0 -2px; rotate: 45deg; transition: rotate var(--dur-med) var(--ease-standard); }
   .nav__menu[aria-expanded='true']::after { rotate: 225deg; translate: 0 2px; }
@@ -63,8 +57,7 @@ const inWorkshop = here.startsWith(site.workshop.href);
     .nav__brand :global(.nav__mark) { display: block; height: 26px; }
     .nav__main { gap: var(--space-s); }
     .nav__rule { display: none; }
-    .nav__menu { display: inline-flex; order: 1; }
-    .nav__workshop { order: 2; }
+    .nav__menu { display: inline-flex; }
     :global(.js) .nav__links {
       position: absolute; inset: 100% 0 auto 0; flex-direction: column; gap: 0;
       padding: var(--space-2) var(--gutter) var(--space-m); background: var(--surface-page); border-bottom: 1px solid var(--border-hairline);

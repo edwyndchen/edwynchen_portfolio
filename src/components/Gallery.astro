@@ -1,0 +1,92 @@
+---
+import PlaceholderFrame from './PlaceholderFrame.astro';
+// A carousel for a section with several images. A horizontal scroll-snap track (swipe, trackpad, keyboard arrows
+// once focused) with Previous/Next buttons and a count. Without JS it is still a scrollable row.
+interface Item { image?: string | null; alt?: string; caption?: string }
+interface Props { label?: string; items?: Item[] }
+const { label = 'Images', items = [] } = Astro.props;
+const slides = items.length ? items : [{}, {}, {}];
+const id = `g-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Math.random().toString(36).slice(2, 6)}`;
+---
+<section class="gallery" aria-roledescription="carousel" aria-label={`${label} images`} data-gallery>
+  <ul class="gallery__track" id={id} tabindex="0" aria-label={`${label} images, ${slides.length} slides`}>
+    {slides.map((s, i) => (
+      <li class="gallery__slide" aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
+        <figure>
+          {s.image
+            ? <img src={s.image} alt={s.alt ?? ''} loading="lazy" decoding="async" />
+            : <PlaceholderFrame id={`${id}-${i}`} ratio="16 / 10" hint={`Slide ${i + 1}: add an image in Keystatic`} />}
+          {s.caption && <figcaption>{s.caption}</figcaption>}
+        </figure>
+      </li>
+    ))}
+  </ul>
+  <div class="gallery__controls" hidden data-controls>
+    <button type="button" class="gallery__btn" aria-controls={id} data-prev><span aria-hidden="true">←</span><span class="visually-hidden">Previous image</span></button>
+    <p class="gallery__count" aria-live="polite"><span data-current>1</span> / {slides.length}</p>
+    <button type="button" class="gallery__btn" aria-controls={id} data-next><span aria-hidden="true">→</span><span class="visually-hidden">Next image</span></button>
+  </div>
+</section>
+
+<style>
+  /* breaks out of the reading column to the page width: screens need the room */
+  .gallery { margin: var(--space-xl) 0; width: min(var(--max), 100vw - 2 * var(--gutter)); position: relative; left: 50%; translate: -50% 0; }
+  .gallery__track {
+    list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: min(88%, 52rem);
+    gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .gallery__track::-webkit-scrollbar { display: none; }
+  .gallery__track:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
+  @media (prefers-reduced-motion: reduce) { .gallery__track { scroll-behavior: auto; } }
+  .gallery__slide { scroll-snap-align: start; }
+  .gallery__slide figure { margin: 0; }
+  .gallery__slide img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+  .gallery__slide figcaption { margin-top: var(--space-s); font-size: var(--text-sm); color: var(--text-secondary); }
+  .gallery__controls { display: flex; align-items: center; gap: var(--space-m); margin-top: var(--space-m); }
+  .gallery__controls[hidden] { display: none; }
+  .gallery__btn {
+    display: inline-grid; place-items: center; width: 48px; height: 48px; font: inherit; font-size: 1.1rem; cursor: pointer;
+    color: var(--text-brand); background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 0;
+    transition: background-color var(--dur-med) var(--ease-standard);
+  }
+  .gallery__btn:hover:not(:disabled) { background: var(--surface-brand-soft); }
+  .gallery__btn:disabled { opacity: 0.35; cursor: default; }
+  .gallery__count { margin: 0; min-width: 3.5rem; text-align: center; font-variant-numeric: tabular-nums; color: var(--text-secondary); font-size: var(--text-sm); }
+</style>
+
+<script>
+  for (const g of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const track = g.querySelector<HTMLElement>('.gallery__track')!;
+    const slides = [...track.children] as HTMLElement[];
+    const controls = g.querySelector<HTMLElement>('[data-controls]')!;
+    const prev = g.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = g.querySelector<HTMLButtonElement>('[data-next]')!;
+    const current = g.querySelector<HTMLElement>('[data-current]')!;
+    if (slides.length < 2) continue;
+    controls.hidden = false;
+    // the slide whose left edge is nearest the track's left edge is the current one
+    const index = () => {
+      const left = track.getBoundingClientRect().left;
+      let best = 0, d = Infinity;
+      slides.forEach((s, i) => { const x = Math.abs(s.getBoundingClientRect().left - left); if (x < d) { d = x; best = i; } });
+      return best;
+    };
+    const go = (i: number) => track.scrollTo({ left: slides[Math.max(0, Math.min(slides.length - 1, i))].offsetLeft - slides[0].offsetLeft });
+    const sync = () => {
+      const i = index();
+      current.textContent = String(i + 1);
+      prev.disabled = i === 0;
+      next.disabled = i === slides.length - 1;
+    };
+    prev.addEventListener('click', () => go(index() - 1));
+    next.addEventListener('click', () => go(index() + 1));
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(index() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
+    });
+    let raf = 0;
+    track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
+    sync();
+  }
+</script>

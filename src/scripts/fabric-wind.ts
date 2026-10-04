@@ -28,6 +28,24 @@ export const WIND = {
   ] as StillSpot[],
 };
 
+/** Where each outfit holds still (the About costume change swaps these in via a 'wind:outfit' event). */
+export const OUTFIT_STILL: Record<string, StillSpot[]> = {
+  hanfu: WIND.still,
+  // festival wear: the face, the pig mask and the hand holding it, the piglet and the arm it sits in
+  pig: [
+    { name: 'torso', cx: 28, cy: 35, rx: 19, ry: 21, hold: 0.8 },
+    { name: 'face', cx: 29, cy: 13, rx: 8, ry: 7, hold: 1 },
+    { name: 'mask and hand', cx: 19, cy: 14, rx: 11, ry: 9, hold: 1 },
+    { name: 'piglet and hand', cx: 43, cy: 43, rx: 10, ry: 8, hold: 1 },
+  ],
+  // the water bearer: the face, the vase and both hands; the stream itself is left to ripple
+  water: [
+    { name: 'torso', cx: 28, cy: 36, rx: 19, ry: 21, hold: 0.8 },
+    { name: 'face', cx: 27, cy: 12, rx: 8, ry: 7, hold: 1 },
+    { name: 'vase and hands', cx: 41, cy: 41, rx: 12, ry: 9, hold: 1 },
+  ],
+};
+
 /** The filter reaches this far past the painting's box on every side (% of the box), so the map covers it too. */
 export const WIND_MARGIN = 6;
 
@@ -83,6 +101,12 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   ro.observe(ed);
   // the dev tuner edits WIND in place and asks for a repaint of the map
   window.addEventListener('wind:retune', paint);
+  // the costume change: a new outfit brings its own still places
+  const onOutfit = (e: Event) => {
+    const spots = OUTFIT_STILL[(e as CustomEvent<string>).detail];
+    if (spots) { WIND.still = spots; paint(); }
+  };
+  window.addEventListener('wind:outfit', onOutfit);
 
   let raf = 0;
   let last = 0;
@@ -102,7 +126,11 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   // pause whenever the figure is off-screen
   const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()));
   io.observe(ed);
-  const off = () => { stop(); io.disconnect(); ro.disconnect(); window.removeEventListener('wind:retune', paint); ed.classList.remove('is-windy'); };
+  const off = () => {
+    stop(); io.disconnect(); ro.disconnect();
+    window.removeEventListener('wind:retune', paint); window.removeEventListener('wind:outfit', onOutfit);
+    ed.classList.remove('is-windy');
+  };
   // a visitor who turns reduced motion on mid-visit gets a still figure straight away
   const onChange = () => { if (reduce.matches) off(); };
   reduce.addEventListener('change', onChange);

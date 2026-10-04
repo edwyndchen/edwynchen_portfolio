@@ -23,31 +23,45 @@ const d = entry.data;
 // the hero shows its own image when set, else the cover art
 const heroSrc = d.hero || d.cover;
 const heroAlt = d.hero ? d.heroAlt : d.coverAlt;
+// tags: what kind of work, then where it ran
+const tags = [d.discipline === 'design-system' ? 'Design system' : 'Product design', ...d.platforms.split(',').map((t) => t.trim()).filter(Boolean)];
+const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 <BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
   <article>
-    <!-- full-width hero: the art fills the top of the screen, the title sits on its paper-white left side -->
-    <header class="case-hero">
-      <div class="case-hero__media">
-        {heroSrc
-          ? <img class="case-hero__img" src={heroSrc} alt={heroAlt} width="1600" height="900" fetchpriority="high" />
-          : <PlaceholderFrame id="case-hero" ratio="16 / 9" hint="Add a hero image in Keystatic" />}
-      </div>
-      <div class="wrap case-hero__text">
-        <p class="label case-hero__kicker">{d.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
-        <h1>{d.title}</h1>
-        <p class="case-hero__dek">{d.dek}</p>
-      </div>
-    </header>
-
-    <div class="wrap case-summary">
-      <Flora plant="banksia" side="right" class="flora--case" />
-      <StatPanels metrics={d.metrics} />
-      <AtAGlance data={d} />
+    <!-- 1. the image, edge to edge -->
+    <div class="case-hero">
+      {heroSrc
+        ? <img class="case-hero__img" src={heroSrc} alt={heroAlt} width="1600" height="900" fetchpriority="high" />
+        : <PlaceholderFrame id="case-hero" ratio="16 / 9" hint="Add a hero image in Keystatic" />}
     </div>
 
+    <!-- 2. the blue band: what this case is, at a glance; its section tabs sit on the band's bottom edge -->
+    <header class="case-band">
+      <div class="wrap case-band__inner">
+        <div class="case-band__intro">
+          <h1>{d.title}</h1>
+          <ul class="case-band__tags" aria-label="Tags">
+            {tags.map((t) => <li>{t}</li>)}
+          </ul>
+          {overview.length > 0 && (
+            <section class="case-band__overview" aria-labelledby="overview-title">
+              <h2 id="overview-title" class="label">Overview</h2>
+              {overview.map((para) => <p>{para}</p>)}
+            </section>
+          )}
+        </div>
+        <div class="case-band__facts">
+          <StatPanels metrics={d.metrics} />
+          <AtAGlance data={d} />
+        </div>
+      </div>
+    </header>
+    <CaseToc headings={headings} />
+
+    <!-- 3. the story -->
     <div class="wrap case-body">
-      <CaseToc headings={headings} />
+      <Flora plant="banksia" side="right" class="flora--case" />
       <div class="prose">
         <Content />
       </div>
@@ -58,40 +72,45 @@ const heroAlt = d.hero ? d.heroAlt : d.coverAlt;
 </BaseLayout>
 
 <style>
-  /* Hero. Phones: title, then the art below at its own shape. Desktop: the art fills the band edge to edge and the
-     title sits over its left side, on a paper wash so it always reads. */
-  .case-hero { position: relative; display: flex; flex-direction: column-reverse; }
-  .case-hero__text { padding-block: var(--space-xl) var(--space-l); position: relative; z-index: 1; }
-  .case-hero__kicker { color: var(--gold-text); margin: 0; }
-  .case-hero h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); max-width: 14ch; }
-  .case-hero__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 34ch; }
+  .case-hero { overflow: hidden; }
   .case-hero__img {
-    display: block; width: 100%; height: auto; mix-blend-mode: multiply;
-    /* the art's paper dissolves into the page: no ruled top or bottom edge */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
+    display: block; width: 100%; height: auto; max-height: min(78svh, 56.25vw); object-fit: cover; object-position: 50% 45%;
+    mix-blend-mode: multiply;
+    /* the art's paper dissolves into the page at the top, so the nav never sits on a ruled edge */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 8%);
+    mask-image: linear-gradient(to bottom, transparent, #000 8%);
   }
-  @media (min-width: 60rem) {
-    .case-hero { display: grid; min-height: calc(100svh - 4.5rem); align-items: end; overflow: hidden; }
-    .case-hero__media { position: absolute; inset: 0; }
-    .case-hero__media :global(.frame) { height: 100%; aspect-ratio: auto !important; }
-    .case-hero__img { height: 100%; object-fit: cover; object-position: 65% 50%; }
-    .case-hero__media::after {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(to right, var(--surface-page) 0%, color-mix(in srgb, var(--surface-page) 85%, transparent) 30%, transparent 58%);
-    }
-    .case-hero__text { padding-block: var(--space-2xl); }
+
+  /* The band repaints the tokens its children use, so the Results and At a glance blocks read on cobalt as they are.
+     Contrast on blue-700: paper 9.5:1, blue-100 7.1:1, gold-300 6.9:1. */
+  .case-band {
+    --text-primary: var(--paper-50); --text-secondary: var(--blue-100); --gold-text: var(--gold-300);
+    --cobalt: var(--paper-0); --border-strong: var(--blue-200); --border-hairline: rgba(255, 255, 255, 0.28);
+    --focus-ring: var(--paper-0);
+    background: var(--surface-brand); color: var(--text-primary);
+    /* room at the bottom for the tab row, which sits on the band's edge */
+    padding-block: var(--space-xl) calc(var(--space-xl) + 3rem);
   }
-  /* results first, then the facts, then a longer pause before the story starts; the banksia grows beside them */
-  .case-summary { display: grid; gap: var(--space-xl); padding-top: var(--space-xl); position: relative; }
-  .case-summary :global(.flora--case) { position: relative; justify-self: end; margin-bottom: calc(var(--space-xl) * -0.5); }
-  @media (min-width: 60rem) {
-    .case-summary :global(.flora--case) { position: absolute; top: var(--space-l); right: 0; margin: 0; width: clamp(110px, 12vw, 180px); }
-    .case-summary > :global(:not(.flora--case)) { max-width: calc(100% - 13rem); }
+  .case-band__inner { display: grid; gap: var(--space-xl); }
+  @media (min-width: 60rem) { .case-band__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: var(--space-2xl); } }
+  .case-band h1 { font-size: var(--fluid-display-xl); color: var(--paper-0); margin: 0 0 var(--space-m); max-width: 16ch; }
+  .case-band__tags { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .case-band__tags li {
+    padding: 5px 11px; font-size: var(--text-xs); font-weight: var(--fw-semibold); letter-spacing: var(--ls-caps); text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: var(--radius-round); color: var(--paper-0);
   }
-  .case-body { padding-top: var(--space-2xl); display: grid; gap: var(--space-l); }
-  @media (min-width: 60rem) { .case-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
-  /* headings land below the sticky nav (and the phone link strip) */
-  .case-body :global(.prose h2) { scroll-margin-top: 6rem; }
-  @media (max-width: 59.99rem) { .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }
+  .case-band__overview h2 { color: var(--gold-text); margin: 0 0 var(--space-s); }
+  .case-band__overview p { margin: 0 0 var(--space-m); max-width: 60ch; font-size: var(--step-0); line-height: var(--lh-relaxed); }
+  .case-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--paper-0); }
+  .case-band__facts { display: grid; gap: var(--space-xl); align-content: start; }
+
+  .case-body { position: relative; padding-top: var(--space-xl); }
+  .case-body :global(.prose) { margin-inline: auto; }
+  /* the banksia grows in the right margin beside the start of the story; on narrow screens it sits above it */
+  .case-body :global(.flora--case) { position: relative; display: block; margin: 0 0 var(--space-s) auto; }
+  @media (min-width: 75rem) {
+    .case-body :global(.flora--case) { position: absolute; top: var(--space-xl); right: 0; margin: 0; width: clamp(120px, 11vw, 180px); }
+  }
+  /* headings land below the nav and the stuck tab row */
+  .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; }
 </style>

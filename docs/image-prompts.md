@@ -46,3 +46,15 @@ Final: pose 2 "dramatic descent" (`ff95fb9b`, Nano Banana, refs: Ed's illustrati
 ## About cloud walls, 2026-10-04
 
 Right wall repainted with short tails (Ed: "the long tail overlaps the character"). Seedream 5.0 Pro edits of the previous `public/hero/cloud-wall-right.webp` (uploaded `ec12a5c2`): first pass `0030af98` (option B of 2, shorter tails), second pass from it `244dd672` (option C, middle wisp ends in a small curl; D `35934fe4` rejected for black outline artefacts). Raw file `art/about/cloud-wall-right-short-tails.png`, cropped (left 34px, so the leftmost billow keeps the old 0.326 position and `--inner` stays 0.43) and resized to 1600px wide.
+
+## Hero clouds v2, 2026-10-04
+
+Seedream 5.0 Pro off hero `7fe457e1`: long bands `ad6aa391`, `830e3949`, `6ed7d08d`, `d36e8854` (v1-v4) and soft billows `013a9e09`, `926136df`, `dbe8516e`, `e2e5916c` (v5-v8). Run through `art/hero-source/build.mjs` (softened to the pale washes). Ed then asked for more swirls back: the hero mixes v-clouds with old n2, n3, n5, n6, n7.
+
+## About costume change, 2026-10-04
+
+Nano Banana 2 off Ed's final portrait (uploaded `a41400c8`). Festival wear with pig mask and piglet: options `be1fd420` (A), `7c462015` (B, used). Aquarius water bearer: `df71be7d` (A), `3bc67e93` (B, used). Backgrounds removed (`7a4a395a`, `d9093623`), recoloured with `node art/portrait/recolor.mjs <in> <out> 1.3`, framed on the portrait's 1100x1538 canvas: `public/images/ed-pig.webp`, `public/images/ed-water.webp`.
+
+## Contact scroll range, 2026-10-04
+
+`public/hero/contact-range.webp`: the hero's peaks and outer peaks layers combined and lifted 62% towards paper-100 (no new generation).

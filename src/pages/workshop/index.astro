@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lattice from '../../components/Lattice.astro';
+import Flora from '../../components/Flora.astro';
 import WorkshopCard from '../../components/WorkshopCard.astro';
 import Contact from '../../components/Contact.astro';
 import { publishedWorkshop, skillsOf, skillKey } from '../../lib/workshop';
@@ -15,8 +16,8 @@ const skills = skillsOf(entries);
   <header class="ws-head">
     <Lattice id="ws-head-lattice" class="ws-head__lattice" tile={52} />
     <div class="wrap ws-head__inner">
-      <p class="label ws-head__kicker">The workshop</p>
-      <h1>Paint still wet</h1>
+      <Flora plant="waratah" side="right" class="flora--ws-head" />
+      <h1>Workshop</h1>
       <p class="ws-head__dek">Side projects and experiments from my bench. Some get fired and glazed. Others stay sketches, and that’s fine.</p>
     </div>
   </header>
@@ -24,6 +25,7 @@ const skills = skillsOf(entries);
   <section class="wrap ws" aria-labelledby="ws-skills-title" data-workshop>
     {skills.length > 0 && (
       <div class="ws__skills">
+        <Flora plant="gum" side="right" class="flora--ws-skills" />
         <h2 id="ws-skills-title" class="label">Brushes and tools</h2>
         <!-- a plain list without JS; the script turns each item into a filter toggle -->
         <ul class="ws__chips" data-chips>
@@ -39,6 +41,7 @@ const skills = skillsOf(entries);
     ) : (
       <p class="ws__empty">The bench is empty for now. Back soon.</p>
     )}
+    <div class="ws__end"><Flora plant="wattle" side="right" class="flora--ws-end" /></div>
   </section>
   <Contact />
 </BaseLayout>
@@ -54,8 +57,17 @@ const skills = skillsOf(entries);
     -webkit-mask-composite: source-in; mask-composite: intersect;
   }
   .ws-head__inner { position: relative; }
-  .ws-head__kicker { color: var(--gold-text); margin: 0; }
-  .ws-head h1 { font-size: var(--step-4); margin: var(--space-s) 0 var(--space-m); max-width: 12ch; }
+  .ws-head h1 { font-size: var(--step-4); margin: 0 0 var(--space-m); max-width: 12ch; }
+  /* the Australian flora lives here now: the waratah in the lattice, the gum by the tools, the wattle at the end */
+  .ws-head__inner :global(.flora--ws-head) { top: 50%; translate: 0 -50%; z-index: 1; }
+  .ws__skills { position: relative; }
+  .ws__skills :global(.flora--ws-skills) { top: calc(var(--space-l) * -1); width: clamp(96px, 12vw, 180px); }
+  .ws__end { position: relative; height: clamp(110px, 14vw, 200px); margin-top: var(--space-l); }
+  .ws__end :global(.flora--ws-end) { top: 0; }
+  @media (max-width: 47.99rem) {
+    .ws-head__inner :global(.flora--ws-head) { top: auto; bottom: calc(var(--space-xl) * -1); translate: none; }
+    .ws__skills :global(.flora--ws-skills) { display: none; }
+  }
   .ws-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 34ch; }
   @media (max-width: 47.99rem) {
     .ws-head :global(.ws-head__lattice) {

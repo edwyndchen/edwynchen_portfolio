@@ -1,25 +1,27 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('nav: Work, About, Contact, then the Workshop as its own button, marked current on its page', async ({ page, isMobile }) => {
+test('nav: Work, About, Contact, then a hairline and the Workshop as a plain link, marked current on its page', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop bar');
   await page.goto('/');
   const nav = page.getByRole('navigation', { name: 'Main' });
-  await expect(nav.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i]);
-  await expect(nav.locator('.nav__workshop')).toHaveText(/workshop/i);
+  await expect(nav.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i, /workshop/i]);
+  await expect(nav.locator('.nav__rule')).toBeVisible();
+  // same link style as the rest: no button frame
+  expect(await nav.locator('.nav__workshop').evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('0px');
   await page.goto('/workshop/');
   await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: /workshop/i })).toHaveAttribute('aria-current', 'page');
 });
 
-test('phone nav: Menu opens and closes the page links, Workshop stays in the bar', async ({ page, isMobile }) => {
+test('phone nav: Menu opens and closes all four links, Workshop included', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phone bar');
   await page.goto('/');
   const menu = page.getByRole('button', { name: 'Menu' });
-  await expect(page.locator('.nav__workshop')).toBeVisible();
+  await expect(page.locator('.nav__workshop')).toBeHidden();
   await expect(page.locator('.nav__links')).toBeHidden();
   await menu.click();
   await expect(menu).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i]);
+  await expect(page.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i, /workshop/i]);
   await page.keyboard.press('Escape');
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await expect(menu).toBeFocused();
@@ -29,7 +31,7 @@ test('phone nav: Menu opens and closes the page links, Workshop stays in the bar
 
 test('Workshop lists entries as cards, with status, date and skills (drafts show in dev)', async ({ page }) => {
   await page.goto('/workshop/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Paint still wet');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Workshop');
   const cards = page.locator('[data-entry]');
   expect(await cards.count()).toBeGreaterThan(0);
   const first = cards.first();

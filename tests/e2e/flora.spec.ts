@@ -1,10 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-test('flora spots are decorative and load', async ({ page }) => {
+test('the home page carries no flora; it lives on the Workshop', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('img.flora')).toHaveCount(0);
+});
+
+test('flora spots are decorative and load', async ({ page }) => {
+  await page.goto('/workshop/');
   const flora = page.locator('img.flora');
   expect(await flora.count()).toBeGreaterThanOrEqual(3);
-  for (const img of await flora.all()) {
+  // (on phones the gum by the tools steps aside, so check the ones that show)
+  for (const img of await page.locator('img.flora:visible').all()) {
     await expect(img).toHaveAttribute('alt', '');
     await img.scrollIntoViewIfNeeded();
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
@@ -12,7 +18,7 @@ test('flora spots are decorative and load', async ({ page }) => {
 });
 
 test('flora never causes horizontal scroll', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/workshop/');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
 });
@@ -35,7 +41,7 @@ test('the case study cover keeps its descriptive alt text', async ({ page }) => 
 
 // art rule: no cropped edges. Each painting is trimmed tight, so its whole box must sit inside the viewport and
 // inside every ancestor that clips it.
-for (const path of ['/', '/work/form-guide-redesign/']) {
+for (const path of ['/workshop/', '/work/form-guide-redesign/']) {
   for (const width of [320, 768, 1440]) {
     test(`flora is never cropped at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -65,10 +71,10 @@ for (const path of ['/', '/work/form-guide-redesign/']) {
   }
 }
 
-test('the banksia sits clear of the results, never behind them', async ({ page }) => {
+test('the banksia sits clear of the story text, never behind it', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const flora = (await page.locator('img.flora--case').boundingBox())!;
-  const plate = (await page.locator('.case-summary .stats').boundingBox())!;
+  const plate = (await page.locator('.case-body .prose p').first().boundingBox())!;
   const overlap =
     Math.max(0, Math.min(flora.x + flora.width, plate.x + plate.width) - Math.max(flora.x, plate.x)) *
     Math.max(0, Math.min(flora.y + flora.height, plate.y + plate.height) - Math.max(flora.y, plate.y));

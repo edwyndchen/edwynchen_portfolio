@@ -11,6 +11,7 @@ const caseStudies = defineCollection({
       discipline: z.enum(['product-design', 'design-system']),
       order: z.number().int(),
       outcome: z.string().min(1),
+      overview: z.string().default(''),
       role: z.string().default(''),
       timeline: z.string().default(''),
       team: z.string().default(''),

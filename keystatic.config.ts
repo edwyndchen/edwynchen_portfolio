@@ -5,6 +5,24 @@ const text = (label: string, description?: string) => fields.text({ label, descr
 
 // A wide image after a case study section (Problem, Outcomes, Process). Until an image is added, the site shows a
 // placeholder frame in its place. Rendered by src/components/SectionImage.astro (see markdoc.config.mjs).
+// Several images for one section (Outcomes, Process), shown as a carousel. Empty slots show placeholder frames.
+// Rendered by src/components/Gallery.astro (see markdoc.config.mjs).
+const gallery = block({
+  label: 'Gallery (carousel)',
+  description: 'Several images for one section, shown as a carousel.',
+  schema: {
+    label: fields.text({ label: 'What it shows', description: 'Names the carousel for screen readers, e.g. "Process"' }),
+    items: fields.array(
+      fields.object({
+        image: fields.image({ label: 'Image', directory: 'public/images/case-studies', publicPath: '/images/case-studies/' }),
+        alt: fields.text({ label: 'Alt text' }),
+        caption: fields.text({ label: 'Caption (optional)' }),
+      }),
+      { label: 'Images', itemLabel: (p) => p.fields.caption.value || p.fields.alt.value || 'Image' },
+    ),
+  },
+});
+
 const sectionImage = block({
   label: 'Section image',
   description: 'A wide image with an optional caption. Shows a placeholder frame until an image is added.',
@@ -39,6 +57,11 @@ export default config({
         }),
         order: fields.integer({ label: 'Order on home page', defaultValue: 1 }),
         outcome: fields.text({ label: 'Outcome (one line, numbers first)', validation: { length: { min: 1 } } }),
+        overview: fields.text({
+          label: 'Overview',
+          description: 'Shown in the blue band at the top of the case study. Leave a blank line between paragraphs.',
+          multiline: true,
+        }),
         role: text('Role'),
         timeline: text('Timeline'),
         team: text('Team'),
@@ -73,7 +96,7 @@ export default config({
               schema: { alt: fields.text({ label: 'Alt text', validation: { length: { min: 1 } } }) },
             },
           },
-          components: { sectionImage },
+          components: { sectionImage, gallery },
         }),
       },
     }),

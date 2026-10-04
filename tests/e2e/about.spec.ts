@@ -176,7 +176,8 @@ test('motion allowed: only the fabric moves in the wind, and only while on scree
   const ed = page.locator('.about__ed');
   await expect(ed).toHaveClass(/is-windy/);
   // one painting, warped in place: no second copy to double the outlines
-  await expect(page.locator('.about__ed img')).toHaveCount(1);
+  // one painting showing at a time (the costume change keeps the others hidden), warped in place
+  await expect(page.locator('.about__outfit:visible')).toHaveCount(1);
   await expect(page.locator('.about__ed-still')).toHaveCSS('filter', /url\("?#ed-wind"?\)/);
   // the stillness map is painted and laid over the painting (face, hands and torso held still)
   const map = page.locator('#ed-wind feImage');
@@ -228,4 +229,32 @@ test('old portrait frame and placeholder are gone', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.about__placeholder')).toHaveCount(0);
   await expect(page.locator('#about img[src*="ed-portrait"]')).toHaveCount(0);
+});
+
+test('costume change: each press puffs Ed into the next outfit, round to the hanfu, and says so', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const swap = page.getByRole('button', { name: "Change Edwyn's outfit" });
+  const showing = () => page.locator('.about__outfit:not([hidden])').getAttribute('data-outfit');
+  await swap.scrollIntoViewIfNeeded();
+  expect(await showing()).toBe('hanfu');
+  await swap.click();
+  expect(await showing()).toBe('pig');
+  await expect(page.locator('[data-outfit-status]')).toContainText('the Pig');
+  await swap.press('Enter');
+  expect(await showing()).toBe('water');
+  await expect(page.locator('[data-outfit-status]')).toContainText('Aquarius');
+  await swap.click();
+  expect(await showing()).toBe('hanfu');
+});
+
+test('costume change with motion: a puff of cloud, then the new outfit', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const swap = page.getByRole('button', { name: "Change Edwyn's outfit" });
+  await page.evaluate(() => window.scrollTo(0, Number(document.querySelector<HTMLElement>('#about')!.dataset.pinEnd ?? 0)));
+  await swap.click();
+  // mid-puff, at least one cloud is showing
+  await expect.poll(() => page.locator('[data-puff] img').evaluateAll((els) => Math.max(...els.map((e) => Number(getComputedStyle(e).opacity))))).toBeGreaterThan(0.3);
+  await expect.poll(() => page.locator('.about__outfit:not([hidden])').getAttribute('data-outfit')).toBe('pig');
 });

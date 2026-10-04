@@ -51,35 +51,64 @@ for (const slug of SLUGS) {
   });
 }
 
-test('case study hero spans the full width with its image, title over it', async ({ page, isMobile }) => {
+test('case study: image across the top, then the blue band with title, tags, overview, results and at a glance', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  const hero = (await page.locator('.case-hero').boundingBox())!;
   const vw = page.viewportSize()!.width;
+  const hero = (await page.locator('.case-hero').boundingBox())!;
   expect(hero.width).toBeGreaterThanOrEqual(vw - 1);
   await expect(page.locator('.case-hero__img')).toBeVisible();
-  await expect(page.locator('.case-hero h1')).toBeVisible();
-  if (!isMobile) expect(hero.height).toBeGreaterThan(page.viewportSize()!.height * 0.75);
+  const band = page.locator('.case-band');
+  const box = (await band.boundingBox())!;
+  expect(box.y).toBeGreaterThanOrEqual(hero.y + hero.height - 2);
+  await expect(band.getByRole('heading', { level: 1 })).toHaveText('Form Guide Redesign');
+  await expect(band.locator('.case-band__tags li').first()).toHaveText(/Product design/i);
+  await expect(band.getByRole('heading', { name: 'Overview' })).toBeVisible();
+  await expect(band.getByRole('heading', { name: 'Results' })).toBeVisible();
+  await expect(band.getByRole('heading', { name: 'At a glance' })).toBeVisible();
+  // the overview lives in the band now, not in the story below
+  await expect(page.locator('.prose h2', { hasText: /^Overview$/ })).toHaveCount(0);
 });
 
-test('case study quick links: one per section, they jump there and mark where you are', async ({ page }) => {
+test("case study tabs sit on the band's bottom edge, jump to their section and mark it", async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  const toc = page.getByRole('navigation', { name: 'On this page' });
-  await expect(toc.getByRole('link')).toHaveText(['Overview', 'My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
-  await toc.getByRole('link', { name: 'Outcomes' }).click();
+  const tabs = page.getByRole('navigation', { name: 'On this page' });
+  await expect(tabs.getByRole('link')).toHaveText(['My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
+  const band = (await page.locator('.case-band').boundingBox())!;
+  const row = (await tabs.boundingBox())!;
+  expect(Math.abs(row.y + row.height - (band.y + band.height))).toBeLessThanOrEqual(2);
+  await tabs.getByRole('link', { name: 'Outcomes' }).click();
   await expect(page).toHaveURL(/#outcomes$/);
   await expect(page.locator('#outcomes')).toBeInViewport();
-  await expect.poll(() => toc.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
+  await expect.poll(() => tabs.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
 });
 
-test('case study has an image (or its placeholder) after Problem, Outcomes and Process', async ({ page }) => {
+test('Problem has an image; Outcomes and Process have carousels', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const after = await page.evaluate(() =>
     ['problem', 'outcomes', 'process'].map((id) => {
-      // walk forward from the heading to the next h2: a section image must sit in between
       let el = document.getElementById(id)?.nextElementSibling;
-      while (el && el.tagName !== 'H2') { if (el.matches('figure.section-image')) return true; el = el.nextElementSibling; }
-      return false;
+      while (el && el.tagName !== 'H2') {
+        if (el.matches('figure.section-image')) return 'image';
+        if (el.matches('section.gallery')) return 'carousel';
+        el = el.nextElementSibling;
+      }
+      return 'none';
     }),
   );
-  expect(after).toEqual([true, true, true]);
+  expect(after).toEqual(['image', 'carousel', 'carousel']);
+});
+
+test('carousel: Next and Previous move a slide and the count follows; arrow keys work too', async ({ page }) => {
+  await page.goto('/work/form-guide-redesign/');
+  const g = page.getByRole('region', { name: 'Outcomes images' });
+  await g.scrollIntoViewIfNeeded();
+  const count = g.locator('[data-current]');
+  await expect(count).toHaveText('1');
+  await expect(g.getByRole('button', { name: 'Previous image' })).toBeDisabled();
+  await g.getByRole('button', { name: 'Next image' }).click();
+  await expect(count).toHaveText('2');
+  await g.locator('.gallery__track').press('ArrowRight');
+  await expect(count).toHaveText('3');
+  await g.getByRole('button', { name: 'Previous image' }).click();
+  await expect(count).toHaveText('2');
 });

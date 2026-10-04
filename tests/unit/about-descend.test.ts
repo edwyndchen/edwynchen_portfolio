@@ -58,3 +58,12 @@ describe('fabric wind', () => {
     expect(scale).toBe(WIND.scale[0]);
   });
 });
+
+import { nextOutfit } from '../../src/scripts/outfit-swap';
+describe('costume change', () => {
+  it('goes hanfu, Pig, Aquarius and round again', () => {
+    expect(nextOutfit('hanfu')).toBe('pig');
+    expect(nextOutfit('pig')).toBe('water');
+    expect(nextOutfit('water')).toBe('hanfu');
+  });
+});

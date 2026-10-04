@@ -1,7 +1,6 @@
 ---
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import Flora from './Flora.astro';
 import { webpSize } from '../lib/image-size';
 
 // read every painting's real pixel size at build, so swapping a file never leaves stale width/height
@@ -24,16 +23,27 @@ const wallR = size(WALL_R);
          from tablets up it dissolves into the two-column grid with the list below the bio. -->
     <div class="about__stage">
       <div class="about__text">
-        <Flora plant="gum" side="left" class="flora--about" />
         <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
         <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
         <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
       </div>
       <figure class="about__figure">
-        <!-- .about__ed is the one box the choreography moves; the wind filter warps the painting inside it -->
-        <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
-          <img class="about__ed-still" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
-        </div>
+        <!-- Ed is a button: each press, a puff of cloud and a change of outfit (hanfu, the Pig, Aquarius, round again).
+             .about__ed is the one box the scroll choreography moves; the wind filter warps whichever painting shows. -->
+        <button class="about__swap" type="button" aria-label="Change Edwyn's outfit" data-outfit-button>
+          <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
+            <div class="about__outfits">
+              <img class="about__ed-still about__outfit" data-outfit="hanfu" data-label="Back in the blue-and-white hanfu." src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
+              <img class="about__outfit" data-outfit="pig" data-label="Festival wear with a pig mask and a piglet: Edwyn's Chinese zodiac, the Pig." src="/images/ed-pig.webp" alt="Brush painting of Edwyn in festival robes, a pig mask pushed up on his head and a piglet in his arm" width={ed.width} height={ed.height} loading="lazy" decoding="async" hidden />
+              <img class="about__outfit" data-outfit="water" data-label="A water bearer pouring a vase: Edwyn is an Aquarius." src="/images/ed-water.webp" alt="Brush painting of Edwyn in wave-patterned scholar's robes, pouring a stream of water from a porcelain vase" width={ed.width} height={ed.height} loading="lazy" decoding="async" hidden />
+            </div>
+            <div class="about__puff" aria-hidden="true" data-puff>
+              {['v5', 'n3', 'v6', 'n5', 'v7', 'v8', 'n2', 'v1'].map((c) => <img src={`/hero/cloud-${c}.webp`} alt="" loading="lazy" decoding="async" />)}
+            </div>
+          </div>
+        </button>
+        <figcaption class="about__hint" aria-hidden="true">Tap me for a costume change</figcaption>
+        <p class="visually-hidden" aria-live="polite" data-outfit-status></p>
         <!-- the wind: slow, low-frequency noise nudging the pixels a few px, scaled down by the stillness map
              (feImage; JS paints and places it) so the face, hands and most of the torso hold still -->
         <svg class="about__wind-defs" width="0" height="0" aria-hidden="true" focusable="false">
@@ -72,9 +82,6 @@ const wallR = size(WALL_R);
     grid-template-columns: minmax(0, 1fr);
   }
   .about__stage { display: grid; gap: var(--space-l); }
-  /* the gum branch hangs above the heading, anchored to the text block (so it rises and fades in with it on the
-     staged two-column layout) and drawn behind the letters */
-  :global(.flora.flora--about) { top: -11.5rem; z-index: -1; }
   .about__text { position: relative; z-index: 1; }
   .about__text > :last-child { margin-bottom: 0; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
@@ -94,10 +101,19 @@ const wallR = size(WALL_R);
     /* the painting's real ratio (from the file, at build): as wide as the column, never taller than the screen allows */
     width: min(100%, (100vh - 10rem) * var(--ratio));
   }
-  .about__ed img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .about__outfits { position: absolute; inset: 0; }
+  .about__outfit { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .about__outfit[hidden] { display: none; }
+  /* the figure is a button with nothing of a button's look: the hint below and the pointer say it's alive */
+  .about__swap { display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+  .about__swap:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 8px; }
+  .about__hint { margin-top: var(--space-s); text-align: center; font-size: var(--text-sm); color: var(--text-secondary); }
+  .about__swap:hover + .about__hint { color: var(--text-brand); }
+  .about__puff { position: absolute; inset: 0; pointer-events: none; }
+  .about__puff img { position: absolute; top: 48%; left: 50%; width: 42%; height: auto; opacity: 0; }
   .about__wind-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
   /* Wind in the fabric: off by default; JS adds .is-windy only when motion is allowed. Retune in fabric-wind.ts. */
-  .about__ed.is-windy .about__ed-still { filter: url(#ed-wind); }
+  .about__ed.is-windy .about__outfit { filter: url(#ed-wind); }
 
   /* Cloud walls: retune here. --inner is where each wall's billowing inner edge sits, as a fraction of its own
      width (the rest of the painting runs off its outer, top and bottom sides). JS places the box and moves the walls;
@@ -127,13 +143,11 @@ const wallR = size(WALL_R);
       gap: var(--space-m); padding-block: var(--space-m);
     }
     .about.is-staged .about__inner { padding-top: var(--space-l); }
-    .about.is-staged .about__figure { width: 100%; max-width: none; min-height: 0; height: 100%; }
+    /* the figure row holds Ed (taking what height is left) and the hint line under him */
+    .about.is-staged .about__figure { width: 100%; max-width: none; min-height: 0; height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; justify-items: center; }
+    .about.is-staged .about__swap { min-height: 0; height: 100%; width: auto; }
     .about.is-staged .about__ed { height: 100%; width: auto; max-width: 100%; }
-  }
-  /* phones and tablets in portrait: tucked top-right beside the heading, clear of the bio (hanging above it, the
-     branch would land on the last work card) */
-  @media (max-width: 63.99rem) {
-    :global(.flora.flora--about) { left: auto; right: 0; top: -2rem; }
+    .about.is-staged .about__hint { margin-top: var(--space-2); }
   }
 
   /* Tablets up: two columns, the text and list on the left, Ed beside them */
@@ -154,20 +168,19 @@ const wallR = size(WALL_R);
     .about__caps { grid-template-columns: minmax(0, 1fr); }
     .about__inner { column-gap: var(--space-l); }
   }
-  /* short screens: the gum branch would sit under the sticky nav for the whole pin, so it sits this one out */
-  @media (min-width: 48rem) and (max-height: 48.5rem) {
-    .about.is-staged :global(.flora--about) { display: none; }
-  }
 </style>
 
 <script>
   import { initAboutDescend } from '../scripts/about-descend';
   import { initFabricWind } from '../scripts/fabric-wind';
+  import { initOutfitSwap } from '../scripts/outfit-swap';
   const el = document.querySelector<HTMLElement>('[data-about]');
   if (el) initAboutDescend(el);
   const ed = el?.querySelector<HTMLElement>('.about__ed');
   const filter = el?.querySelector<SVGFilterElement>('#ed-wind');
   if (ed && filter) initFabricWind(ed, filter);
+  const swap = el?.querySelector<HTMLButtonElement>('[data-outfit-button]');
+  if (swap) initOutfitSwap(swap);
   // dev only: /?wind opens the wind tuner
   if (import.meta.env.DEV && new URLSearchParams(location.search).has('wind')) {
     import('../scripts/wind-tuner').then((m) => m.mountWindTuner());
