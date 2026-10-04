@@ -1,5 +1,6 @@
 ---
 import Plate from './Plate.astro';
+import PlaceholderFrame from './PlaceholderFrame.astro';
 import { STATUS_LABEL, hasWriteup, skillKey, type WorkshopStatus } from '../lib/workshop';
 
 interface Props {
@@ -20,7 +21,11 @@ const external = d.link && /^https?:/.test(d.link);
 ---
 <Plate as="article" class="wcard">
   <div data-skills={d.skills.map(skillKey).join(' ')} class="wcard__inner">
-    {d.image && <div class="wcard__media"><img src={d.image} alt={page ? '' : d.imageAlt} width="800" height="500" loading="lazy" decoding="async" /></div>}
+    <div class="wcard__media">
+      {d.image
+        ? <img src={d.image} alt={page ? '' : d.imageAlt} width="800" height="500" loading="lazy" decoding="async" />
+        : <PlaceholderFrame id={entry.id} />}
+    </div>
     <p class="wcard__meta">
       <span class:list={['wcard__status', `wcard__status--${d.status}`]}>{STATUS_LABEL[d.status]}</span>
       <time datetime={d.date.toISOString().slice(0, 10)}>{month}</time>

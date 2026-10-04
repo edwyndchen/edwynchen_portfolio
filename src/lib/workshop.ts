@@ -1,9 +1,10 @@
 export type WorkshopStatus = 'in-progress' | 'shipped' | 'experiment';
 
+// in the workshop's own words: a piece is on the easel, fired (finished and out in the world), or a sketch
 export const STATUS_LABEL: Record<WorkshopStatus, string> = {
-  'in-progress': 'In progress',
-  shipped: 'Shipped',
-  experiment: 'Experiment',
+  'in-progress': 'On the easel',
+  shipped: 'Fired',
+  experiment: 'Sketch',
 };
 
 type Entry = { id: string; body?: string; data: { title: string; date: Date; draft: boolean; skills: string[] } };

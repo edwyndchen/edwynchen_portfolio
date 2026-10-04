@@ -1,0 +1,19 @@
+---
+import PlaceholderFrame from './PlaceholderFrame.astro';
+// A wide image after a case study section. Empty image: a placeholder frame holds the space.
+interface Props { image?: string; alt?: string; caption?: string }
+const { image, alt = '', caption } = Astro.props;
+const id = Math.random().toString(36).slice(2, 8);
+---
+<figure class="section-image">
+  {image
+    ? <img src={image} alt={alt} loading="lazy" decoding="async" />
+    : <PlaceholderFrame id={`si-${id}`} ratio="16 / 9" hint="Add a section image in Keystatic" />}
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .section-image { margin: var(--space-xl) 0; }
+  .section-image img { display: block; width: 100%; height: auto; }
+  .section-image figcaption { margin-top: var(--space-s); font-size: var(--text-sm); color: var(--text-secondary); }
+</style>

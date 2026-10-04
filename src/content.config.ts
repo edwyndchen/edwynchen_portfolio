@@ -18,11 +18,17 @@ const caseStudies = defineCollection({
       context: z.string().default(''),
       cover: z.string().nullish(),
       coverAlt: z.string().default(''),
+      hero: z.string().nullish(),
+      heroAlt: z.string().default(''),
       metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
     })
     .refine((d) => !d.cover || d.coverAlt.trim().length > 0, {
       message: 'coverAlt is required when a cover image is set',
       path: ['coverAlt'],
+    })
+    .refine((d) => !d.hero || d.heroAlt.trim().length > 0, {
+      message: 'heroAlt is required when a hero image is set',
+      path: ['heroAlt'],
     }),
 });
 

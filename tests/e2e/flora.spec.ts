@@ -30,7 +30,7 @@ test('home card covers are decorative (the title link names the card) and load',
 
 test('the case study cover keeps its descriptive alt text', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  expect(((await page.locator('img.case-head__cover').getAttribute('alt')) ?? '').length).toBeGreaterThan(20);
+  expect(((await page.locator('img.case-hero__img').getAttribute('alt')) ?? '').length).toBeGreaterThan(20);
 });
 
 // art rule: no cropped edges. Each painting is trimmed tight, so its whole box must sit inside the viewport and
@@ -65,10 +65,10 @@ for (const path of ['/', '/work/form-guide-redesign/']) {
   }
 }
 
-test('the banksia sits clear of the title plate, never behind it', async ({ page }) => {
+test('the banksia sits clear of the results, never behind them', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const flora = (await page.locator('img.flora--case').boundingBox())!;
-  const plate = (await page.locator('.case-head .plate').boundingBox())!;
+  const plate = (await page.locator('.case-summary .stats').boundingBox())!;
   const overlap =
     Math.max(0, Math.min(flora.x + flora.width, plate.x + plate.width) - Math.max(flora.x, plate.x)) *
     Math.max(0, Math.min(flora.y + flora.height, plate.y + plate.height) - Math.max(flora.y, plate.y));

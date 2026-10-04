@@ -1,0 +1,22 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../data/site';
+---
+<LegalLayout title="Terms of use" description="The ground rules for using this site and its content." updated="4 October 2026">
+  <p>By using this site you agree to these terms. They're short.</p>
+
+  <h2>The content is mine</h2>
+  <p>The writing, artwork and design on this site are mine unless noted otherwise. You're welcome to link to any page. Please ask before reusing anything else, including the illustrations.</p>
+
+  <h2>Work for other companies</h2>
+  <p>Case studies describe projects I worked on for employers and clients. Their names, products and trademarks belong to them. Figures come from my own records of each project and are shared to show my part in the work.</p>
+
+  <h2>No guarantees</h2>
+  <p>I keep the site accurate and working, but it's provided as is. I'm not responsible for other websites I link to.</p>
+
+  <h2>Changes and law</h2>
+  <p>I may update these terms; the date at the top shows the latest version. These terms are governed by the laws of Victoria, Australia.</p>
+
+  <h2>Questions</h2>
+  <p>Email me at <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+</LegalLayout>

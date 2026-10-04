@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Plate from '../../components/Plate.astro';
+import PlaceholderFrame from '../../components/PlaceholderFrame.astro';
+import CaseToc from '../../components/CaseToc.astro';
 import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
 import StatPanels from '../../components/StatPanels.astro';
@@ -17,27 +18,36 @@ export async function getStaticPaths() {
 }
 
 const { entry, prev, next } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
+// the hero shows its own image when set, else the cover art
+const heroSrc = d.hero || d.cover;
+const heroAlt = d.hero ? d.heroAlt : d.coverAlt;
 ---
 <BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
   <article>
-    <header class="wrap case-head">
-      <Flora plant="banksia" side="right" class="flora--case" />
-      <Plate>
-        <p class="label case-head__kicker">{d.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
+    <!-- full-width hero: the art fills the top of the screen, the title sits on its paper-white left side -->
+    <header class="case-hero">
+      <div class="case-hero__media">
+        {heroSrc
+          ? <img class="case-hero__img" src={heroSrc} alt={heroAlt} width="1600" height="900" fetchpriority="high" />
+          : <PlaceholderFrame id="case-hero" ratio="16 / 9" hint="Add a hero image in Keystatic" />}
+      </div>
+      <div class="wrap case-hero__text">
+        <p class="label case-hero__kicker">{d.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
         <h1>{d.title}</h1>
-        <p class="case-head__dek">{d.dek}</p>
-      </Plate>
-      {d.cover && <img class="case-head__cover" src={d.cover} alt={d.coverAlt} width="1600" height="900" />}
+        <p class="case-hero__dek">{d.dek}</p>
+      </div>
     </header>
 
     <div class="wrap case-summary">
+      <Flora plant="banksia" side="right" class="flora--case" />
       <StatPanels metrics={d.metrics} />
       <AtAGlance data={d} />
     </div>
 
     <div class="wrap case-body">
+      <CaseToc headings={headings} />
       <div class="prose">
         <Content />
       </div>
@@ -48,22 +58,40 @@ const d = entry.data;
 </BaseLayout>
 
 <style>
-  .case-head { padding-top: var(--space-xl); position: relative; overflow-x: clip; display: grid; grid-template-columns: minmax(0, 1fr); }
-  /* the banksia sits beside the title plate, never behind it: in flow, above the plate's right side on phones... */
-  .case-head :global(.flora--case) { position: relative; justify-self: end; margin-bottom: var(--space-s); }
-  /* ...and in its own column to the right of the plate on desktop */
-  @media (min-width: 60rem) {
-    .case-head { grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-xl); align-items: center; }
-    .case-head :global(.flora--case) { grid-column: 2; grid-row: 1; margin-bottom: 0; }
-    .case-head > :global(.plate) { grid-column: 1; grid-row: 1; }
-    .case-head__cover { grid-column: 1 / -1; }
+  /* Hero. Phones: title, then the art below at its own shape. Desktop: the art fills the band edge to edge and the
+     title sits over its left side, on a paper wash so it always reads. */
+  .case-hero { position: relative; display: flex; flex-direction: column-reverse; }
+  .case-hero__text { padding-block: var(--space-xl) var(--space-l); position: relative; z-index: 1; }
+  .case-hero__kicker { color: var(--gold-text); margin: 0; }
+  .case-hero h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); max-width: 14ch; }
+  .case-hero__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 34ch; }
+  .case-hero__img {
+    display: block; width: 100%; height: auto; mix-blend-mode: multiply;
+    /* the art's paper dissolves into the page: no ruled top or bottom edge */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
   }
-  .case-head > :global(.plate), .case-head__cover { position: relative; z-index: 1; }
-  .case-head h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); }
-  .case-head__kicker { color: var(--gold-text); margin: 0; }
-  .case-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 40ch; }
-  .case-head__cover { margin-top: var(--space-l); width: 100%; height: auto; mix-blend-mode: multiply; }
-  /* results first, then the facts, then a longer pause before the story starts */
-  .case-summary { display: grid; gap: var(--space-xl); padding-top: var(--space-xl); }
-  .case-body { padding-top: var(--space-2xl); }
+  @media (min-width: 60rem) {
+    .case-hero { display: grid; min-height: calc(100svh - 4.5rem); align-items: end; overflow: hidden; }
+    .case-hero__media { position: absolute; inset: 0; }
+    .case-hero__media :global(.frame) { height: 100%; aspect-ratio: auto !important; }
+    .case-hero__img { height: 100%; object-fit: cover; object-position: 65% 50%; }
+    .case-hero__media::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to right, var(--surface-page) 0%, color-mix(in srgb, var(--surface-page) 85%, transparent) 30%, transparent 58%);
+    }
+    .case-hero__text { padding-block: var(--space-2xl); }
+  }
+  /* results first, then the facts, then a longer pause before the story starts; the banksia grows beside them */
+  .case-summary { display: grid; gap: var(--space-xl); padding-top: var(--space-xl); position: relative; }
+  .case-summary :global(.flora--case) { position: relative; justify-self: end; margin-bottom: calc(var(--space-xl) * -0.5); }
+  @media (min-width: 60rem) {
+    .case-summary :global(.flora--case) { position: absolute; top: var(--space-l); right: 0; margin: 0; width: clamp(110px, 12vw, 180px); }
+    .case-summary > :global(:not(.flora--case)) { max-width: calc(100% - 13rem); }
+  }
+  .case-body { padding-top: var(--space-2xl); display: grid; gap: var(--space-l); }
+  @media (min-width: 60rem) { .case-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
+  /* headings land below the sticky nav (and the phone link strip) */
+  .case-body :global(.prose h2) { scroll-margin-top: 6rem; }
+  @media (max-width: 59.99rem) { .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }
 </style>

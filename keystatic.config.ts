@@ -1,6 +1,19 @@
 import { collection, config, fields } from '@keystatic/core';
+import { block } from '@keystatic/core/content-components';
 
 const text = (label: string, description?: string) => fields.text({ label, description });
+
+// A wide image after a case study section (Problem, Outcomes, Process). Until an image is added, the site shows a
+// placeholder frame in its place. Rendered by src/components/SectionImage.astro (see markdoc.config.mjs).
+const sectionImage = block({
+  label: 'Section image',
+  description: 'A wide image with an optional caption. Shows a placeholder frame until an image is added.',
+  schema: {
+    image: fields.image({ label: 'Image', directory: 'public/images/case-studies', publicPath: '/images/case-studies/' }),
+    alt: fields.text({ label: 'Alt text', description: 'What the image shows. Leave blank only if it is decorative.' }),
+    caption: fields.text({ label: 'Caption (optional)' }),
+  },
+});
 
 export default config({
   storage: { kind: 'local' },
@@ -37,6 +50,13 @@ export default config({
           publicPath: '/images/case-studies/',
         }),
         coverAlt: text('Cover alt text', 'Describe the image for screen readers. Required when a cover is set.'),
+        hero: fields.image({
+          label: 'Hero image',
+          description: 'Full-width image at the top of the case study. Falls back to the cover art when empty.',
+          directory: 'public/images/case-studies',
+          publicPath: '/images/case-studies/',
+        }),
+        heroAlt: text('Hero alt text', 'Required when a hero image is set.'),
         metrics: fields.array(
           fields.object({
             value: fields.text({ label: 'Value', description: 'Whole numbers, e.g. 52%' }),
@@ -53,6 +73,7 @@ export default config({
               schema: { alt: fields.text({ label: 'Alt text', validation: { length: { min: 1 } } }) },
             },
           },
+          components: { sectionImage },
         }),
       },
     }),
@@ -74,9 +95,9 @@ export default config({
         status: fields.select({
           label: 'Status',
           options: [
-            { label: 'In progress', value: 'in-progress' },
-            { label: 'Shipped', value: 'shipped' },
-            { label: 'Experiment', value: 'experiment' },
+            { label: 'On the easel (in progress)', value: 'in-progress' },
+            { label: 'Fired (shipped)', value: 'shipped' },
+            { label: 'Sketch (experiment)', value: 'experiment' },
           ],
           defaultValue: 'in-progress',
         }),

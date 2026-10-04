@@ -13,7 +13,8 @@ test('layout has landmarks, skip link and nav', async ({ page }) => {
   await page.keyboard.press('Tab');
   await expect(page.locator('.skip-link')).toBeFocused();
   for (const label of ['Work', 'About', 'Contact']) {
-    await expect(page.getByRole('link', { name: label, exact: true }).first()).toBeAttached();
+    // on phones these sit inside the closed Menu, so look past hidden ones
+    await expect(page.getByRole('link', { name: label, exact: true, includeHidden: true }).first()).toBeAttached();
   }
 });
 
@@ -23,9 +24,12 @@ test('body background is porcelain', async ({ page }) => {
   expect(bg).toBe('rgb(250, 248, 242)'); // DS --surface-page #FAF8F2
 });
 
-test('every nav link is at least 44px wide and tall', async ({ page }) => {
+test('every visible nav control is at least 44px wide and 40px+ tall (links and menu 44)', async ({ page }) => {
   await page.goto('/');
-  for (const a of await page.locator('.nav__links a').all()) {
+  const workshop = (await page.locator('.nav__workshop').boundingBox())!;
+  expect(workshop.width).toBeGreaterThanOrEqual(44);
+  expect(workshop.height).toBeGreaterThanOrEqual(40);
+  for (const a of await page.locator('.nav__links a:visible, .nav__menu:visible').all()) {
     const box = (await a.boundingBox())!;
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);

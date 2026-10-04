@@ -10,7 +10,8 @@
     "import:case-studies": "node scripts/import-case-studies.mjs",
     "optimise:art": "node scripts/optimise-art.mjs",
     "hero": "node art/hero-source/build.mjs",
-    "shots": "node scripts/screenshots.mjs"
+    "shots": "node scripts/screenshots.mjs",
+    "transition": "node scripts/brush-reveal.mjs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^2.0.9",

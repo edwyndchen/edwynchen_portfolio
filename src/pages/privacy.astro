@@ -1,0 +1,22 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../data/site';
+---
+<LegalLayout title="Privacy policy" description="What this site collects and what happens to it." updated="4 October 2026">
+  <p>This is my personal portfolio. I keep what I collect to the minimum, and I use it only to reply to you.</p>
+
+  <h2>What I collect</h2>
+  <p>Only what you send through the contact form: your name, your email address and your message. Nothing else is collected about you on purpose. There are no analytics, no tracking pixels and no advertising cookies on this site.</p>
+
+  <h2>Who handles it</h2>
+  <p>The site is hosted by Netlify, and form messages are stored by Netlify Forms and emailed to me. Netlify is based in the United States, so your message may be stored outside Australia. The fonts load from Google Fonts, which means Google sees your IP address when the page loads, as with most websites.</p>
+
+  <h2>What I do with it</h2>
+  <p>I read your message and reply. I don't add you to a mailing list, share your details or sell them. I delete form messages once the conversation is done, unless we end up working together and I need to keep a record.</p>
+
+  <h2>Seeing, fixing or deleting your details</h2>
+  <p>Email me at <a href={`mailto:${site.email}`}>{site.email}</a> and I'll send you what I hold, correct it or delete it.</p>
+
+  <h2>Complaints</h2>
+  <p>If something's wrong, email me first and I'll sort it out. If you're not happy with my answer, you can contact the <a href="https://www.oaic.gov.au/privacy/privacy-complaints">Office of the Australian Information Commissioner</a>.</p>
+</LegalLayout>

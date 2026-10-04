@@ -1,22 +1,40 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('nav links to the Workshop between About and Contact, marked current on its page', async ({ page }) => {
+test('nav: Work, About, Contact, then the Workshop as its own button, marked current on its page', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop bar');
   await page.goto('/');
-  const links = page.getByRole('navigation', { name: 'Main' }).getByRole('link');
-  await expect(links).toHaveText([/work/i, /about/i, /workshop/i, /contact/i]);
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await expect(nav.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i]);
+  await expect(nav.locator('.nav__workshop')).toHaveText(/workshop/i);
   await page.goto('/workshop/');
   await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: /workshop/i })).toHaveAttribute('aria-current', 'page');
 });
 
+test('phone nav: Menu opens and closes the page links, Workshop stays in the bar', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'phone bar');
+  await page.goto('/');
+  const menu = page.getByRole('button', { name: 'Menu' });
+  await expect(page.locator('.nav__workshop')).toBeVisible();
+  await expect(page.locator('.nav__links')).toBeHidden();
+  await menu.click();
+  await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.nav__links a')).toHaveText([/work/i, /about/i, /contact/i]);
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(menu).toBeFocused();
+  await expect(page.locator('.nav__links')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+});
+
 test('Workshop lists entries as cards, with status, date and skills (drafts show in dev)', async ({ page }) => {
   await page.goto('/workshop/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Things I make on the side');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Paint still wet');
   const cards = page.locator('[data-entry]');
   expect(await cards.count()).toBeGreaterThan(0);
   const first = cards.first();
   await expect(first.getByRole('heading', { level: 2 })).toBeVisible();
-  await expect(first.locator('.wcard__status')).toHaveText(/In progress|Shipped|Experiment/);
+  await expect(first.locator('.wcard__status')).toHaveText(/On the easel|Fired|Sketch/);
   await expect(first.locator('time')).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}$/);
 });
 
@@ -31,7 +49,7 @@ test('skills filter: toggles are real buttons, filter the cards and say how many
   await expect(react).toHaveAttribute('aria-pressed', 'true');
   const shown = await cards.evaluateAll((els) => els.filter((e) => !(e as HTMLElement).hidden).length);
   expect(shown).toBeLessThan(total);
-  await expect(page.locator('[data-count]')).toHaveText(`Showing ${shown} of ${total} projects`);
+  await expect(page.locator('[data-count]')).toHaveText(`Showing ${shown} of ${total} pieces`);
   await react.click();
   await expect(page.locator('[data-entry]:not([hidden])')).toHaveCount(total);
 });
@@ -101,8 +119,15 @@ test('thanks page exists and is kept out of search', async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
 });
 
-test('footer carries the Acknowledgement of Country', async ({ page }) => {
+test('Acknowledgement of Country sits below the footer, headed, with the Aboriginal flag', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('footer')).toContainText('Wurundjeri Woi-wurrung people of the Kulin Nation');
-  await expect(page.locator('footer')).toContainText('Elders, past and present');
+  const country = page.getByRole('complementary', { name: 'Acknowledgement of Country' });
+  await expect(country).toContainText('Wurundjeri Woi-wurrung people of the Kulin Nation');
+  await expect(country).toContainText('Elders, past and present');
+  await expect(country.getByRole('img', { name: 'Australian Aboriginal flag' })).toBeVisible();
+  // it comes after the footer
+  expect(await page.evaluate(() => {
+    const f = document.querySelector('footer')!, c = document.querySelector('.country')!;
+    return Boolean(f.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING);
+  })).toBe(true);
 });

@@ -1,26 +1,92 @@
 ---
 import SouthernCross from './SouthernCross.astro';
+import Logo from './Logo.astro';
 import { site } from '../data/site';
 const year = new Date().getFullYear();
+const socials = [
+  { label: 'LinkedIn', href: site.linkedin },
+  { label: 'Behance', href: site.behance },
+].filter((s) => s.href);
 ---
 <footer class="footer">
-  <div class="wrap footer__inner">
-    <p class="footer__ack">I live and work on the lands of the Wurundjeri Woi-wurrung people of the Kulin Nation. I pay my respects to their Elders, past and present, and to all Aboriginal and Torres Strait Islander peoples.</p>
-    <div class="footer__base">
-      <p class="label">© {year} {site.name}</p>
-      <SouthernCross class="footer__cross" />
+  <div class="wrap footer__main">
+    <div class="footer__about">
+      <a class="footer__brand" href="/" aria-label={`${site.name}, home`}><Logo /></a>
+      <p class="footer__summary">{site.summary}</p>
     </div>
+    {socials.length > 0 && (
+      <nav class="footer__social" aria-label="Elsewhere">
+        <ul>
+          {socials.map((s) => (
+            <li><a href={s.href} rel="me noopener" target="_blank">{s.label}<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+    <SouthernCross class="footer__cross" />
+  </div>
+  <div class="wrap footer__base">
+    <p class="label">© {year} {site.name}</p>
+    <ul class="footer__legal">
+      <li><a href="/privacy/">Privacy policy</a></li>
+      <li><a href="/terms/">Terms of use</a></li>
+    </ul>
+    <a class="footer__top" href="#" data-back-to-top>Back to top<span aria-hidden="true"> ↑</span></a>
   </div>
 </footer>
+<!-- Acknowledgement of Country: its own band beneath the footer, with the flags -->
+<aside class="country" aria-labelledby="country-title">
+  <div class="wrap country__inner">
+    <ul class="country__flags" aria-label="Flags">
+      <li><img src="/flags/aboriginal.svg" alt="Australian Aboriginal flag" width="60" height="36" /></li>
+      <!-- Torres Strait Islander flag: add once its use is cleared with the Torres Strait Island Regional Council -->
+    </ul>
+    <div>
+      <h2 id="country-title" class="label">Acknowledgement of Country</h2>
+      <p>I live and work on the lands of the Wurundjeri Woi-wurrung people of the Kulin Nation. I pay my respects to their Elders, past and present, and to all Aboriginal and Torres Strait Islander peoples.</p>
+    </div>
+  </div>
+</aside>
 
 <style>
   /* DS footer: deep navy ground, ivory and dim-blue text */
-  .footer { background: var(--surface-invert); color: var(--text-on-invert); padding-block: var(--space-7); }
-  .footer__inner { display: grid; gap: var(--space-l); }
-  .footer__base { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); padding-top: var(--space-m); border-top: 1px solid var(--border-invert); }
-  .footer p { margin: 0; color: var(--text-invert-dim); }
-  /* Acknowledgement of Country: plain, readable, first thing in the footer */
-  .footer .footer__ack { max-width: 60ch; color: var(--text-on-invert); font-size: var(--text-sm); line-height: var(--lh-relaxed, 1.6); }
+  .footer { background: var(--surface-invert); color: var(--text-on-invert); padding-top: var(--space-xl); }
+  .footer a { color: var(--text-on-invert); }
+  .footer a:hover { color: var(--text-invert-dim); }
+  .footer :focus-visible { outline-color: var(--text-on-invert); }
+  .footer__main { display: grid; gap: var(--space-l); align-items: start; padding-bottom: var(--space-l); }
+  @media (min-width: 48rem) { .footer__main { grid-template-columns: minmax(0, 1fr) auto auto; column-gap: var(--space-xl); } }
+  .footer__brand { display: inline-flex; min-height: 44px; align-items: center; }
+  .footer__summary { margin: var(--space-s) 0 0; max-width: 34ch; font-family: var(--font-display); font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--text-on-invert); }
+  .footer__social ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
+  .footer__social a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); }
   /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
   .footer :global(.footer__cross) { width: 1.75rem; height: 1.75rem; color: var(--wattle-gold); flex: none; }
+  .footer__base {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l);
+    padding-block: var(--space-m); border-top: 1px solid var(--border-invert);
+  }
+  .footer__base p { margin: 0; color: var(--text-invert-dim); }
+  .footer__legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
+  .footer__legal a, .footer__top { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-sm); }
+  .footer__top { margin-left: auto; font-weight: var(--fw-semibold); }
+
+  .country { background: var(--surface-page); border-top: 4px solid var(--surface-invert); }
+  .country__inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-m) var(--space-l); padding-block: var(--space-l); }
+  .country__flags { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-s); }
+  .country__flags img { display: block; width: 60px; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
+  .country h2 { color: var(--gold-text); margin: 0 0 var(--space-2); }
+  .country p { margin: 0; max-width: 70ch; font-size: var(--text-sm); color: var(--text-primary); }
 </style>
+
+<script>
+  // Back to top: smooth only when motion is fine, and focus lands at the top so keyboard users start over too
+  const top = document.querySelector<HTMLAnchorElement>('[data-back-to-top]');
+  top?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const smooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    document.querySelector<HTMLElement>('.nav__brand')?.focus({ preventScroll: true });
+    history.replaceState(null, '', location.pathname + location.search);
+  });
+</script>

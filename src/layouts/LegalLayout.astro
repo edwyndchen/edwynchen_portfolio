@@ -1,0 +1,21 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site } from '../data/site';
+import '../styles/prose.css';
+interface Props { title: string; description: string; updated: string }
+const { title, description, updated } = Astro.props;
+---
+<!-- plain reading pages (privacy, terms): a title, a date, the prose -->
+<BaseLayout title={`${title} | ${site.name}`} description={description}>
+  <article class="wrap legal">
+    <h1>{title}</h1>
+    <p class="legal__updated">Last updated {updated}</p>
+    <div class="prose"><slot /></div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal { padding-block: var(--space-xl) var(--space-2xl); }
+  .legal h1 { font-size: var(--fluid-display-xl); margin: 0 0 var(--space-xs); }
+  .legal__updated { margin: 0 0 var(--space-l); color: var(--text-secondary); font-size: var(--text-sm); }
+</style>

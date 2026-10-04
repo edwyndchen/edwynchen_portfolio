@@ -15,7 +15,7 @@ for (const slug of SLUGS) {
       await expect(page.locator('[data-stat]')).toHaveCount(0);
     }
     await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Next/ })).toHaveAttribute('href', /\/work\/.+\//);
+    await expect(page.getByRole('navigation', { name: 'More case studies' }).getByRole('link', { name: /Next/ })).toHaveAttribute('href', /\/work\/.+\//);
   });
 
   test(`case study ${slug}: results are headed, and the outcome is not repeated beside them`, async ({ page }) => {
@@ -50,3 +50,36 @@ for (const slug of SLUGS) {
     expect(results.violations).toEqual([]);
   });
 }
+
+test('case study hero spans the full width with its image, title over it', async ({ page, isMobile }) => {
+  await page.goto('/work/form-guide-redesign/');
+  const hero = (await page.locator('.case-hero').boundingBox())!;
+  const vw = page.viewportSize()!.width;
+  expect(hero.width).toBeGreaterThanOrEqual(vw - 1);
+  await expect(page.locator('.case-hero__img')).toBeVisible();
+  await expect(page.locator('.case-hero h1')).toBeVisible();
+  if (!isMobile) expect(hero.height).toBeGreaterThan(page.viewportSize()!.height * 0.75);
+});
+
+test('case study quick links: one per section, they jump there and mark where you are', async ({ page }) => {
+  await page.goto('/work/form-guide-redesign/');
+  const toc = page.getByRole('navigation', { name: 'On this page' });
+  await expect(toc.getByRole('link')).toHaveText(['Overview', 'My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
+  await toc.getByRole('link', { name: 'Outcomes' }).click();
+  await expect(page).toHaveURL(/#outcomes$/);
+  await expect(page.locator('#outcomes')).toBeInViewport();
+  await expect.poll(() => toc.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
+});
+
+test('case study has an image (or its placeholder) after Problem, Outcomes and Process', async ({ page }) => {
+  await page.goto('/work/form-guide-redesign/');
+  const after = await page.evaluate(() =>
+    ['problem', 'outcomes', 'process'].map((id) => {
+      // walk forward from the heading to the next h2: a section image must sit in between
+      let el = document.getElementById(id)?.nextElementSibling;
+      while (el && el.tagName !== 'H2') { if (el.matches('figure.section-image')) return true; el = el.nextElementSibling; }
+      return false;
+    }),
+  );
+  expect(after).toEqual([true, true, true]);
+});

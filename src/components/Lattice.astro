@@ -1,0 +1,22 @@
+---
+// A Chinese window lattice (菱花格: a diamond set in each square, a small square at the heart), drawn as an SVG
+// pattern in currentColor so it takes its blue from the tokens. Decorative; size and colour come from the parent.
+interface Props { class?: string; tile?: number; id: string }
+const { class: className, tile = 44, id } = Astro.props;
+const t = tile, h = tile / 2, q = tile * 0.41, w = tile * 0.18;
+---
+<svg class:list={['lattice', className]} aria-hidden="true" focusable="false" width="100%" height="100%">
+  <defs>
+    <pattern id={id} width={t} height={t} patternUnits="userSpaceOnUse">
+      <path
+        d={`M0 0H${t}V${t}H0Z M${h} 0L${t} ${h}L${h} ${t}L0 ${h}Z M${q} ${q}h${w}v${w}h-${w}Z`}
+        fill="none" stroke="currentColor" stroke-width="1.25"
+      />
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill={`url(#${id})`} />
+</svg>
+
+<style>
+  .lattice { display: block; }
+</style>
