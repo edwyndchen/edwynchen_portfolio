@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Plate from '../components/Plate.astro';
+import { site } from '../data/site';
+---
+<!-- where the contact form lands when it posts without JS (Netlify Forms redirects here) -->
+<BaseLayout title={`Message sent | ${site.name}`} description="Your message is on its way." noindex>
+  <div class="wrap thanks">
+    <Plate>
+      <h1>Thanks, message sent.</h1>
+      <p>I’ll get back to you soon.</p>
+      <p><a class="button" href="/">Back to the home page</a></p>
+    </Plate>
+  </div>
+</BaseLayout>
+
+<style>
+  .thanks { padding-block: var(--space-2xl); }
+  .thanks h1 { font-size: var(--fluid-display-xl); margin: 0 0 var(--space-m); }
+  .thanks p { margin: 0 0 var(--space-m); }
+  .thanks p:last-child { margin: var(--space-l) 0 0; }
+</style>

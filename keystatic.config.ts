@@ -56,5 +56,52 @@ export default config({
         }),
       },
     }),
+    workshop: collection({
+      label: 'Workshop',
+      slugField: 'title',
+      path: 'src/content/workshop/*',
+      format: { contentField: 'body' },
+      entryLayout: 'content',
+      columns: ['title', 'date', 'status'],
+      schema: {
+        title: fields.slug({ name: { label: 'Title' } }),
+        draft: fields.checkbox({
+          label: 'Draft',
+          description: 'Drafts show in dev and here, never on the live site. Untick to publish.',
+          defaultValue: true,
+        }),
+        date: fields.date({ label: 'Date', description: 'When you started (or shipped) it. Newest shows first.', validation: { isRequired: true } }),
+        status: fields.select({
+          label: 'Status',
+          options: [
+            { label: 'In progress', value: 'in-progress' },
+            { label: 'Shipped', value: 'shipped' },
+            { label: 'Experiment', value: 'experiment' },
+          ],
+          defaultValue: 'in-progress',
+        }),
+        blurb: fields.text({ label: 'Blurb', description: 'One or two lines for the card', multiline: true, validation: { length: { min: 1 } } }),
+        skills: fields.array(fields.text({ label: 'Skill or tool' }), {
+          label: 'Skills and tools',
+          description: 'e.g. Figma, React, GSAP. These build the skills filter on the Workshop page.',
+          itemLabel: (p) => p.value,
+        }),
+        image: fields.image({ label: 'Image', directory: 'public/images/workshop', publicPath: '/images/workshop/' }),
+        imageAlt: text('Image alt text', 'Describe the image for screen readers. Required when an image is set.'),
+        link: fields.url({ label: 'Link', description: 'Live demo, GitHub, Figma, etc. Optional.' }),
+        linkLabel: text('Link text', 'e.g. "Try it", "View on GitHub". Defaults to "Visit".'),
+        body: fields.markdoc({
+          label: 'Write-up (optional)',
+          description: 'Leave empty for a card only. Anything here gets its own page.',
+          options: {
+            image: {
+              directory: 'public/images/workshop',
+              publicPath: '/images/workshop/',
+              schema: { alt: fields.text({ label: 'Alt text', validation: { length: { min: 1 } } }) },
+            },
+          },
+        }),
+      },
+    }),
   },
 });

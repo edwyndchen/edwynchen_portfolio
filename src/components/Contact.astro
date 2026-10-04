@@ -4,26 +4,142 @@ import Flora from './Flora.astro';
 ---
 <section id="contact" class="contact wrap" aria-labelledby="contact-title">
   <Flora plant="wattle" side="right" class="flora--contact" />
-  <h2 id="contact-title">Have a project or a role in mind?</h2>
-  <p>Keen to hear about it. Email is quickest.</p>
-  <ul class="contact__links">
-    <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-    {site.linkedin && <li><a href={site.linkedin}>LinkedIn</a></li>}
-    {site.resume && <li><a href={site.resume}>Resume</a></li>}
-  </ul>
+  <div class="contact__grid">
+    <div class="contact__intro">
+      <h2 id="contact-title">Have a project or a role in mind?</h2>
+      <p>Keen to hear about it. Send a note here, or email me directly.</p>
+      <ul class="contact__links">
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        {site.linkedin && <li><a href={site.linkedin}>LinkedIn</a></li>}
+        {site.resume && <li><a href={site.resume}>Resume</a></li>}
+      </ul>
+    </div>
+
+    <!-- Netlify Forms: Netlify finds this form in the built HTML and emails each submission (it only works once
+         deployed). Without JS it posts and lands on /thanks/; with JS it sends in place and says so here. -->
+    <form class="contact__form" name="contact" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="company" data-contact-form>
+      <input type="hidden" name="form-name" value="contact" />
+      <p class="visually-hidden" aria-hidden="true">
+        <label>Leave this empty <input name="company" tabindex="-1" autocomplete="off" /></label>
+      </p>
+      <div class="field">
+        <label for="cf-name">Name</label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" required aria-describedby="cf-name-err" />
+        <p class="field__err" id="cf-name-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-email">Email</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required aria-describedby="cf-email-err" />
+        <p class="field__err" id="cf-email-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="5" required aria-describedby="cf-message-err"></textarea>
+        <p class="field__err" id="cf-message-err" data-err></p>
+      </div>
+      <div class="contact__send">
+        <button class="button button--primary" type="submit">Send message</button>
+        <p class="contact__status" role="status" data-status></p>
+      </div>
+    </form>
+  </div>
 </section>
 
 <style>
-  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); text-align: center; position: relative; overflow-x: clip; }
+  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); position: relative; overflow-x: clip; }
   :global(.flora--contact) { top: var(--space-l); }
-  .contact h2, .contact p, .contact__links { position: relative; z-index: 1; }
-  .contact h2 { font-size: var(--step-3); margin-inline: auto; max-width: 16ch; }
-  .contact p { margin: var(--space-m) auto var(--space-s); }
-  .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-m); }
+  .contact__grid { position: relative; z-index: 1; display: grid; gap: var(--space-xl); align-items: start; }
+  @media (min-width: 60rem) {
+    .contact__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-2xl); }
+    /* the form fills the right column, so the wattle grows in the space under the links on the left */
+    .contact :global(.flora--contact) { top: auto; bottom: var(--space-2xl); left: 0; right: auto; }
+  }
+  .contact h2 { font-size: var(--step-3); max-width: 14ch; margin: 0; }
+  .contact__intro > p { margin: var(--space-m) 0 var(--space-s); max-width: 36ch; }
+  .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
   .contact__links a { display: inline-flex; align-items: center; min-height: 48px; font-size: var(--fluid-display-sm); font-family: var(--font-display); font-weight: var(--fw-medium); overflow-wrap: anywhere; }
+
+  /* the form sits on a porcelain plate: white body, double keyline, like the work cards */
+  .contact__form {
+    display: grid; gap: var(--space-m);
+    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -7px;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); background: var(--surface-raised); box-shadow: var(--shadow-sm);
+  }
+  .field { display: grid; gap: var(--space-2); }
+  .field label { font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--text-primary); }
+  .field input, .field textarea {
+    width: 100%; min-height: 48px; padding: 12px 14px; font: inherit; color: var(--text-primary);
+    background: var(--surface-page); border: 1px solid var(--border-ink); border-radius: 0;
+  }
+  .field textarea { resize: vertical; min-height: 8.5rem; }
+  .field input:hover, .field textarea:hover { border-color: var(--border-strong); }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; border-color: var(--border-strong); }
+  .field [aria-invalid='true'] { border-color: var(--text-seal); }
+  .field__err { margin: 0; min-height: 0; font-size: var(--text-sm); color: var(--text-seal); }
+  .field__err:empty { display: none; }
+  .contact__send { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s) var(--space-m); }
+  .contact__status { margin: 0; font-size: var(--text-sm); color: var(--text-secondary); }
+  .contact__status:empty { display: none; }
+  .contact__done { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); }
+  .contact__done:focus { outline: none; }
+
   /* on a phone the wattle sits above the heading, not over it */
   @media (max-width: 48rem) {
     .contact { padding-top: calc(var(--space-xl) + 5rem); }
     :global(.flora--contact) { top: var(--space-l); }
   }
 </style>
+
+<script>
+  // Inline errors, then send in place. Without JS the browser validates and the form posts to /thanks/.
+  const MESSAGES: Record<string, (el: HTMLInputElement | HTMLTextAreaElement) => string> = {
+    name: () => 'Add your name.',
+    email: (el) => (el.validity.valueMissing ? 'Add your email so I can reply.' : 'That email looks incomplete, e.g. name@example.com.'),
+    message: () => 'Write a short message.',
+  };
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-contact-form]')) {
+    form.noValidate = true;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const fields = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.field input, .field textarea')];
+    const check = (el: HTMLInputElement | HTMLTextAreaElement) => {
+      const err = el.parentElement!.querySelector<HTMLElement>('[data-err]')!;
+      const ok = el.value.trim() !== '' && el.checkValidity();
+      el.setAttribute('aria-invalid', String(!ok));
+      err.textContent = ok ? '' : MESSAGES[el.name]?.(el) ?? 'Check this field.';
+      return ok;
+    };
+    // once a field has been flagged, re-check it as the visitor fixes it
+    for (const el of fields) el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') check(el); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const bad = fields.filter((el) => !check(el));
+      if (bad.length) { bad[0].focus(); return; }
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const done = document.createElement('p');
+        done.className = 'contact__done';
+        done.tabIndex = -1;
+        done.textContent = 'Thanks, message sent. I’ll get back to you soon.';
+        form.replaceChildren(done);
+        done.focus();
+      } catch {
+        button.disabled = false;
+        status.textContent = '';
+        const a = document.createElement('a');
+        const email = form.closest('.contact')?.querySelector<HTMLAnchorElement>('a[href^="mailto:"]');
+        a.href = email?.href ?? '#contact';
+        a.textContent = 'email me directly';
+        status.append('That didn’t send. Try again, or ', a, '.');
+      }
+    });
+  }
+</script>

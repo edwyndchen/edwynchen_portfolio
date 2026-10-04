@@ -1,15 +1,19 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../data/site';
+const here = Astro.url.pathname;
 ---
 <header class="nav" data-nav>
   <div class="wrap nav__inner">
     <a class="nav__brand" href="/" aria-label={`${site.name}, home`}>
-      <Logo />
+      <Logo class="nav__logo" />
+      <Logo mark class="nav__mark" />
     </a>
     <nav aria-label="Main">
       <ul class="nav__links">
-        {site.nav.map((item) => <li><a class="label" href={item.href}>{item.label}</a></li>)}
+        {site.nav.map((item) => (
+          <li><a class="label" href={item.href} aria-current={!item.href.includes('#') && here.startsWith(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
       </ul>
     </nav>
   </div>
@@ -34,11 +38,18 @@ import { site } from '../data/site';
   }
   .nav__links a:hover { color: var(--action-primary-hover); }
   .nav__links a:active { color: var(--action-primary-active); }
-  /* small phones (320-415px): tighten so brand + three links never overflow */
+  .nav__links a[aria-current='page'] { text-decoration: underline; text-underline-offset: 0.45em; text-decoration-thickness: 1px; }
+  .nav__brand :global(.nav__mark) { display: none; }
+  /* phones: four links leave no room for the wordmark, so the brush mark stands in for it */
+  @media (max-width: 34rem) {
+    .nav__brand :global(.nav__logo) { display: none; }
+    .nav__brand :global(.nav__mark) { display: block; height: 26px; }
+    .nav__links { gap: 0.75rem; }
+  }
+  /* small phones (320-415px): tighten so the mark + four links never overflow */
   @media (max-width: 26rem) {
-    .nav__links { gap: 0.625rem; }
-    .nav__links a { letter-spacing: 0.06em; }
-    .nav__brand :global(svg) { height: 20px; width: auto; }
+    .nav__links { gap: 0.25rem; }
+    .nav__links a { letter-spacing: 0.04em; min-width: 44px; padding-inline: 2px; }
   }
 </style>
 

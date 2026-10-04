@@ -1,0 +1,62 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Plate from '../../components/Plate.astro';
+import Contact from '../../components/Contact.astro';
+import { publishedWorkshop, hasWriteup, STATUS_LABEL } from '../../lib/workshop';
+import { site } from '../../data/site';
+import '../../styles/prose.css';
+
+// only entries with a write-up get a page (the rest are cards on /workshop/)
+export async function getStaticPaths() {
+  const entries = publishedWorkshop(await getCollection('workshop'), import.meta.env.DEV).filter(hasWriteup);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const month = d.date.toLocaleDateString('en-AU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const external = d.link && /^https?:/.test(d.link);
+---
+<BaseLayout title={`${d.title} | Workshop | ${site.name}`} description={d.blurb}>
+  <article>
+    <header class="wrap wsp-head">
+      <p class="wsp-back"><a href="/workshop/"><span aria-hidden="true">← </span>Workshop</a></p>
+      <Plate>
+        <p class="label wsp-head__kicker">{STATUS_LABEL[d.status]} · <time datetime={d.date.toISOString().slice(0, 10)}>{month}</time></p>
+        <h1>{d.title}</h1>
+        <p class="wsp-head__dek">{d.blurb}</p>
+        {(d.skills.length > 0 || d.link) && (
+          <div class="wsp-head__foot">
+            {d.skills.length > 0 && <ul class="wsp-head__skills" aria-label="Skills and tools">{d.skills.map((s) => <li>{s}</li>)}</ul>}
+            {d.link && (
+              <a class="button" href={d.link} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+                {d.linkLabel || 'Visit'}<span aria-hidden="true"> ↗</span>{external && <span class="visually-hidden"> (opens in a new tab)</span>}
+              </a>
+            )}
+          </div>
+        )}
+      </Plate>
+      {d.image && <img class="wsp-head__image" src={d.image} alt={d.imageAlt} loading="eager" />}
+    </header>
+    <div class="wrap wsp-body">
+      <div class="prose"><Content /></div>
+    </div>
+  </article>
+  <Contact />
+</BaseLayout>
+
+<style>
+  .wsp-head { padding-top: var(--space-l); }
+  .wsp-back { margin: 0 0 var(--space-m); }
+  .wsp-back a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); }
+  .wsp-head__kicker { color: var(--gold-text); margin: 0; }
+  .wsp-head h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); }
+  .wsp-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 40ch; }
+  .wsp-head__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-m); margin-top: var(--space-l); }
+  .wsp-head__skills { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .wsp-head__skills li { padding: 4px 9px; font-size: var(--text-xs); border: 1px solid var(--border-hairline); color: var(--text-brand); }
+  .wsp-head__image { display: block; margin-top: var(--space-l); width: 100%; height: auto; mix-blend-mode: multiply; }
+  .wsp-body { padding-block: var(--space-xl); }
+</style>

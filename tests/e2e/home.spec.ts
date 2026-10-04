@@ -39,10 +39,12 @@ test('hero copy: name, role line, intro, no eyebrow', async ({ page }) => {
   await expect(page.locator('.hero__copy .label')).toHaveCount(0);
 });
 
-test('nav brand is the wordmark with an accessible name', async ({ page }) => {
+test('nav brand is the wordmark (the brush mark alone on phones) with an accessible name', async ({ page, isMobile }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: 'Edwyn Chen, home' })).toBeVisible();
-  await expect(page.locator('.nav__brand svg.logo')).toHaveCount(1);
+  // exactly one of the two drawings shows: the full wordmark, or on phones (four nav links) the mark alone
+  await expect(page.locator('.nav__brand svg.logo:visible')).toHaveCount(1);
+  await expect(page.locator(isMobile ? '.nav__brand svg.logo--mark' : '.nav__brand svg.nav__logo')).toBeVisible();
 });
 
 test('footer has the Southern Cross and no "Made in Melbourne"', async ({ page }) => {

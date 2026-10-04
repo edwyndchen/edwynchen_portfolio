@@ -26,4 +26,25 @@ const caseStudies = defineCollection({
     }),
 });
 
-export const collections = { caseStudies };
+const workshop = defineCollection({
+  loader: glob({ pattern: '**/*.mdoc', base: './src/content/workshop' }),
+  schema: z
+    .object({
+      title: z.string().min(1),
+      draft: z.boolean().default(true),
+      date: z.coerce.date(),
+      status: z.enum(['in-progress', 'shipped', 'experiment']),
+      blurb: z.string().min(1),
+      skills: z.array(z.string().min(1)).default([]),
+      image: z.string().nullish(),
+      imageAlt: z.string().default(''),
+      link: z.string().url().nullish(),
+      linkLabel: z.string().default(''),
+    })
+    .refine((d) => !d.image || d.imageAlt.trim().length > 0, {
+      message: 'imageAlt is required when an image is set',
+      path: ['imageAlt'],
+    }),
+});
+
+export const collections = { caseStudies, workshop };

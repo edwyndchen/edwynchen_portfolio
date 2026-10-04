@@ -5,16 +5,22 @@ const year = new Date().getFullYear();
 ---
 <footer class="footer">
   <div class="wrap footer__inner">
-    <p class="label">© {year} {site.name}</p>
-    <SouthernCross class="footer__cross" />
+    <p class="footer__ack">I live and work on the lands of the Wurundjeri Woi-wurrung people of the Kulin Nation. I pay my respects to their Elders, past and present, and to all Aboriginal and Torres Strait Islander peoples.</p>
+    <div class="footer__base">
+      <p class="label">© {year} {site.name}</p>
+      <SouthernCross class="footer__cross" />
+    </div>
   </div>
 </footer>
 
 <style>
   /* DS footer: deep navy ground, ivory and dim-blue text */
   .footer { background: var(--surface-invert); color: var(--text-on-invert); padding-block: var(--space-7); }
-  .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); }
+  .footer__inner { display: grid; gap: var(--space-l); }
+  .footer__base { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); padding-top: var(--space-m); border-top: 1px solid var(--border-invert); }
   .footer p { margin: 0; color: var(--text-invert-dim); }
+  /* Acknowledgement of Country: plain, readable, first thing in the footer */
+  .footer .footer__ack { max-width: 60ch; color: var(--text-on-invert); font-size: var(--text-sm); line-height: var(--lh-relaxed, 1.6); }
   /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
   .footer :global(.footer__cross) { width: 1.75rem; height: 1.75rem; color: var(--wattle-gold); flex: none; }
 </style>

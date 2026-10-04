@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Plate from '../../components/Plate.astro';
+import WorkshopCard from '../../components/WorkshopCard.astro';
+import Contact from '../../components/Contact.astro';
+import { publishedWorkshop, skillsOf, skillKey } from '../../lib/workshop';
+import { site } from '../../data/site';
+
+const entries = publishedWorkshop(await getCollection('workshop'), import.meta.env.DEV);
+const skills = skillsOf(entries);
+---
+<BaseLayout title={`Workshop | ${site.name}`} description="Personal projects and experiments by Edwyn Chen.">
+  <header class="wrap ws-head">
+    <Plate>
+      <p class="label ws-head__kicker">Workshop</p>
+      <h1>Things I make on the side</h1>
+      <p class="ws-head__dek">Personal projects and experiments. Some ship, some are me testing a skill.</p>
+    </Plate>
+  </header>
+
+  <section class="wrap ws" aria-labelledby="ws-skills-title" data-workshop>
+    {skills.length > 0 && (
+      <div class="ws__skills">
+        <h2 id="ws-skills-title" class="label">Skills and tools</h2>
+        <!-- a plain list without JS; the script turns each item into a filter toggle -->
+        <ul class="ws__chips" data-chips>
+          {skills.map((s) => <li data-key={skillKey(s)}>{s}</li>)}
+        </ul>
+        <p class="ws__count" aria-live="polite" data-count></p>
+      </div>
+    )}
+    {entries.length > 0 ? (
+      <ol class="ws__list" aria-label="Projects">
+        {entries.map((e) => <li data-entry><WorkshopCard entry={e} /></li>)}
+      </ol>
+    ) : (
+      <p class="ws__empty">Nothing to show yet. Back soon.</p>
+    )}
+  </section>
+  <Contact />
+</BaseLayout>
+
+<style>
+  .ws-head { padding-top: var(--space-xl); }
+  /* the same title plate as a case study */
+  .ws-head__kicker { color: var(--gold-text); margin: 0; }
+  .ws-head h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); }
+  .ws-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 40ch; }
+  .ws { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+  .ws__skills { margin-bottom: var(--space-l); }
+  .ws__skills h2 { color: var(--gold-text); margin: 0 0 var(--space-s); }
+  .ws__chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .ws__chips li { padding: 6px 12px; border: 1px solid var(--border-hairline); color: var(--text-brand); font-size: var(--text-sm); }
+  .ws__chips li:has(button) { padding: 0; border: 0; }
+  /* the buttons are made by the script below, so they carry no scope attribute: style them globally */
+  .ws__chips :global(button) {
+    min-height: 44px; padding: 0 14px; font: inherit; font-size: var(--text-sm); cursor: pointer;
+    color: var(--text-brand); background: var(--surface-raised); border: 1px solid var(--border-default); border-radius: 0;
+    transition: background-color var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard);
+  }
+  .ws__chips :global(button:hover) { border-color: var(--border-strong); }
+  .ws__chips :global(button[aria-pressed='true']) { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-brand); }
+  .ws__count { margin: var(--space-s) 0 0; min-height: 1.5em; font-size: var(--text-sm); color: var(--text-secondary); }
+  .ws__list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-l); align-items: stretch; }
+  .ws__list > li { display: grid; }
+  .ws__list > li[hidden] { display: none; }
+  @media (min-width: 48rem) { .ws__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 75rem) { .ws__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ws__empty { color: var(--text-secondary); }
+</style>
+
+<script>
+  // Skills filter: each skill toggles; cards that carry any pressed skill stay. None pressed shows everything.
+  const root = document.querySelector<HTMLElement>('[data-workshop]');
+  const chips = root?.querySelector<HTMLUListElement>('[data-chips]');
+  const count = root?.querySelector<HTMLElement>('[data-count]');
+  const cards = [...(root?.querySelectorAll<HTMLElement>('[data-entry]') ?? [])];
+  if (root && chips && count && cards.length > 1) {
+    const on = new Set<string>();
+    const apply = () => {
+      let shown = 0;
+      for (const li of cards) {
+        const keys = (li.querySelector<HTMLElement>('[data-skills]')?.dataset.skills ?? '').split(' ');
+        const show = on.size === 0 || keys.some((k) => on.has(k));
+        li.hidden = !show;
+        if (show) shown++;
+      }
+      count.textContent = on.size === 0 ? '' : `Showing ${shown} of ${cards.length} projects`;
+    };
+    for (const li of chips.querySelectorAll<HTMLLIElement>('li')) {
+      const key = li.dataset.key!;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = li.textContent;
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => {
+        const pressed = !on.has(key);
+        if (pressed) on.add(key); else on.delete(key);
+        b.setAttribute('aria-pressed', String(pressed));
+        apply();
+      });
+      li.replaceChildren(b);
+    }
+  }
+</script>

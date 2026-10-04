@@ -67,6 +67,11 @@ a:active { color: var(--action-primary-active); }
 }
 .button:hover { background: var(--surface-brand-soft); border-color: var(--action-primary-hover); color: var(--action-primary-hover); }
 .button:active { transform: translateY(1px); color: var(--action-primary-active); border-color: var(--action-primary-active); }
+/* DS primary button: the cobalt fill, for the one main action on a screen (sending a message) */
+.button--primary { color: var(--text-on-brand); background: var(--action-primary); border-color: var(--action-primary); }
+.button--primary:hover { color: var(--text-on-brand); background: var(--action-primary-hover); border-color: var(--action-primary-hover); }
+.button--primary:active { color: var(--text-on-brand); background: var(--action-primary-active); border-color: var(--action-primary-active); }
+.button[disabled] { opacity: 0.6; cursor: progress; }
 
 /* Hero copy starts hidden only when JS is running and motion is allowed, so it never
    flashes in then out. If the hero script never runs, the fallback brings it back. */
