@@ -25,6 +25,10 @@ const shown = metrics.slice(0, 4);
   .stats__value { display: block; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1; color: var(--cobalt); white-space: nowrap; }
   .stats__label { display: block; margin-top: var(--space-xs); max-width: 24ch; color: var(--text-secondary); }
   /* phones: value and label side by side, so four results don't become a long column of giant numbers */
+  /* tablets: four results never wrap three-and-one; two by two instead */
+  @media (min-width: 30.01rem) and (max-width: 63.99rem) {
+    .stats:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   @media (max-width: 30rem) {
     /* subgrid keeps every label on one shared left edge, sized by the widest value */
     .stats { grid-template-columns: max-content minmax(0, 1fr); gap: 0 var(--space-m); }

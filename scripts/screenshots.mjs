@@ -4,7 +4,7 @@ import { chromium } from '@playwright/test';
 const round = process.argv[2] ?? 'latest';
 const base = process.env.BASE ?? 'http://localhost:4321';
 const pages = { home: '/', case: '/work/form-guide-redesign/' };
-const viewports = { desktop: { width: 1440, height: 900 }, mobile: { width: 375, height: 812 } };
+const viewports = { desktop: { width: 1440, height: 900 }, 'tablet-landscape': { width: 1024, height: 768 }, tablet: { width: 768, height: 1024 }, mobile: { width: 375, height: 812 } };
 
 const ok = await fetch(base).then((r) => r.ok).catch(() => false);
 if (!ok) {

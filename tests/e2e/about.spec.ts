@@ -69,10 +69,11 @@ test('two decorative cloud walls sit between the case studies and the About cont
   await expect(page.locator('[data-cloud-passage], .about__tower')).toHaveCount(0);
 });
 
-test('reading order stays heading, bio, list, figure', async ({ page }) => {
+// the figure sits inside the one-screen phone stage with the bio, so it comes before the list (and is seen there)
+test('reading order stays heading, bio, figure, list', async ({ page }) => {
   await page.goto('/');
   const order = await page.evaluate(() => {
-    const els = ['#about-title', '#about .about__text p', '#about .about__caps', '#about .about__figure'].map((s) => document.querySelector(s) as Node);
+    const els = ['#about-title', '#about .about__text p', '#about .about__figure', '#about .about__caps'].map((s) => document.querySelector(s) as Node);
     return els.every((el, i) => i === 0 || Boolean(els[i - 1].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING));
   });
   expect(order).toBe(true);
@@ -174,12 +175,13 @@ test('motion allowed: only the fabric moves in the wind, and only while on scree
   await page.goto('/');
   const ed = page.locator('.about__ed');
   await expect(ed).toHaveClass(/is-windy/);
-  const wind = page.locator('.about__ed-wind');
-  await expect(wind).toHaveAttribute('alt', '');
-  await expect(wind).toHaveAttribute('aria-hidden', 'true');
-  await expect(wind).toHaveCSS('filter', /url\("?#ed-wind"?\)/);
-  // the wind copy is masked (head, face, hands and tablet stay on the still copy)
-  expect(await wind.evaluate((el) => getComputedStyle(el).maskImage)).toContain('radial-gradient');
+  // one painting, warped in place: no second copy to double the outlines
+  await expect(page.locator('.about__ed img')).toHaveCount(1);
+  await expect(page.locator('.about__ed-still')).toHaveCSS('filter', /url\("?#ed-wind"?\)/);
+  // the stillness map is painted and laid over the painting (face, hands and torso held still)
+  const map = page.locator('#ed-wind feImage');
+  expect(await map.getAttribute('href')).toMatch(/^data:image\/svg\+xml,/);
+  expect(Number(await map.getAttribute('width'))).toBeGreaterThan(0);
   const freq = () => page.locator('#ed-wind feTurbulence').getAttribute('baseFrequency');
   // off-screen (top of the page): paused
   const a = await freq();
@@ -194,23 +196,33 @@ test('reduced motion: no wind, the painting is the still copy alone', async ({ p
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.locator('.about__ed')).not.toHaveClass(/is-windy/);
-  await expect(page.locator('.about__ed-wind')).toBeHidden();
-  expect(await page.locator('.about__ed-still').evaluate((el) => getComputedStyle(el).maskImage)).toBe('none');
+  await expect(page.locator('.about__ed-still')).toHaveCSS('filter', 'none');
 });
 
-test('陳 mark beside the heading uses the brush font and is hidden from screen readers', async ({ page }) => {
+test('陳 mark beside the heading uses the Chinese font and is hidden from screen readers', async ({ page }) => {
   await page.goto('/');
   const mark = page.locator('#about .about__mark');
   await expect(mark).toHaveText('陳');
   await expect(mark).toHaveAttribute('aria-hidden', 'true');
-  await expect(mark).toHaveCSS('font-family', /Ma Shan Zheng/);
+  await expect(mark).toHaveCSS('font-family', /Cactus Classical Serif/);
 });
 
-// Pending Ed's font choice (review round 1, B1). The CSS check above passes even though Ma Shan Zheng has only the
-// simplified 陈, so the traditional 陳 silently falls back to a system glyph. Once a traditional-capable brush font is
-// chosen, replace this with a real glyph check (e.g. document.fonts.check() for that family and the character, or
-// compare the rendered width against a forced fallback) and keep the CSS assertion above.
-test.fixme('陳 mark renders in the brush font itself, not a fallback glyph', async () => {});
+// The CSS check alone once passed while the glyph fell back to a system font (Ma Shan Zheng has no traditional 陳),
+// so ask the browser which font actually drew it
+test('陳 is drawn by Cactus Classical Serif itself, not a fallback', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'needs the Chrome DevTools protocol');
+  await page.goto('/');
+  const mark = page.locator('#about .about__mark');
+  await mark.scrollIntoViewIfNeeded();
+  await page.evaluate(() => document.fonts.ready);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('DOM.enable');
+  await cdp.send('CSS.enable');
+  const { root } = await cdp.send('DOM.getDocument');
+  const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector: '#about .about__mark' });
+  const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
+  expect(fonts.map((f) => f.familyName)).toEqual(['Cactus Classical Serif']);
+});
 
 test('old portrait frame and placeholder are gone', async ({ page }) => {
   await page.goto('/');

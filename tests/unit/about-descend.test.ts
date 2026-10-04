@@ -19,7 +19,7 @@ describe('About descent', () => {
   });
 });
 
-import { WIND, windFrequency } from '../../src/scripts/fabric-wind';
+import { WIND, windFrequency, windScale, stillnessMap } from '../../src/scripts/fabric-wind';
 import { readFileSync } from 'node:fs';
 
 describe('fabric wind', () => {
@@ -31,15 +31,30 @@ describe('fabric wind', () => {
       expect(Math.max(x, y)).toBeLessThan(0.02);
     }
   });
-  it('breathes slowly: 8 to 12 second periods, x and y out of step', () => {
-    for (const p of WIND.period) expect(p).toBeGreaterThanOrEqual(8), expect(p).toBeLessThanOrEqual(12);
-    expect(WIND.period[0]).not.toBe(WIND.period[1]);
+  it('breathes, not flutters: 4 to 8 second periods, x, y and gusts all out of step', () => {
+    for (const p of [...WIND.period, WIND.gust]) expect(p).toBeGreaterThanOrEqual(4), expect(p).toBeLessThanOrEqual(8);
+    expect(new Set([...WIND.period, WIND.gust]).size).toBe(3);
   });
-  it('the filter is subtle: 2 octaves, displacement scale 6 to 10', () => {
+  it('the face and both hands never move; the torso holds most of the way', () => {
+    const hold = (n: string) => WIND.still.find((s) => s.name === n)?.hold;
+    for (const n of ['face', 'stylus hand', 'tablet hand']) expect(hold(n)).toBe(1);
+    expect(hold('torso')).toBeGreaterThanOrEqual(0.6);
+    expect(hold('torso')).toBeLessThan(1);
+  });
+  it('paints the stillness map: white page, one feathered spot per held part, black at full hold', () => {
+    const svg = decodeURIComponent(stillnessMap().replace('data:image/svg+xml,', ''));
+    expect(svg).toContain('fill="#fff"');
+    expect(svg.match(/<ellipse/g)).toHaveLength(WIND.still.length);
+    expect(svg).toContain('rgb(0,0,0)');
+    expect(svg).toContain('stop-opacity="0"');
+  });
+  it('gusts stay a ripple, never a warp: displacement 6 to 20px', () => {
+    for (let t = 0; t < 30; t += 0.25) expect(windScale(t)).toBeGreaterThanOrEqual(6), expect(windScale(t)).toBeLessThanOrEqual(20);
+  });
+  it('the filter starts where the gusts rest: 2 octaves, scale equal to the resting displacement', () => {
     const src = readFileSync('src/components/About.astro', 'utf8');
     expect(src).toMatch(/numOctaves="2"/);
     const scale = Number(/feDisplacementMap[^>]*scale="(\d+(?:\.\d+)?)"/.exec(src)?.[1]);
-    expect(scale).toBeGreaterThanOrEqual(6);
-    expect(scale).toBeLessThanOrEqual(10);
+    expect(scale).toBe(WIND.scale[0]);
   });
 });

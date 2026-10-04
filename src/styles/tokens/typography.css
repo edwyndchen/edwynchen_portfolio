@@ -1,11 +1,11 @@
 /* ============================================================
-   TYPOGRAPHY — Cormorant Garamond (display) · Manrope (sans) · Ma Shan Zheng (cjk)
+   TYPOGRAPHY — Cormorant Garamond (display) · Manrope (sans) · Cactus Classical Serif (cjk, traditional; the DS's Ma Shan Zheng has no 陳)
    ============================================================ */
 :root {
   /* Families */
-  --font-display: 'Cormorant Garamond', 'Ma Shan Zheng', Georgia, serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-sans:    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
-  --font-cjk:     'Ma Shan Zheng', 'Cormorant Garamond', serif;
+  --font-cjk:     'Cactus Classical Serif', serif;
   --font-mono:    ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
   /* Weights */

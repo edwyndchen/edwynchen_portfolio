@@ -16,7 +16,7 @@
   --wattle-gold: var(--gold-400);        /* gilt fill: Southern Cross */
   --gold-text: var(--text-gold);         /* gold-600, AA on paper */
 
-  /* type: --font-display (Cormorant Garamond) and --font-cjk (Ma Shan Zheng) come from the DS */
+  /* type: --font-display (Cormorant Garamond) and --font-cjk (Cactus Classical Serif, swapped from the DS's Ma Shan Zheng) come from the DS */
   --font-body: var(--font-sans);         /* Manrope */
 
   /* fluid versions of the DS display scale: DS size at desktop, sensible at 375px */

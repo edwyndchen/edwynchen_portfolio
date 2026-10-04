@@ -42,3 +42,7 @@ Final hero = approved option A (`7fe457e1`) split into depth layers via Seedream
 ## Portrait (About transition) — approved by Ed, 2026-10-04
 
 Final: pose 2 "dramatic descent" (`ff95fb9b`, Nano Banana, refs: Ed's illustration `b8e16570`, porcelain style `7df1eddf`, Chang'e painting `e40be9ce`), generated as a small centred figure so nothing touches the frame. Background removed (`432db29d`), recoloured to the hero blues with `node art/portrait/recolor.mjs <in> <out> 1.3`, mirrored horizontally (Ed: "flipped the wrong side"), trimmed, saved as `public/images/ed-porcelain.webp`. Earlier rejected attempts are kept in `art/portrait/`.
+
+## About cloud walls, 2026-10-04
+
+Right wall repainted with short tails (Ed: "the long tail overlaps the character"). Seedream 5.0 Pro edits of the previous `public/hero/cloud-wall-right.webp` (uploaded `ec12a5c2`): first pass `0030af98` (option B of 2, shorter tails), second pass from it `244dd672` (option C, middle wisp ends in a small curl; D `35934fe4` rejected for black outline artefacts). Raw file `art/about/cloud-wall-right-short-tails.png`, cropped (left 34px, so the leftmost billow keeps the old 0.326 position and `--inner` stays 0.43) and resized to 1600px wide.

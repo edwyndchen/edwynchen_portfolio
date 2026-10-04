@@ -20,11 +20,36 @@ const wallR = size(WALL_R);
     <img class="about__wall about__wall--right" src={WALL_R} alt="" width={wallR.width} height={wallR.height} loading="lazy" decoding="async" />
   </div>
   <div class="about__inner wrap">
-    <div class="about__text">
-      <Flora plant="gum" side="left" class="flora--about" />
-      <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
-      <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
-      <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
+    <!-- The stage: what the clouds part over. On phones it is exactly one screen under the nav (heading, bio, Ed);
+         from tablets up it dissolves into the two-column grid with the list below the bio. -->
+    <div class="about__stage">
+      <div class="about__text">
+        <Flora plant="gum" side="left" class="flora--about" />
+        <h2 id="about-title">About me<span class="about__mark" aria-hidden="true" lang="zh-Hant">陳</span></h2>
+        <p>I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
+        <p>Coffee-fuelled designer and gym junkie. I like leaving places better than I found them, physically and digitally. Born and raised in Melbourne.</p>
+      </div>
+      <figure class="about__figure">
+        <!-- .about__ed is the one box the choreography moves; the wind filter warps the painting inside it -->
+        <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
+          <img class="about__ed-still" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
+        </div>
+        <!-- the wind: slow, low-frequency noise nudging the pixels a few px, scaled down by the stillness map
+             (feImage; JS paints and places it) so the face, hands and most of the torso hold still -->
+        <svg class="about__wind-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <filter id="ed-wind" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="7" result="raw" />
+            <!-- opaque noise, so the arithmetic below works on plain values -->
+            <feColorMatrix in="raw" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1" result="noise" />
+            <feImage preserveAspectRatio="none" result="hold" />
+            <!-- noise × map + 0.5 × (1 − map): where the map is black the push is neutral grey, i.e. none -->
+            <feComposite in="noise" in2="hold" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="push" />
+            <feDisplacementMap in="SourceGraphic" in2="push" scale="9" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
+      </figure>
+    </div>
+    <div class="about__more">
       <h3 class="label">What I do</h3>
       <ul class="about__caps">
         <li>Product and UX design</li>
@@ -34,43 +59,30 @@ const wallR = size(WALL_R);
         <li>Illustration and brand</li>
       </ul>
     </div>
-    <figure class="about__figure">
-      <!-- .about__ed is the one box the choreography moves. Inside, the painting twice, stacked exactly: the still
-           copy (the real image) and, when motion runs, a wind copy above it that only the fabric shows through -->
-      <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
-        <img class="about__ed-still" src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
-        <img class="about__ed-wind" src={ED_SRC} alt="" aria-hidden="true" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
-      </div>
-      <!-- the wind: slow, low-frequency noise nudging the pixels a few px; JS breathes its frequency -->
-      <svg class="about__wind-defs" width="0" height="0" aria-hidden="true" focusable="false">
-        <filter id="ed-wind" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="7" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
-    </figure>
   </div>
 </section>
 
 <style>
-  .about { position: relative; }
+  .about { position: relative; --nav-h: 4.5rem; }
   /* the nav link moves focus here (JS sets tabindex=-1); the section itself needs no ring */
   .about:focus { outline: none; }
   .about__inner {
     position: relative; display: grid; gap: var(--space-l) var(--space-xl);
     padding-top: var(--space-2xl); padding-bottom: var(--space-xl);
-    grid-template-columns: minmax(0, 1fr); align-items: center;
+    grid-template-columns: minmax(0, 1fr);
   }
+  .about__stage { display: grid; gap: var(--space-l); }
   /* the gum branch hangs above the heading, anchored to the text block (so it rises and fades in with it on the
-     staged desktop layout) and drawn behind the letters */
+     staged two-column layout) and drawn behind the letters */
   :global(.flora.flora--about) { top: -11.5rem; z-index: -1; }
   .about__text { position: relative; z-index: 1; }
+  .about__text > :last-child { margin-bottom: 0; }
   .about h2 { font-size: var(--step-3); margin-bottom: var(--space-m); }
   .about__mark {
     font-family: var(--font-cjk); font-weight: 400; font-size: 1.1em; line-height: 1;
     color: var(--blue-400); margin-inline-start: 0.3em; /* 3.22:1, clears large-text 3:1 */
   }
-  .about h3 { color: var(--gold-text); margin-top: var(--space-l); margin-bottom: var(--space-xs); }
+  .about h3 { color: var(--gold-text); margin-top: 0; margin-bottom: var(--space-xs); }
   .about__caps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); column-gap: var(--space-l); max-width: 36rem; }
   .about__caps li { border-top: var(--rule-hair); padding-block: var(--space-3); }
 
@@ -84,25 +96,8 @@ const wallR = size(WALL_R);
   }
   .about__ed img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   .about__wind-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-
-  /* Wind in the fabric: retune here, per portrait. Two soft holes in the wind copy (% of the painting's box) keep
-     the head, face, stylus hand, tablet and tablet hand on the still copy, so they never warp. The still copy is
-     masked the other way, so the cloth shows only its moving self (no doubled outlines). Off by default: JS adds
-     .is-windy only when motion is allowed. */
-  .about__ed {
-    --hole-a: ellipse 30% 22% at 22% 19%; /* head, face, stylus and its hand */
-    --hole-b: ellipse 15% 12% at 45% 45%; /* tablet and the hand holding it */
-  }
-  .about__ed .about__ed-wind { display: none; }
-  .about__ed.is-windy .about__ed-wind {
-    display: block; filter: url(#ed-wind);
-    mask-image: radial-gradient(var(--hole-a), transparent 70%, #000 92%), radial-gradient(var(--hole-b), transparent 70%, #000 95%);
-    mask-composite: intersect;
-  }
-  .about__ed.is-windy .about__ed-still {
-    mask-image: radial-gradient(var(--hole-a), #000 85%, transparent 100%), radial-gradient(var(--hole-b), #000 88%, transparent 100%);
-    mask-composite: add;
-  }
+  /* Wind in the fabric: off by default; JS adds .is-windy only when motion is allowed. Retune in fabric-wind.ts. */
+  .about__ed.is-windy .about__ed-still { filter: url(#ed-wind); }
 
   /* Cloud walls: retune here. --inner is where each wall's billowing inner edge sits, as a fraction of its own
      width (the rest of the painting runs off its outer, top and bottom sides). JS places the box and moves the walls;
@@ -124,19 +119,44 @@ const wallR = size(WALL_R);
   .about__wall--left  { --inner: 0.62; left: calc(50% + (var(--overlap) - var(--inner)) * var(--w)); }
   .about__wall--right { --inner: 0.43; left: calc(50% - (var(--overlap) + var(--inner)) * var(--w)); }
 
-  @media (min-width: 60rem) {
-    .about__inner { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
-    .about__figure { width: 100%; max-width: none; }
+  /* Phones, staged: the stage is one screen under the nav, so the pin holds heading, bio and Ed whole and the
+     visitor reads while the clouds part. Ed takes whatever height the text leaves; the list follows the pin. */
+  @media (max-width: 47.99rem) {
+    .about.is-staged .about__stage {
+      height: calc(100svh - var(--nav-h)); grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--space-m); padding-block: var(--space-m);
+    }
+    .about.is-staged .about__inner { padding-top: var(--space-l); }
+    .about.is-staged .about__figure { width: 100%; max-width: none; min-height: 0; height: 100%; }
+    .about.is-staged .about__ed { height: 100%; width: auto; max-width: 100%; }
+  }
+  /* phones and tablets in portrait: tucked top-right beside the heading, clear of the bio (hanging above it, the
+     branch would land on the last work card) */
+  @media (max-width: 63.99rem) {
+    :global(.flora.flora--about) { left: auto; right: 0; top: -2rem; }
+  }
+
+  /* Tablets up: two columns, the text and list on the left, Ed beside them */
+  @media (min-width: 48rem) {
+    .about__inner {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      grid-template-areas: 'text fig' 'more fig'; align-items: center;
+    }
+    .about__stage { display: contents; }
+    .about__text { grid-area: text; align-self: end; }
+    .about__more { grid-area: more; align-self: start; }
+    .about__figure { grid-area: fig; width: 100%; max-width: none; }
     /* the stage is one screen tall, content centred under the sticky nav, so the pin can hold it whole */
     .about.is-staged .about__inner { min-height: 100vh; padding-block: 7rem 2rem; align-content: center; }
   }
-  /* short desktop screens: the gum branch would sit under the sticky nav for the whole pin, so it sits this one out */
-  @media (min-width: 60rem) and (max-height: 47.5rem) {
-    .about.is-staged :global(.flora--about) { display: none; }
+  /* tablets in portrait: the list in one column, so it never squeezes beside the figure */
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    .about__caps { grid-template-columns: minmax(0, 1fr); }
+    .about__inner { column-gap: var(--space-l); }
   }
-  @media (max-width: 48rem) {
-    /* phones: tucked top-right beside the heading, clear of the bio */
-    :global(.flora.flora--about) { left: auto; right: calc(var(--gutter) * -0.5); top: -2rem; }
+  /* short screens: the gum branch would sit under the sticky nav for the whole pin, so it sits this one out */
+  @media (min-width: 48rem) and (max-height: 48.5rem) {
+    .about.is-staged :global(.flora--about) { display: none; }
   }
 </style>
 
@@ -146,6 +166,10 @@ const wallR = size(WALL_R);
   const el = document.querySelector<HTMLElement>('[data-about]');
   if (el) initAboutDescend(el);
   const ed = el?.querySelector<HTMLElement>('.about__ed');
-  const turb = el?.querySelector<SVGFETurbulenceElement>('#ed-wind feTurbulence');
-  if (ed && turb) initFabricWind(ed, turb);
+  const filter = el?.querySelector<SVGFilterElement>('#ed-wind');
+  if (ed && filter) initFabricWind(ed, filter);
+  // dev only: /?wind opens the wind tuner
+  if (import.meta.env.DEV && new URLSearchParams(location.search).has('wind')) {
+    import('../scripts/wind-tuner').then((m) => m.mountWindTuner());
+  }
 </script>
