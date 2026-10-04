@@ -1,6 +1,6 @@
 # Porcelain portfolio — handoff
 
-_Last updated 2026-10-04. Read this first in any new session, then the spec._
+_Last updated 2026-10-04 (evening). Read this first in any new session, then the spec._
 
 ## What this is
 
@@ -23,26 +23,24 @@ Or use the `porcelain-portfolio` entry in `/Users/ed/Claude/Cowork/.claude/launc
 
 ## State at handoff
 
-Committed and green up to `98f804c` (unit 50, e2e 81 + 5 skipped). Built:
+Committed and green up to `361c7a5` (unit 59, e2e 152 + skipped). Built:
 
-- Home: hero (7 parallax layers from Ed's hand-edited art; spreads upward on load and collapses into a tighter landscape on scroll; tram crosses the bridge; clouds sail left→right), staggered case study plates with painted covers, About, Contact, navy footer with only the gold Southern Cross.
-- Case study pages for Form Guide Redesign, Punters Design System, EonX Design System, Pay By Account (Keystatic-editable). Pay By Account has no stat panels (no numbers in its source; nothing invented).
-- Design system applied: Cormorant Garamond (display), Manrope (body/labels), Ma Shan Zheng (Chinese). Wordmark logo in the nav. 陳 (traditional) beside the About heading.
-- Flora (waratah, wattle, banksia, gum, each separate) as free-floating spots.
-
-**Work → About transition (Task 10e), committed in `9179464`:** About is a pinned stage. Two opaque, low-contrast cloud walls (`public/hero/cloud-wall-*.webp`) part on scroll, Ed descends between them in pose 2 (`public/images/ed-porcelain.webp`, final), then glides to the right of About (desktop) or lands centred below the text (mobile) while the text rises in. Subtle SVG wind ripple on the fabric only (mask holes `--hole-a`/`--hole-b` tuned to this pose). Reduced motion / no JS: no pin, no walls, no wind, static layout. Tests: unit 52, e2e 87 + 7 skipped. Screenshots: `docs/review/about-descend/`. Ed has not reviewed it yet.
-
-Known rough edges from that task (look at these first):
-- Desktop nav link to #about jumps to the end of the pin (intercepted in JS); on phones it lands on the heading.
-- On phones Ed passes briefly over the "What I do" rows while descending.
-- On desktop his robes pass under the sticky nav around 30% through the pin.
+- Home: hero (7 parallax layers), staggered case study plates, About, Contact, navy footer.
+- About transition (Task 10e, signed off in principle; tuning ongoing): cloud walls part over a pinned stage. Two columns from 48rem (tablets up): Ed descends centred then glides right while the text rises in. Phones: the stage is one screen (heading, bio, Ed), the text is never faded, the walls part and clear first, then Ed drops a short way below the bio; the "What I do" list follows the pin. The right wall was repainted with short tails (`docs/image-prompts.md`).
+- Fabric wind: one image warped through an feTurbulence filter scaled by a stillness map (face and both hands fully still, torso 80% still). Retune in `src/scripts/fabric-wind.ts`, or live: `npm run dev`, open `/?wind`, use the sliders, "Copy settings".
+- 陳 renders in Cactus Classical Serif (Ed picked it; Ma Shan Zheng has no traditional 陳). A CDP test checks the font that actually draws it.
+- Case study pages (4), Keystatic-editable, with Contact at the end.
+- Workshop (`/workshop/`, Keystatic collection `workshop`): cards with status, date, skills, optional link; a write-up gives an entry its own page. Skill toggles filter the cards. New entries default to Draft (shown in dev only). Two drafts seeded from existing briefs (HYROX Lap Timer, Our Attachments) for Ed to edit, add images and publish.
+- Contact: two columns, Netlify form (name, email, message, honeypot). JS sends in place with inline errors; without JS it lands on `/thanks/`. Only works once deployed on Netlify.
+- Footer: Acknowledgement of Country (Wurundjeri Woi-wurrung people of the Kulin Nation), then © and the Southern Cross.
+- Review round 1 done (`docs/review/round-1/findings.md`): section A applied, section B items are Ed's calls (see below).
 
 ## Next steps
 
-1. Show Ed the transition (docs/review/about-descend/ or live), fix the three rough edges above, get his sign-off.
-2. Review rounds (plan Task 11): four reviewer subagents (usability, accessibility, Chinese-first/Aussie-detail balance, "looks AI-made") on 1440 + 375 screenshots; one builder applies fixes; max 4 rounds; check in with Ed before the last round. Lighthouse accessibility ≥ 95.
-3. Handoff README (plan Task 12).
-4. Deploy (Netlify + Keystatic GitHub mode) is out of scope until Ed asks.
+1. Ed reviews the new About on his phone/tablet, the wind (via `/?wind`), Workshop, contact form and footer.
+2. Round 1 section B decisions still open: pause-motion control (WCAG 2.2.2, needed), desktop pin length, case-study body layout, Punters/EonX/Pay By Account cover repaints, copy edits ("X, not Y" lines), flora size, Flinders Street linework, footer ©.
+3. Review round 2 (plan Task 11) once B is settled: screenshots now include tablet (`npm run shots -- round-2`).
+4. Handoff README (plan Task 12). Deploy (Netlify + Keystatic GitHub mode) only when Ed asks.
 
 ## Open items for Ed
 
@@ -56,6 +54,7 @@ Known rough edges from that task (look at these first):
 - coverAlt only enforced at build, not in the Keystatic UI.
 - Hidden mobile hero clouds still tween; hero copy can flash before the reveal script runs.
 - Hard-coded cover image dimensions (1600x900, real 1600x904).
+- Dev server sometimes serves stale component CSS after an edit: `touch` the file.
 
 ## Task 10e brief (for reference)
 
