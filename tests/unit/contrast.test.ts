@@ -7,7 +7,7 @@ describe('contrastRatio', () => {
     expect(contrastRatio('#000000', '#FFFFFF')).toBeCloseTo(21, 1);
   });
   test('is symmetric', () => {
-    expect(contrastRatio('#2B4C86', '#FAF8F2')).toBeCloseTo(contrastRatio('#FAF8F2', '#2B4C86'), 5);
+    expect(contrastRatio('#3231b0', '#FAF8F2')).toBeCloseTo(contrastRatio('#FAF8F2', '#3231b0'), 5);
   });
 });
 
@@ -22,7 +22,7 @@ describe('design tokens', () => {
   test('site aliases resolve to the DS colours', () => {
     expect(hex('porcelain').toLowerCase()).toBe('#faf8f2');
     expect(hex('ink').toLowerCase()).toBe('#1b1c1a');
-    expect(hex('cobalt').toLowerCase()).toBe('#2b4c86');
+    expect(hex('cobalt').toLowerCase()).toBe('#3231b0');
     for (const name of ['cobalt-ink', 'cobalt-wash', 'wattle-gold', 'gold-text']) {
       expect(hex(name), name).toMatch(/^#[0-9A-Fa-f]{6}$/);
     }

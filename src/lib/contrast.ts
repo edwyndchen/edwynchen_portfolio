@@ -14,7 +14,7 @@ export function contrastRatio(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-/** Custom properties whose value is a hex colour or a single var() alias, e.g. { 'blue-700': '#2b4c86', 'text-brand': 'var(--blue-700)' } */
+/** Custom properties whose value is a hex colour or a single var() alias, e.g. { 'blue-700': '#3231b0', 'text-brand': 'var(--blue-700)' } */
 export function readTokens(css: string): Record<string, string> {
   const out: Record<string, string> = {};
   for (const m of css.matchAll(/--([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6}|var\(--[a-z0-9-]+\))\s*;/g)) out[m[1]] = m[2];

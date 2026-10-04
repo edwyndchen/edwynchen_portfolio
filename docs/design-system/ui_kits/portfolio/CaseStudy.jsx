@@ -132,7 +132,7 @@ function CaseStudy() {
           const tw = window.__cstw || {};
           const mark = tw.coverMark || 'none';
           return (
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-card)', overflow: 'hidden', background: 'radial-gradient(circle at 34% 28%, #ffffff, #eef2f9 60%, #dbe4f3)', boxShadow: 'var(--shadow-float)', display: 'grid', placeItems: 'center' }}>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-card)', overflow: 'hidden', background: 'radial-gradient(circle at 34% 28%, #ffffff, #eeeffc 60%, #dbe4f3)', boxShadow: 'var(--shadow-float)', display: 'grid', placeItems: 'center' }}>
               {tw.coverBorder && <div style={{ position: 'absolute', inset: 18, borderRadius: 'calc(var(--radius-card) - 8px)', border: '1.5px solid var(--blue-200)', pointerEvents: 'none' }} />}
               {mark !== 'none'
                 ? <Logo variant={mark} size={128} color="var(--blue-500)" />

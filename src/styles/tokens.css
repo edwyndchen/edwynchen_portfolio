@@ -10,7 +10,7 @@
   /* palette aliases */
   --porcelain: var(--surface-page);      /* #FAF8F2 page ground */
   --ink: var(--text-primary);            /* #1B1C1A body text */
-  --cobalt: var(--text-brand);           /* #2B4C86 headings, links, actions */
+  --cobalt: var(--text-brand);           /* #3231b0 headings, links, actions */
   --cobalt-ink: var(--text-brand);       /* headings stay cobalt; body moved to --ink */
   --cobalt-wash: var(--blue-300);
   --wattle-gold: var(--gold-400);        /* gilt fill: Southern Cross */

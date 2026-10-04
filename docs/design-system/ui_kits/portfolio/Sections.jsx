@@ -7,7 +7,7 @@ const { Button, Logo, Eyebrow, Seal, WorkCard, MotifDivider, Blockquote, Badge, 
 function InkWash({ children, style }) {
   return (
     <div style={{ position: 'relative', overflow: 'hidden', ...style }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 90% at 82% 15%, rgba(66,105,173,0.20), rgba(66,105,173,0) 55%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 90% at 82% 15%, rgba(83,83,196,0.20), rgba(83,83,196,0) 55%)', pointerEvents: 'none' }} />
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ function Hero({ onNav }) {
         </div>
         <div style={{ position: 'relative', minHeight: 360, display: 'grid', placeItems: 'center' }}>
           {/* Porcelain plate / ink-illustration placeholder */}
-          <div style={{ position: 'relative', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle at 38% 32%, #ffffff, #eef2f9 62%, #dbe4f3)', boxShadow: 'var(--shadow-float)', display: 'grid', placeItems: 'center' }}>
+          <div style={{ position: 'relative', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle at 38% 32%, #ffffff, #eeeffc 62%, #dbe4f3)', boxShadow: 'var(--shadow-float)', display: 'grid', placeItems: 'center' }}>
             <div style={{ position: 'absolute', inset: 14, borderRadius: '50%', border: '1.5px solid var(--blue-200)' }} />
             <Logo variant={tw.heroMark || 'medallion'} size={120} color="var(--blue-500)" />
           </div>
@@ -115,7 +115,7 @@ function About() {
   const caps = ['Product Strategy', 'UI/UX Design', 'Design Systems', 'Prototyping', 'User Research'];
   return (
     <section id="about" style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '84px var(--gutter)', display: 'grid', gridTemplateColumns: '0.8fr 1fr 0.7fr', gap: 44, alignItems: 'start' }}>
-      <div style={{ position: 'relative', aspectRatio: '3 / 4', borderRadius: 'var(--radius-image)', background: 'linear-gradient(160deg, #eef2f9, #dbe4f3)', display: 'grid', placeItems: 'center', boxShadow: 'var(--shadow-sm)' }}>
+      <div style={{ position: 'relative', aspectRatio: '3 / 4', borderRadius: 'var(--radius-image)', background: 'linear-gradient(160deg, #eeeffc, #dbe4f3)', display: 'grid', placeItems: 'center', boxShadow: 'var(--shadow-sm)' }}>
         <span style={{ fontFamily: 'var(--font-cjk)', fontSize: 88, color: 'var(--blue-300)', opacity: 0.6 }}>观</span>
         <div style={{ position: 'absolute', bottom: 12, right: 12 }}><Seal characters="然" size={40} /></div>
       </div>

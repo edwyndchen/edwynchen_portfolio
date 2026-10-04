@@ -17,7 +17,7 @@
 <script type="text/babel">
 const { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio } = window;
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accentColor": "#2b4c86",
+  "accentColor": "#3231b0",
   "emphasis": "Colour"
 }/*EDITMODE-END*/;
 
@@ -41,7 +41,7 @@ function Card(){
       <TweaksPanel>
         <TweakSection label="Accent word" />
         <TweakColor label="Colour" value={t.accentColor}
-          options={['#2b4c86', '#1b1c1a', '#a6342b', '#6f8a6f']}
+          options={['#3231b0', '#1b1c1a', '#a6342b', '#6f8a6f']}
           onChange={(v) => setTweak('accentColor', v)} />
         <TweakRadio label="Emphasis" value={t.emphasis}
           options={['Colour', 'Underline', 'None']}

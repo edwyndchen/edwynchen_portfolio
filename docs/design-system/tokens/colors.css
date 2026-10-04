@@ -4,18 +4,19 @@
    Every -500 meets WCAG AA (>=4.5:1) as text on its own -50.
    ============================================================ */
 :root {
-  /* --- Porcelain cobalt (青花 blue) : the primary brand hue --- */
-  --blue-950: #16233f; /* deepest ink-navy, dark surfaces / footer */
-  --blue-900: #1d2f52;
-  --blue-800: #24406f;
-  --blue-700: #2b4c86; /* PRIMARY — the cobalt of the wordmark */
-  --blue-600: #33589a;
-  --blue-500: #4269ad; /* illustration mid-blue */
-  --blue-400: #6d8bc4;
-  --blue-300: #9bb1d7;
-  --blue-200: #c4d1e8;
-  --blue-100: #dee6f2;
-  --blue-50:  #eef2f9;
+  /* --- Porcelain cobalt (青花 blue) : the primary brand hue. "Kiln cobalt" (2026-10-04): sampled from the painted
+     artwork (hero, portrait), so text and buttons share the art's ultramarine --- */
+  --blue-950: #0d0b45; /* deepest ink-navy, dark surfaces / footer */
+  --blue-900: #131095;
+  --blue-800: #1f1ca6;
+  --blue-700: #3231b0; /* PRIMARY: text, links, buttons, wordmark. 8.98:1 on paper-50 */
+  --blue-600: #4241bb;
+  --blue-500: #5353c4; /* the art's mid-blue. 5.81:1 on paper-50 */
+  --blue-400: #7375d7;
+  --blue-300: #9598e6;
+  --blue-200: #b7baf2;
+  --blue-100: #d8daf9;
+  --blue-50:  #eeeffc;
 
   /* --- Paper / porcelain glaze — warm ivory → deep clay neutral --- */
   --paper-0:   #ffffff; /* glaze white — the fired porcelain body */

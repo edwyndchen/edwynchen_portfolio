@@ -31,7 +31,7 @@ export function RevealImage({
       {/* protection gradient + reveal overlay */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(22,35,63,0.55), rgba(22,35,63,0) 55%)',
+        background: 'linear-gradient(to top, rgba(13,11,69,0.55), rgba(13,11,69,0) 55%)',
         opacity: hover ? 1 : 0.85, transition: 'opacity var(--dur-med) var(--ease-standard)',
       }} />
 

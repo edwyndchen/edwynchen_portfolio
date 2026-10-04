@@ -73,9 +73,9 @@ with deep-navy sections for contrast and a single seal-red accent. Everything
 breathes — whitespace is the primary material.
 
 - **Color:** blue-and-white porcelain (青花).
-  - *Cobalt* `--blue-700 #2b4c86` is the primary — the wordmark, links, primary
+  - *Cobalt* `--blue-700 #3231b0` is the primary — the wordmark, links, primary
     actions. A full blue scale (50→950) supports illustration midtones and the
-    deep-navy `--blue-950 #16233f` used for full-bleed dark sections + footer.
+    deep-navy `--blue-950 #0d0b45` used for full-bleed dark sections + footer.
   - *Paper* is a warm ivory `--paper-50 #faf8f2` (page) / `#f4f0e6` (scroll paper),
     NOT pure white. Pure `--paper-0 #fff` is reserved for the fired-porcelain body
     of product cards.
@@ -112,7 +112,7 @@ breathes — whitespace is the primary material.
   No pill buttons except tiny dot indicators.
 - **Cards:** ivory or white body, thin cobalt hairline OR the ornamental corner
   frame, soft cool-tinted shadow (`--shadow-sm/md`). No colored left-border accents.
-- **Shadows:** soft, low, cool-blue-tinted (`rgba(22,35,63,…)`), never gray or harsh.
+- **Shadows:** soft, low, cool-blue-tinted (`rgba(13,11,69,…)`), never gray or harsh.
   The floating hero porcelain plate gets the one dramatic `--shadow-float`.
 - **Motion:** calm and intentional. Long ease-outs (`--ease-entrance`), gentle
   fades and rises, ~260–520ms. **No bounce, no spring, no snap.** Ink should settle,
