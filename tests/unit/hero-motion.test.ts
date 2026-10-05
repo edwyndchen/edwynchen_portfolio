@@ -24,7 +24,10 @@ describe('cloudDuration', () => {
   test('slow: every crossing takes at least a minute', () => {
     for (const d of [0.04, 0.12, 0.35, 1]) for (const i of [0, 1, 2]) expect(cloudDuration(d, i)).toBeGreaterThanOrEqual(60);
   });
-  test('20% faster than the first cut', () => expect(cloudDuration(0.5, 0)).toBeCloseTo((200 - 55) / 1.2));
+  test('front clouds cross in 75s; the back ones at least three times slower (far things drift slowly)', () => {
+    expect(cloudDuration(1, 0)).toBeCloseTo(75);
+    expect(cloudDuration(0.04, 0)).toBeGreaterThan(cloudDuration(1, 0) * 3);
+  });
 });
 
 describe('spreadPercent', () => {
@@ -39,7 +42,11 @@ describe('spreadPercent', () => {
     expect(spreadPercent(0.04, 60)).toBeCloseTo(spreadPercent(0.04, 30) * 2, 1);
     expect(Math.abs(spreadPercent(0.04, 16))).toBeLessThan(Math.abs(spreadPercent(0.04, 30)));
   });
-  test('rounded to 2dp', () => expect(spreadPercent(0.04)).toBe(-13.8));
+  test('rounded to 2dp', () => expect(spreadPercent(0.04)).toBe(-23));
+  test('back layers stand well above the city at the top; front layers dip only a little', () => {
+    expect(spreadPercent(0.04)).toBeLessThan(-20);
+    expect(spreadPercent(1)).toBeLessThan(Math.abs(spreadPercent(0.04)));
+  });
 });
 
 describe('collapsePercent', () => {

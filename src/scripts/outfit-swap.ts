@@ -81,7 +81,11 @@ export function initOutfitSwap(button: HTMLButtonElement): () => void {
     return tl;
   };
 
+  // the "Click for a magic trick" hint: gone after the first trick, for the rest of this visit (Ed: it should be
+  // there every time someone new arrives, so nothing is stored)
+  const hint = button.querySelector<HTMLElement>('[data-magic-hint]');
   const onClick = () => {
+    hint?.classList.add('is-done');
     if (busy) return;
     const to = nextOutfit(current);
     if (reduce.matches) { show(to); return; }
@@ -89,28 +93,10 @@ export function initOutfitSwap(button: HTMLButtonElement): () => void {
     const ready = imgs.get(to)!.decode().catch(() => {});
     burst(ready, () => show(to)).eventCallback('onComplete', () => { busy = false; });
   };
-  // the wand's label follows the pointer while it is over him (hover devices only)
-  const tip = document.querySelector<HTMLElement>('[data-wand-tip]');
-  const fig = button.parentElement;
-  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-  const onTipMove = (e: PointerEvent) => {
-    if (!tip || !fig || !fine.matches || e.pointerType !== 'mouse') return;
-    const r = fig.getBoundingClientRect();
-    // below-right of the wand, flipped to its left when it would run off the screen
-    const flip = e.clientX + 26 + tip.offsetWidth > document.documentElement.clientWidth - 8;
-    const x = e.clientX - r.left + (flip ? -tip.offsetWidth - 10 : 26);
-    tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(e.clientY - r.top + 24)}px)`;
-    tip.classList.add('is-on');
-  };
-  const onTipLeave = () => tip?.classList.remove('is-on');
-  button.addEventListener('pointermove', onTipMove);
-  button.addEventListener('pointerleave', onTipLeave);
   button.addEventListener('click', onClick);
   show('hanfu');
   status.textContent = ''; // say nothing until the first change
   return () => {
     button.removeEventListener('click', onClick);
-    button.removeEventListener('pointermove', onTipMove);
-    button.removeEventListener('pointerleave', onTipLeave);
   };
 }

@@ -80,6 +80,18 @@ export default config({
           publicPath: '/images/case-studies/',
         }),
         heroAlt: text('Hero alt text', 'Required when a hero image is set.'),
+        finals: fields.array(
+          fields.object({
+            image: fields.image({ label: 'Image', directory: 'public/images/case-studies', publicPath: '/images/case-studies/' }),
+            alt: fields.text({ label: 'Alt text', description: 'What the screen shows.' }),
+            caption: fields.text({ label: 'Caption (optional)' }),
+          }),
+          {
+            label: 'Finished work (gallery)',
+            description: 'The finished screens, shown as a carousel at the top of the story, above My role. Placeholder frames show until images are added.',
+            itemLabel: (p) => p.fields.caption.value || p.fields.alt.value || 'Image',
+          },
+        ),
         metrics: fields.array(
           fields.object({
             value: fields.text({ label: 'Value', description: 'Whole numbers, e.g. 52%' }),

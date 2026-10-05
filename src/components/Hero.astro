@@ -12,15 +12,12 @@ import { site } from '../data/site';
     </div>
   </div>
   <div class="hero__scene" aria-hidden="true">
-    <!-- the back layer (the furthest range and the Southern Cross) stays still: stars don't move, no parallax -->
-    <div class="hero__layer hero__layer--back" data-depth="0.04" data-scroll="0" data-static>
+    <!-- the furthest range: starts highest, and flattens down to the city's level as you scroll (round 9) -->
+    <div class="hero__layer hero__layer--back" data-depth="0.04" data-scroll="0.05">
       <img class="hero__fill" src="/hero/far.webp" alt="" width="2400" height="1021" decoding="async" fetchpriority="high" />
-      <svg class="hero__cross" viewBox="0 0 100 100"><g fill="currentColor">
-        <circle cx="50" cy="8" r="4"/><circle cx="44" cy="92" r="4.6"/><circle cx="14" cy="46" r="4"/><circle cx="80" cy="36" r="3.4"/><circle cx="62" cy="62" r="2.2"/>
-      </g></svg>
-      <img class="hero__cloud" src="/hero/cloud-s4.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:26%" />
-      <img class="hero__cloud" src="/hero/cloud-v1.webp" alt="" decoding="async" loading="lazy" style="top:24%;left:0;--rest:58%;width:24%" />
-      <img class="hero__cloud" src="/hero/cloud-r4.webp" alt="" decoding="async" loading="lazy" style="top:8%;left:0;--rest:86%;width:13%" />
+      <img class="hero__cloud" src="/hero/cloud-s4.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:18%" />
+      <img class="hero__cloud" src="/hero/cloud-r1.webp" alt="" decoding="async" loading="lazy" style="top:24%;left:0;--rest:58%;width:17%" />
+      <img class="hero__cloud" src="/hero/cloud-r4.webp" alt="" decoding="async" loading="lazy" style="top:8%;left:0;--rest:86%;width:10%" />
     </div>
     <div class="hero__layer" data-depth="0.12" data-scroll="0.15">
       <img class="hero__cloud" src="/hero/cloud-r2.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:30%;width:15%" />
@@ -35,7 +32,7 @@ import { site } from '../data/site';
     </div>
     <div class="hero__layer" data-depth="0.35" data-scroll="0.45">
       <img class="hero__cloud" src="/hero/cloud-s1.webp" alt="" decoding="async" loading="lazy" style="top:54%;left:0;--rest:8%;width:20%" />
-      <img class="hero__cloud" src="/hero/cloud-v3.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;--rest:52%;width:22%" />
+      <img class="hero__cloud" src="/hero/cloud-s2.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;--rest:52%;width:22%" />
     </div>
     <div class="hero__layer" data-depth="0.5" data-scroll="0.65">
       <img class="hero__fill" src="/hero/mid.webp" alt="" width="2400" height="1021" decoding="async" />
@@ -57,11 +54,12 @@ import { site } from '../data/site';
   }
   /* one column: name, the line, then the button under it */
   .hero__copy { justify-items: start; }
-  .hero h1 { font-size: var(--step-4); max-width: 12ch; }
+  /* the name in the logo's own face, Poppins Bold (Ed, round 9), a size down from the old display serif */
+  .hero h1 { font-family: var(--font-wordmark); font-weight: 700; letter-spacing: -0.01em; font-size: var(--fluid-display-xl); max-width: 12ch; }
   /* the role reads as a quiet serif subtitle, the DS italic voice, one size under the section headings */
   .hero__role {
     font-family: var(--font-display); font-style: italic; font-weight: var(--fw-medium);
-    font-size: var(--fluid-display-md); line-height: var(--lh-snug); color: var(--ink);
+    font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--ink);
     max-width: 30ch; margin: var(--space-s) 0 0;
   }
   .hero__pitch { padding-bottom: 0.4em; }
@@ -71,25 +69,30 @@ import { site } from '../data/site';
 
   .hero__scene {
     /* 16% extra sky above the painting so layers spread upward on load never get their peaks cut flat */
-    position: relative; width: 100%; aspect-ratio: 3120 / 1540; overflow: hidden; background: var(--porcelain);
-    /* the art's paper edge dissolves into the glaze instead of ending on a hard line */
-    /* (a long top fade, so the cooler sky never meets the paper on a visible line) */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 18%, var(--cobalt-ink) 94%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, var(--cobalt-ink) 18%, var(--cobalt-ink) 94%, transparent);
+    /* clipped at the sides only: at the top of the page the back layers stand high and may rise past the scene's
+       top edge, so nothing is ever cut flat (Ed, round 9). No background and no mask (a mask would hide whatever
+       rises above the box): the page shows through, and only the foot dissolves, under an overlay (::after). The far
+       range carries its own soft top edge. */
+    position: relative; width: 100%; aspect-ratio: 3120 / 1540; overflow-x: clip; overflow-y: visible;
   }
+  .hero__scene::after {
+    content: ''; position: absolute; inset: auto 0 0; height: 7%; z-index: 20; pointer-events: none;
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--porcelain) 0%, transparent), var(--porcelain));
+  }
+  /* the copy stays above anything that rises behind it */
+  .hero__copy { position: relative; z-index: 21; }
   /* layers keep the painting's aspect, sit on the bottom of the scene and are slightly oversized so parallax never reveals an edge */
   .hero__layer { position: absolute; inset: auto -3% -3% -3%; height: 91.4%; /* 106% width at the painting aspect, inside the 1540-tall scene */ will-change: transform; }
   .hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   /* the far range's painted sky is a touch whiter than the page: its top edge feathers away, so no line ever shows
      between the copy and the mountains */
   .hero__layer--back .hero__fill {
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 34%);
-    mask-image: linear-gradient(to bottom, transparent, #000 34%);
+    /* only the blank paper above its peaks feathers away; the peaks themselves start at ~22% of the painting */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 17%);
+    mask-image: linear-gradient(to bottom, transparent, #000 17%);
   }
   .hero__cloud { position: absolute; height: auto; }
   .hero__tram { position: absolute; left: 31%; top: 77%; width: 3.6%; height: auto; opacity: 0; }
-   /* in the back layer, 50% bigger than in the painting, in the sky above the big right-hand peak */
-  .hero__cross { position: absolute; top: 14%; left: 71%; width: 4.5%; height: auto; color: var(--cobalt); opacity: 0.85; }
   @media (prefers-reduced-motion: reduce) { .hero__tram { opacity: 1; left: 47%; } .hero__cloud { left: var(--rest) !important; /* beats inline left:0 */ } }
   @media (max-width: 48rem) {
     /* Layers keep the art's aspect (2400/1021) and overflow the scene, so %-positioned items stay on
@@ -98,8 +101,6 @@ import { site } from '../data/site';
     .hero__scene { aspect-ratio: 1.49; }
     .hero__layer { inset: auto; bottom: -3%; height: 91.3%; width: 144%; left: -27%; }
     .hero__cloud ~ .hero__cloud ~ .hero__cloud { display: none; }
-    /* phones crop the art: the right peak sits near the right edge */
-    .hero__cross { left: 70%; top: 18%; width: 5%; }
   }
 </style>
 

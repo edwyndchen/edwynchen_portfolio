@@ -21,6 +21,8 @@ const caseStudies = defineCollection({
       coverAlt: z.string().default(''),
       hero: z.string().nullish(),
       heroAlt: z.string().default(''),
+      // the finished work, as a carousel above My role (Ed, round 9)
+      finals: z.array(z.object({ image: z.string().nullish(), alt: z.string().default(''), caption: z.string().default('') })).default([]),
       metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
     })
     .refine((d) => !d.cover || d.coverAlt.trim().length > 0, {

@@ -2,14 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { DESCEND, ED_START } from '../../src/scripts/about-descend';
 
 describe('About descent', () => {
-  it('starts Ed hidden above the opening', () => {
-    expect(ED_START.yPercent).toBeLessThan(-50);
-    expect(ED_START.opacity).toBe(0);
+  it('starts Ed hidden, a little above his rest spot (inside the walls\' cover)', () => {
+    expect(ED_START.yPercent).toBeLessThan(-20);
+    expect(ED_START.yPercent).toBeGreaterThan(-50);
+    expect(ED_START.opacity).toBe(1); // there from the start, behind the walls
   });
   it('walls part first, Ed descends while they part, then glides once he has landed', () => {
     const { part, descend, glide } = DESCEND.phases;
     expect(part[0]).toBe(0);
-    expect(descend[0]).toBeGreaterThan(part[0]);
+    expect(descend[0]).toBeGreaterThanOrEqual(part[0]);
     expect(descend[0]).toBeLessThan(part[1]);
     expect(glide[0]).toBeGreaterThanOrEqual(descend[1]);
     expect(glide[1]).toBe(1);

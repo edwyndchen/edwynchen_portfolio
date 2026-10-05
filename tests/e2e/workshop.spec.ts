@@ -83,3 +83,12 @@ test('Acknowledgement of Country sits below the footer, headed, with the Aborigi
     return Boolean(f.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING);
   })).toBe(true);
 });
+
+test('the paint scroll is on the home page only; case studies keep just the line and the links', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#contact [data-paint]')).toHaveCount(1);
+  const href = await page.locator('#work h3 a').first().getAttribute('href');
+  await page.goto(href!);
+  await expect(page.locator('#contact [data-paint]')).toHaveCount(0);
+  await expect(page.locator('#contact').getByRole('link', { name: /^Email / })).toBeVisible();
+});

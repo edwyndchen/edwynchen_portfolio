@@ -6,6 +6,7 @@ import CaseToc from '../../components/CaseToc.astro';
 import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
 import CaseNav from '../../components/CaseNav.astro';
+import Gallery from '../../components/Gallery.astro';
 import Contact from '../../components/Contact.astro';
 import { neighbours, sortCaseStudies } from '../../lib/case-studies';
 import { site } from '../../data/site';
@@ -56,7 +57,14 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
       </div>
     </header>
 
-    <!-- 3. the story, with its On this page links beside it -->
+    <!-- 3. the finished work first, as a carousel (Ed, round 9: show the result before the story); placeholder frames
+         until the images are added in Keystatic (Finished work) -->
+    <section class="wrap case-finals" aria-labelledby="finals-title">
+      <h2 id="finals-title" class="label">The finished work</h2>
+      <Gallery label="Finished work" items={d.finals} />
+    </section>
+
+    <!-- 4. the story, with its On this page links beside it -->
     <div class="wrap case-body">
       <Flora plant="banksia" side="right" class="flora--case" />
       <CaseToc headings={headings} />
@@ -70,6 +78,9 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
 </BaseLayout>
 
 <style>
+  .case-finals { padding-top: var(--space-xl); }
+  .case-finals h2 { margin: 0; }
+  .case-finals > :global(.gallery.gallery) { margin-block: var(--space-m) 0; }
   .case-hero { overflow: hidden; }
   .case-hero__img {
     display: block; width: 100%; height: auto; max-height: min(78svh, 56.25vw); object-fit: cover; object-position: 50% 45%;

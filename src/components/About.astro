@@ -30,7 +30,7 @@ const wallR = size(WALL_R);
       <figure class="about__figure">
         <!-- Ed is a button: each press, a puff of cloud and a change of outfit (hanfu, the Pig, Aquarius, round again).
              .about__ed is the one box the scroll choreography moves; the wind filter warps whichever painting shows. -->
-        <button class="about__swap" type="button" aria-label="Change Edwyn's outfit" data-outfit-button>
+        <button class="about__swap" type="button" aria-label="A magic trick: change Edwyn's outfit" data-outfit-button>
           <div class="about__ed" style={`--ratio: ${ed.width} / ${ed.height}`}>
             <div class="about__outfits">
               <img class="about__ed-still about__outfit" data-outfit="hanfu" data-label="Back in the blue-and-white hanfu." src={ED_SRC} alt="Brush painting of Edwyn flying in flowing blue-and-white robes, holding a stylus and tablet" width={ed.width} height={ed.height} loading="lazy" decoding="async" />
@@ -39,14 +39,19 @@ const wallR = size(WALL_R);
             </div>
             <!-- the hint, without words: a few sparkles glint by him now and then (the magic wand cursor does the rest) -->
             <span class="about__glints" aria-hidden="true"><i></i><i></i><i></i></span>
+            <!-- the hint in words (Ed, round 9): at his lower left, a painted hand points up at him with "Tap me" under it,
+                 so phone and keyboard users know he does something too. It goes after the first trick
+                 and stays gone (outfit-swap.ts). The button's own name says the same for screen readers. -->
+            <span class="about__hint" aria-hidden="true" data-magic-hint>
+              <span class="about__hint-tag">Tap me</span>
+              <img class="about__hint-hand" src="/about/hand.webp" alt="" width="240" height="107" decoding="async" />
+            </span>
             <div class="about__puff" aria-hidden="true" data-puff>
               <span class="about__mist" data-puff-mist></span>
               {['v5', 's1', 'v6', 'n3', 'v7', 's2', 'v8', 'n5', 's3', 'n2', 's4', 'n6'].map((c) => <img src={`/hero/cloud-${c}.webp`} alt="" loading="lazy" decoding="async" />)}
             </div>
           </div>
         </button>
-        <!-- follows the wand cursor while hovering him (mouse and trackpad only; outfit-swap.ts) -->
-        <span class="about__tip" aria-hidden="true" data-wand-tip>Let’s make some magic</span>
         <p class="visually-hidden" aria-live="polite" data-outfit-status></p>
         <!-- the wind: slow, low-frequency noise nudging the pixels a few px, scaled down by the stillness map
              (feImage; JS paints and places it) so the face, hands and most of the torso hold still -->
@@ -62,9 +67,12 @@ const wallR = size(WALL_R);
             <feOffset in="noise" dx="0" dy="0" result="flowA" />
             <feOffset in="noise" dx="0" dy="0" result="flowB" />
             <feComposite in="flowA" in2="flowB" operator="arithmetic" k1="0" k2="1" k3="0" k4="0" result="flow" />
+            <!-- the lift (round 9): while he moves, a steady bias on the push streams the cloth behind him (up as he
+                 floats down); JS sets the R and G offsets from his velocity, zero at rest -->
+            <feColorMatrix in="flow" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="lifted" />
             <feImage preserveAspectRatio="none" result="hold" />
             <!-- noise × map + 0.5 × (1 − map): where the map is black the push is neutral grey, i.e. none -->
-            <feComposite in="flow" in2="hold" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="push" />
+            <feComposite in="lifted" in2="hold" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="push" />
             <feDisplacementMap in="SourceGraphic" in2="push" scale="9" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </svg>
@@ -118,8 +126,8 @@ const wallR = size(WALL_R);
   /* the figure is a button with nothing of a button's look: the hint below and the pointer say it's alive */
   .about__swap {
     display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit;
-    /* a little cobalt magic wand, its star tip the hotspot: he's a trick waiting to happen */
-    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10 10 L28 28' stroke='%230d0b45' stroke-width='5' stroke-linecap='round'/><path d='M10 10 L28 28' stroke='%233231b0' stroke-width='3' stroke-linecap='round'/><path d='M20.5 20.5 L23.5 23.5' stroke='%23fff' stroke-width='3'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%233231b0' stroke-width='1.2' stroke-linejoin='round'/><path d='M15 2 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7 Z' fill='%235353c4'/><path d='M3 15 l.6 1.3 1.3 .6 -1.3 .6 -.6 1.3 -.6 -1.3 -1.3 -.6 1.3 -.6 Z' fill='%235353c4'/></svg>") 7 7, pointer;
+    /* a little cobalt magic wand, its star tip the hotspot, haloed in white so it never gets lost over the painting */
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10 10 L28 28' stroke='%23fff' stroke-width='8' stroke-linecap='round'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%23fff' stroke-width='3.5' stroke-linejoin='round'/><path d='M15 2 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M3 15 l.6 1.3 1.3 .6 -1.3 .6 -.6 1.3 -.6 -1.3 -1.3 -.6 1.3 -.6 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M10 10 L28 28' stroke='%230d0b45' stroke-width='5' stroke-linecap='round'/><path d='M10 10 L28 28' stroke='%233231b0' stroke-width='3' stroke-linecap='round'/><path d='M20.5 20.5 L23.5 23.5' stroke='%23fff' stroke-width='3'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%233231b0' stroke-width='1.2' stroke-linejoin='round'/></svg>") 7 7, pointer;
   }
   /* now and then three sparkles glint by him (for phones too, where there's no cursor); they rest while motion is paused */
   .about__glints { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
@@ -135,18 +143,33 @@ const wallR = size(WALL_R);
   @keyframes about-glint { 0%, 70%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); } 80% { opacity: 0.9; transform: scale(1) rotate(45deg); } 90% { opacity: 0; transform: scale(0.5) rotate(90deg); } }
   @media (prefers-reduced-motion: reduce) { .about__glints i { animation: none; opacity: 0.55; transform: scale(0.7); } }
   :global(html.motion-paused) .about__glints i { animation: none; opacity: 0; }
+  /* "Tap me": at his lower left, inside his own box so it never reaches the text column: a painted hand pointing up
+     and right at him, nudging towards him, with a porcelain tag under it. Only with JS (the trick needs it); shown once
+     he has landed; gone after the first trick */
+  .about__hint { display: none; }
+  :global(.js) .about__hint {
+    /* out to his lower left, clear of the painting (Ed, round 9), still short of the text column */
+    position: absolute; z-index: 2; left: -18%; bottom: 0; display: grid; justify-items: start; gap: 0.3rem;
+    pointer-events: none; transition: opacity var(--dur-med) var(--ease-standard);
+  }
+  /* staged: the hint shows only once he has landed */
+  .about.is-staged:not(.is-landed) .about__hint { opacity: 0; }
+  .about__hint.is-done { opacity: 0; visibility: hidden; transition: opacity var(--dur-med) var(--ease-standard), visibility 0s var(--dur-med); }
+  .about__hint-tag {
+    white-space: nowrap; padding: 0.35rem 0.7rem; background: var(--surface-raised); color: var(--text-brand);
+    border: 1px solid var(--border-strong); outline: 1px solid var(--border-default); outline-offset: 2px;
+    font-size: var(--text-sm); font-weight: var(--fw-semibold); letter-spacing: 0.01em; box-shadow: var(--shadow-sm);
+  }
+  /* the painting points left: flipped and tilted, it points up and right, at him */
+  .about__hint-hand { order: -1; display: block; width: clamp(60px, 6vw, 84px); height: auto; margin-left: 10%; transform: scaleX(-1) rotate(35deg); animation: about-point 1.6s ease-in-out infinite; }
+  @keyframes about-point { 50% { translate: 5px -5px; } }
+  /* phones: the figure fills the column, so the hint tucks into the side margin */
+  @media (max-width: 47.99rem) { :global(.js) .about__hint { left: -15%; bottom: -2%; } }
+  @media (prefers-reduced-motion: reduce) { .about__hint-hand { animation: none; } }
+  :global(html.motion-paused) .about__hint-hand { animation: none; }
   .about__swap:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 8px; }
   .about__puff { position: absolute; inset: 0; pointer-events: none; }
   .about__puff { z-index: 1; }
-  /* the wand's little label: a porcelain tag with a cobalt keyline, trailing just below-right of the wand */
-  .about__tip {
-    position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; white-space: nowrap;
-    padding: 0.35rem 0.7rem; background: var(--surface-raised); color: var(--text-brand);
-    border: 1px solid var(--border-strong); outline: 1px solid var(--border-default); outline-offset: 2px;
-    font-size: var(--text-sm); font-weight: var(--fw-semibold); letter-spacing: 0.01em; box-shadow: var(--shadow-sm);
-    opacity: 0; transition: opacity var(--dur-med) var(--ease-standard);
-  }
-  .about__tip.is-on { opacity: 1; }
   /* each billow is most of the figure's width, so a dozen of them overlapping hide him completely */
   .about__puff img { position: absolute; top: 50%; left: 50%; width: 92%; max-width: none; height: auto; opacity: 0; }
   /* the solid heart of the puff: porcelain paper feathered at its rim, a little larger than the figure */

@@ -52,8 +52,8 @@ test('footer: summary, Ed\'s seal (a named image), legal links and back to top o
   const footer = page.locator('footer');
   await expect(footer).not.toContainText('Made in Melbourne');
   await expect(footer).toContainText('Product designer making the world more accessible and beautiful one screen at a time.');
-  await expect(footer.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', 'https://www.linkedin.com/in/edwynchen/');
-  await expect(footer.getByRole('link', { name: /Behance/ })).toHaveAttribute('href', 'https://www.behance.net/edwynchen');
+  // no social links in the footer (Ed, round 9): Contact, just above it, has them
+  await expect(footer.getByRole('link', { name: /LinkedIn|Behance/ })).toHaveCount(0);
   await expect(footer.getByRole('img', { name: /seal/ })).toBeVisible();
   const base = footer.locator('.footer__base');
   await expect(base).toContainText('© ');
@@ -84,4 +84,15 @@ test('hovering a case study plate changes its rim, nothing lifts or zooms', asyn
   const shadow = await plate.evaluate((el) => getComputedStyle(el).boxShadow);
   await page.mouse.move(0, 0);
   await expect.poll(() => plate.evaluate((el) => getComputedStyle(el).boxShadow)).toBe(shadow);
+});
+
+test('footer: the seal ends the copyright line, far right and level with Back to top', async ({ page }) => {
+  await page.goto('/');
+  const box = (sel: string) => page.locator(sel).first().evaluate((el) => { const r = el.getBoundingClientRect(); return { mid: r.top + r.height / 2, right: r.right, left: r.left }; });
+  const top = await box('.footer__top'), seal = await box('.footer__seal');
+  expect(Math.abs(top.mid - seal.mid)).toBeLessThan(3);
+  expect(seal.left).toBeGreaterThan(top.right);
+  await expect(page.locator('.footer__end > :last-child')).toHaveClass(/footer__seal/);
+  const base = await page.locator('.footer__base').evaluate((el) => { const r = el.getBoundingClientRect(), p = parseFloat(getComputedStyle(el).paddingRight); return r.right - p; });
+  expect(Math.abs(base - seal.right)).toBeLessThan(2);
 });

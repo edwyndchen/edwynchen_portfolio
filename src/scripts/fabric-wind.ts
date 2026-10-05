@@ -56,9 +56,11 @@ export const WATER_FLOW: [number, number] = [-26, 18];
  * Drag (Ed, 2026-10-05: the cloth should feel the motion, like real physics). While the scroll choreography moves him
  * (the descent, the glide), his speed pushes the cloth harder and streams the ripples the opposite way, so the robes
  * and ribbons trail behind him. `full` is the speed (px/s) at which the drag peaks; `push` the extra displacement
- * (px) at full drag; `trail` how far the ripples stream per px he moves; `ease` how quickly the cloth catches up.
+ * (px) at full drag; `trail` how far the ripples stream per px he moves; `ease` how quickly the cloth catches up;
+ * `lift` the steady bias (0..0.5 of the push) that streams the whole ribbon behind him, so it billows up as he floats
+ * down (Ed, round 9: dramatic). The descent is short, so the drag peaks at a gentle speed.
  */
-export const DRAG = { full: 900, push: 16, trail: 0.7, ease: 0.12, settle: 0.86 };
+export const DRAG = { full: 200, push: 30, trail: 1.1, ease: 0.12, settle: 0.86, lift: 0.4 };
 /** The water's flow repeats every this many px; two copies half a period apart cross-fade, so it never jumps. */
 export const FLOW_PERIOD = 140;
 
@@ -115,6 +117,7 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   const map = filter.querySelector('feImage');
   const [flowA, flowB] = [...filter.querySelectorAll('feOffset')];
   const mix = filter.querySelectorAll('feComposite')[0];
+  const lift = filter.querySelector('feColorMatrix[result="lifted"]');
   if (!turb || !disp || !map) return () => {};
   ed.classList.add('is-windy');
 
@@ -183,6 +186,12 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
     // the water bearer: the noise streams along (and pushes a little harder), so the water reads as flowing
     const water = outfit === 'water';
     disp.setAttribute('scale', (windScale(t) * (water ? 1.35 : 1) + drag * DRAG.push).toFixed(2));
+    if (lift) {
+      // bias the push along his motion: sampling from ahead of him draws the cloth back, so it trails behind (up as he
+      // comes down); zero at rest
+      const v = Math.hypot(vx, vy) || 1, b = drag * DRAG.lift;
+      lift.setAttribute('values', `1 0 0 0 ${((vx / v) * b).toFixed(3)}  0 1 0 0 ${((vy / v) * b).toFixed(3)}  0 0 1 0 0  0 0 0 1 0`);
+    }
     if (flowA && flowB && mix) {
       // the water flows along its direction; everything else only carries the drag trail
       const speed = Math.hypot(WATER_FLOW[0], WATER_FLOW[1]), ux = WATER_FLOW[0] / speed, uy = WATER_FLOW[1] / speed;

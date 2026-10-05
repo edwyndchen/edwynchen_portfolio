@@ -8,21 +8,26 @@ import { isMotionPaused, whilePlaying } from './motion';
  * width from its own side (desktop leaves a centre opening for Ed; phones open almost to the edges).
  */
 export const DESCEND = {
-  phases: { part: [0, 0.4], descend: [0.25, 0.65], glide: [0.65, 1], clear: [0.58, 0.92] },
-  // phones: the opening can only reach the screen edges, which leaves the walls' wisps across him, so there the
-  // walls part and slide straight off first and he descends into clear page (the text reads from the first part)
-  phasesMobile: { part: [0, 0.35], descend: [0.5, 0.9], glide: [1, 1], clear: [0.28, 0.6] },
+  // Ed is already there behind the walls before they start to part, and comes down as they open (Ed, round 9), so
+  // the opening reveals him rather than him arriving after it
+  phases: { part: [0, 0.4], descend: [0, 0.6], glide: [0.65, 1], clear: [0.58, 0.92] },
+  // phones: the walls part and slide off the sides (the text reads from the first part) while he descends behind them
+  phasesMobile: { part: [0, 0.35], descend: [0, 0.5], glide: [1, 1], clear: [0.28, 0.6] },
   pin: { desktop: 180, mobile: 140 },
+  // the walls start parting this far (fraction of a screen) before the pin, while the last work cards are still on
+  // their way off screen (Ed, round 9); the timeline's phases run across this lead-in and the pin together
+  lead: 0.55,
   part: { desktop: 0.14, mobile: 0.04 },
   // how far above his rest spot Ed starts (yPercent of his own height): enough to read as a descent, little enough
-  // that he is mostly on screen by the time he is inked (phones much less: the bio sits right above him and stays
+  // that he stays inside the walls' cover until they open (any higher and his head shows above the clouds) (phones much less: the bio sits right above him and stays
   // readable the whole way, so he must not sweep across it)
-  dropFrom: { desktop: -75, mobile: -18 },
+  dropFrom: { desktop: -30, mobile: -18 },
   scrub: 1,
 } as const;
 
-/** Ed waits above the opening, centred, unseen, with a slight tilt that settles as he comes down. */
-export const ED_START = { yPercent: DESCEND.dropFrom.desktop, rotation: 2, opacity: 0 };
+/** Ed waits behind the closed walls, centred and already there (Ed, round 9: never popping in), with a slight tilt
+ * that settles as he comes down. */
+export const ED_START = { yPercent: DESCEND.dropFrom.desktop, rotation: 2, opacity: 1 };
 
 /** The two-column layout (and its choreography) starts at tablet width; keep in step with About.astro. */
 export const SPLIT = '48rem';
@@ -93,29 +98,38 @@ export function initAboutDescend(root: HTMLElement): () => void {
       const [d0, d1] = ph.descend;
       const [g0, g1] = ph.glide;
       const [c0, c1] = ph.clear;
+      // the pin holds the stage still; the timeline starts a little earlier (DESCEND.lead) and ends with it
+      const pin = ScrollTrigger.create({
+        trigger: focus,
+        start: desktop ? 'center center' : () => `top top+=${navH()}`,
+        end: `+=${desktop ? DESCEND.pin.desktop : DESCEND.pin.mobile}%`,
+        pin: root,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onRefresh: (st) => {
+          root.dataset.pinStart = String(Math.round(st.start));
+          root.dataset.pinEnd = String(Math.round(st.end));
+        },
+      });
       const tl = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
-          trigger: focus,
-          start: desktop ? 'center center' : () => `top top+=${navH()}`,
-          end: `+=${desktop ? DESCEND.pin.desktop : DESCEND.pin.mobile}%`,
-          pin: root,
+          start: () => Math.max(0, pin.start - window.innerHeight * DESCEND.lead),
+          end: () => pin.end,
           scrub: DESCEND.scrub,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefresh: (st) => {
-            root.dataset.pinStart = String(Math.round(st.start));
-            root.dataset.pinEnd = String(Math.round(st.end));
-          },
           onLeave: () => playFloat(),
+          // the "magic trick" hint waits until he has landed (mid-descent it would float over the clouds)
+          onUpdate: (st) => root.classList.toggle('is-landed', st.progress > 0.97),
+          onToggle: (st) => root.classList.toggle('is-landed', st.progress > 0.97),
+          onRefresh: (st) => root.classList.toggle('is-landed', st.progress > 0.97), // loaded already past it
         },
       });
-      // phase 1: the walls part, easing in and out so the first scroll does not throw them open
-      tl.to(left, { x: leftPart, duration: p1 - p0, ease: 'sine.inOut' }, p0)
-        .to(right, { x: rightPart, duration: p1 - p0, ease: 'sine.inOut' }, p0)
+      // phase 1: the walls part, opening from the first scroll (they start while the last work cards are leaving)
+      tl.to(left, { x: leftPart, duration: p1 - p0, ease: 'power1.out' }, p0)
+        .to(right, { x: rightPart, duration: p1 - p0, ease: 'power1.out' }, p0)
         // phase 2: Ed comes down through the opening, inked quickly, the tilt settling as he lands
         .to(ed, { yPercent: 0, rotation: 0, duration: d1 - d0, ease: 'power2.out' }, d0)
-        .to(ed, { opacity: 1, duration: 0.1 }, d0)
         // phase 3: the walls drift off the sides, a touch ahead of the glide so the text rises into clear page
         .to(left, { x: leftOff, duration: c1 - c0, ease: 'sine.inOut' }, c0)
         .to(right, { x: rightOff, duration: c1 - c0, ease: 'sine.inOut' }, c0);
@@ -163,12 +177,13 @@ export function initAboutDescend(root: HTMLElement): () => void {
       }
 
       return () => {
+        pin.kill();
         offMotion();
         ScrollTrigger.removeEventListener('refreshInit', placeBox);
         ScrollTrigger.removeEventListener('refreshInit', noteFocus);
         ScrollTrigger.removeEventListener('refresh', keepFocus);
         document.removeEventListener('click', onClick);
-        root.classList.remove('is-staged');
+        root.classList.remove('is-staged', 'is-landed');
         root.removeAttribute('tabindex');
         box.style.top = '';
         delete root.dataset.pinStart;

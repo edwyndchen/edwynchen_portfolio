@@ -10,7 +10,7 @@ test('hero scene loads every layer and cloud', async ({ page }) => {
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
   }
   expect(await page.locator('.hero__scene .hero__cloud').count()).toBe(11);
-  await expect(page.locator('.hero svg.hero__cross')).toHaveCount(1);
+  await expect(page.locator('.hero .hero__cross')).toHaveCount(0); // the Southern Cross is gone (Ed, round 9)
   await expect(page.locator('.hero__scene')).toHaveAttribute('aria-hidden', 'true');
 });
 
@@ -96,25 +96,16 @@ test('desktop: layers start spread upward and collapse downward on scroll', asyn
   await page.waitForTimeout(1500);
   const farSettled = await farTop(page);
   const melbSettled = (await melb.boundingBox())!.y + (await page.evaluate(() => window.scrollY));
-  // the back layer (far range and the Southern Cross) never moves (Ed, 2026-10-05: stars don't move)
-  expect(Math.abs(farSettled - farStart)).toBeLessThan(2);
+  // we start high above the land (Ed, round 9): the far range stands well up at first and comes down to the city
+  expect(farSettled - farStart).toBeGreaterThan(80);
   expect(Math.abs(melbStart - melbSettled)).toBeLessThan(4);
 });
 
-test('the Southern Cross sits in the back layer and stays put on scroll and pointer moves', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'desktop');
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
+test('nothing rising above the scene is ever cut flat: no top clip and no mask on the scene', async ({ page }) => {
   await page.goto('/');
-  await page.waitForTimeout(800);
-  const cross = page.locator('.hero__layer--back .hero__cross');
-  await expect(cross).toHaveCount(1);
-  const where = () => cross.evaluate((el) => { const r = el.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top + window.scrollY)]; });
-  const before = await where();
-  const box = (await page.locator('.hero__scene').boundingBox())!;
-  await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.5, { steps: 6 });
-  await page.evaluate(() => window.scrollTo(0, 300));
-  await page.waitForTimeout(1600);
-  expect(await where()).toEqual(before);
+  const css = await page.locator('.hero__scene').evaluate((el) => { const c = getComputedStyle(el); return { y: c.overflowY, mask: c.maskImage || c.webkitMaskImage }; });
+  expect(css.y).toBe('visible');
+  expect(css.mask === 'none' || css.mask === '').toBe(true);
 });
 
 test('reduced motion: layers do not fan out', async ({ page }) => {

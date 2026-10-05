@@ -11,22 +11,30 @@ export function scrollShift(scrollFactor: number, maxPercent = 10): number {
   return -maxPercent * scrollFactor || 0;
 }
 
-/** Starting yPercent at page top: layers behind Melbourne (depth 0.5) start higher, layers in front start lower. */
-export function spreadPercent(depth: number, k = 30): number {
-  return Math.round((depth - 0.5) * k * 100) / 100 || 0;
+/**
+ * Starting yPercent at page top. We start high above the land (Ed, round 9): the layers behind Melbourne (depth 0.5)
+ * stand well up and apart from the city, the further back the higher; layers in front start a little lower.
+ */
+export function spreadPercent(depth: number, k = 50): number {
+  const kk = depth < 0.5 ? k : k * 0.3;
+  return Math.round((depth - 0.5) * kk * 100) / 100 || 0;
 }
 
-/** Settled yPercent once the scene reaches the top: a tighter landscape than the painting, back layers sink, front layers rise. */
-export function collapsePercent(depth: number, c = 10): number {
+/** Settled yPercent once the scene reaches the top: coming down, the land flattens, every layer close to the city's
+ * level (just a touch of depth left: back layers a hair lower, front a hair higher). */
+export function collapsePercent(depth: number, c = 3): number {
   return Math.round((depth - 0.5) * -c * 100) / 100 || 0;
 }
 
 /** Clouds cross 20% faster than the first cut (Ed, 2026-10-04): every duration divided by this. */
 export const CLOUD_SPEED = 1.2;
 
+/** Seconds for a cloud to cross its layer. Front clouds (depth 1) take 75s; further back they slow sharply, as far
+ * things do (Ed, round 9: the back clouds were drifting like near ones, behind the mountains). */
 export function cloudDuration(depth: number, index: number): number {
-  return (200 - depth * 110 + (index % 3) * 15) / CLOUD_SPEED;
+  return (90 / (0.22 + 0.78 * depth) + (index % 3) * 15) / CLOUD_SPEED;
 }
+
 
 export function initHero(root: HTMLElement): () => void {
   const scene = root.querySelector<HTMLElement>('.hero__scene');
@@ -41,7 +49,7 @@ export function initHero(root: HTMLElement): () => void {
 
     gsap.fromTo('[data-reveal]', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' });
 
-    // the endless ones (tram, clouds, twinkle) answer to the Pause motion switch
+    // the endless ones (tram, clouds) answer to the Pause motion switch
     const endless: gsap.core.Animation[] = [];
     const tram = gsap
       .timeline({ repeat: -1, repeatDelay: 2.5 })
@@ -64,12 +72,10 @@ export function initHero(root: HTMLElement): () => void {
       endless.push(tween);
     });
 
-    endless.push(gsap.to('.hero__cross circle', { opacity: 0.35, duration: 2.4, stagger: { each: 0.5, repeat: -1, yoyo: true }, ease: 'sine.inOut' }));
     const offMotion = whilePlaying(() => endless.forEach((t) => t.resume()), () => endless.forEach((t) => t.pause()));
 
-    // the back layer (furthest range and the Southern Cross) is data-static: it sits where the others settle and
-    // never moves, neither on scroll nor with the pointer (Ed: stars don't move)
-    scene.querySelectorAll<HTMLElement>('[data-static]').forEach((l) => gsap.set(l, { yPercent: collapsePercent(Number(l.dataset.depth), window.matchMedia('(max-width: 48rem)').matches ? 6 : 10) }));
+    // a data-static layer never moves, neither on scroll nor with the pointer (none at the moment)
+    scene.querySelectorAll<HTMLElement>('[data-static]').forEach((l) => gsap.set(l, { yPercent: 0 }));
     const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]:not([data-static])')];
     // One scrubbed timeline per layer: phase 1 (page top -> scene top reaches viewport top) collapses the
     // tall spread into a tighter landscape; phase 2 is the scroll-out parallax from there.
@@ -85,9 +91,9 @@ export function initHero(root: HTMLElement): () => void {
       const build = () => {
         const share = settleShare();
         tl.clear();
-        const collapsed = collapsePercent(depth, mobile.matches ? 6 : 10);
+        const collapsed = collapsePercent(depth, mobile.matches ? 2 : 3);
         if (share > 0.001) {
-          tl.fromTo(layer, { yPercent: spreadPercent(depth, mobile.matches ? 16 : 30) }, { yPercent: collapsed, ease: 'none', duration: share });
+          tl.fromTo(layer, { yPercent: spreadPercent(depth, mobile.matches ? 30 : 50) }, { yPercent: collapsed, ease: 'none', duration: share });
         } else {
           tl.set(layer, { yPercent: collapsed });
         }

@@ -2,17 +2,36 @@
 import { site } from '../data/site';
 import SocialIcon from './SocialIcon.astro';
 import SealStamp from './SealStamp.astro';
+// the paint-the-scroll toy belongs to the home page only (Ed, round 9); elsewhere Contact is just the line and the links
+interface Props { scroll?: boolean }
+const { scroll = false } = Astro.props;
 ---
-<section id="contact" class="contact wrap" aria-labelledby="contact-title" data-scroll-paint>
-  <!-- the invitation and the ways to reach Ed, above the scroll -->
-  <!-- the invitation and how to play, above the scroll -->
-  <div class="contact__head">
-    <h2 id="contact-title">Let’s make something beautiful together.</h2>
-    <ol class="paint__steps" aria-label="How to paint the scroll">
-      <li data-step-item="paint"><span class="paint__num" aria-hidden="true">1</span>Paint the scene with the brush</li>
-      <li data-step-item="pig"><span class="paint__num" aria-hidden="true">2</span>Add a flying pig</li>
-      <li data-step-item="seal"><span class="paint__num" aria-hidden="true">3</span>Sign it with my seal</li>
+<section id="contact" class:list={['contact wrap', !scroll && 'contact--plain']} aria-labelledby="contact-title" data-scroll-paint={scroll ? '' : undefined}>
+  <!-- the toy's controls above the scroll, in view before you start: the steps and the buttons. The prompt (its copy
+       changes as you go) is for screen readers only now (Ed, round 9: too much on screen) -->
+  <!-- no visible heading (Ed, round 9): the scroll and the line under it say it; this one names the section -->
+  <h2 id="contact-title" class="visually-hidden">Contact</h2>
+  {scroll && (<>
+  <div class="paint__bar" data-paint-ui>
+    <ol class="paint__steps" aria-label="Steps">
+      <li data-step-item="paint"><span class="paint__num" aria-hidden="true">1</span>Paint</li>
+      <li data-step-item="pig"><span class="paint__num" aria-hidden="true">2</span>Add animal</li>
+      <li data-step-item="seal"><span class="paint__num" aria-hidden="true">3</span>Seal</li>
     </ol>
+    <div class="paint__buttons">
+      <button class="button paint__btn" type="button" data-paint-action="auto">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 4.5l5 5L11 18H6v-5l8.5-8.5zM12.5 6.5l5 5" /><path d="M4 21h7" /></svg>Paint it for me</button>
+      <button class="button paint__btn" type="button" data-paint-action="pig" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></svg>Add a flying pig</button>
+      <button class="button paint__btn" type="button" data-paint-action="seal" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6v4a3 3 0 0 1-1 2.2V12h-4V9.2A3 3 0 0 1 9 7V3z" /><path d="M5 12h14v4H5z" /><path d="M7 20h10" /></svg>Add the seal</button>
+      <button class="button paint__btn paint__quiet" type="button" data-paint-action="reset">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>Start again</button>
+      <button class="button paint__btn paint__quiet" type="button" data-paint-action="next" aria-label="Next scene: Wilsons Promontory">Next scene
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </div>
+    <p class="paint__prompt visually-hidden" role="status" aria-describedby="paint-help" data-paint-prompt>Grab the brush. The Twelve Apostles won’t paint themselves.</p>
   </div>
 
   <!-- a hanging scroll to paint on (scroll-paint.ts): the scene, then a flying pig, then Ed's seal -->
@@ -26,30 +45,20 @@ import SealStamp from './SealStamp.astro';
           <canvas class="paint__canvas" data-paint-canvas></canvas>
         </div>
         <div class="scroll__stamps" aria-hidden="true" data-stamps></div>
-        <img class="paint__brush" src="/scroll/brush.webp" alt="" width="200" height="242" aria-hidden="true" loading="lazy" decoding="async" data-brush />
-        <img class="scroll__seal" src="/scroll/seal.webp" alt="" width="220" height="537" aria-hidden="true" loading="lazy" decoding="async" data-seal />
         <template data-stamp-tpl><span class="scroll__stamp"><SealStamp /></span></template>
 
       </div>
     </div>
     <span class="scroll__rod" aria-hidden="true"></span>
+    <!-- the brush and the seal follow the pointer above the whole scroll, so they pass over the rods and mount like a
+         real brush would, never cropped at the paper's edge -->
+    <img class="paint__brush" src="/scroll/brush.webp" alt="" width="200" height="242" aria-hidden="true" loading="lazy" decoding="async" data-brush />
+    <img class="scroll__seal" src="/scroll/seal.webp" alt="" width="220" height="537" aria-hidden="true" loading="lazy" decoding="async" data-seal />
   </div>
-  <!-- the prompt and the step buttons sit under the scroll, off the painting -->
-  <div class="paint__bar" data-paint-ui>
-    <p class="paint__prompt" role="status" aria-describedby="paint-help" data-paint-prompt>Pick up the brush and paint the Twelve Apostles.</p>
-    <div class="paint__buttons">
-      <button class="button" type="button" data-paint-action="auto">Paint it for me</button>
-      <button class="button" type="button" data-paint-action="pig" hidden>Add a flying pig</button>
-      <button class="button" type="button" data-paint-action="seal" hidden>Add the seal</button>
-      <button class="button paint__quiet" type="button" data-paint-action="reset">Start again</button>
-      <button class="paint__next" type="button" data-paint-action="next" aria-label="Next scene: Wilsons Promontory">Next scene
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-      </button>
-    </div>
-  </div>
+  </>)}
   <!-- then the real thing: the ways to reach Ed -->
   <div class="contact__foot">
-    <p class="contact__more">Contact me to make more beautiful work together.</p>
+    <p class="contact__more">Let’s connect to make the world more beautiful.</p>
       <ul class="contact__links">
         <li><a href={`mailto:${site.email}`} aria-label={`Email ${site.email}`} title={site.email}><SocialIcon name="mail" /></a></li>
         {site.linkedin && <li><a href={site.linkedin} rel="me noopener" target="_blank" aria-label="LinkedIn (opens in a new tab)" title="LinkedIn"><SocialIcon name="linkedin" /></a></li>}
@@ -61,10 +70,10 @@ import SealStamp from './SealStamp.astro';
 
 <style>
   .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
-  .contact__head { display: grid; gap: var(--space-m); margin-bottom: var(--space-l); }
-  .contact h2 { font-size: var(--step-3); max-width: 22ch; margin: 0; }
+  /* above the scroll: the three steps and the buttons on one line, the prompt under them */
+  .paint__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-s) var(--space-m); margin-bottom: var(--space-m); }
   /* the three steps; the current one is marked as the visitor goes (scroll-paint.ts sets data-step on the section) */
-  .paint__steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
+  .paint__steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-m); }
   .paint__steps li { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--text-secondary); font-size: var(--text-md); }
   .paint__num {
     display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; flex: none;
@@ -72,8 +81,15 @@ import SealStamp from './SealStamp.astro';
   }
   [data-step='paint'] [data-step-item='paint'], [data-step='pig'] [data-step-item='pig'], [data-step='seal'] [data-step-item='seal'] { color: var(--text-brand); font-weight: var(--fw-semibold); }
   [data-step='paint'] [data-step-item='paint'] .paint__num, [data-step='pig'] [data-step-item='pig'] .paint__num, [data-step='seal'] [data-step-item='seal'] .paint__num { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
+  .paint__prompt { flex-basis: 100%; margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--fluid-display-sm); color: var(--text-brand); }
+  .paint__buttons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); }
+  .paint__buttons [hidden] { display: none; }
+  .paint__btn { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .paint__btn svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .paint__quiet { background: var(--surface-raised); }
+  .contact--plain .contact__foot { margin-top: 0; border-top: 0; padding-top: 0; }
   .contact__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-m) var(--space-l); margin-top: var(--space-xl); padding-top: var(--space-l); border-top: var(--rule-hair); }
-  .contact__more { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); max-width: 30ch; }
+  .contact__more { margin: 0; font-family: var(--font-display); font-size: var(--step-3); font-weight: var(--fw-bold); line-height: var(--lh-snug); color: var(--text-brand); max-width: 24ch; }
   .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
   /* 48px round targets holding a 26px icon, ringed in cobalt like a porcelain seal */
   .contact__links a {
@@ -125,27 +141,13 @@ import SealStamp from './SealStamp.astro';
   @media (prefers-reduced-motion: reduce) { .paint__sketch { animation: none; } }
   :global(html.motion-paused) .paint__sketch { animation: none; }
   /* while painting, the painted brush follows the pointer in place of the cursor (scroll-paint.ts) */
-  .paint__brush { position: absolute; left: 0; top: 0; z-index: 5; width: 110px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
+  .paint__brush { position: absolute; left: 0; top: 0; z-index: 6; width: 110px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
   .scroll__paper.is-painting, .scroll__paper.is-painting .paint__canvas { cursor: none; }
-
-  /* under the scroll: the prompt on the left, the step buttons and the next-scene arrow on the right */
-  .paint__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-s) var(--space-m); margin-top: var(--space-m); }
-  .paint__prompt { margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--fluid-display-sm); color: var(--text-brand); max-width: 30ch; }
-  .paint__buttons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); }
-  .paint__buttons [hidden] { display: none; }
-  .paint__quiet { background: var(--surface-raised); }
-  .paint__next {
-    display: inline-flex; align-items: center; gap: 0.4rem; min-height: 48px; padding: 0 0.9rem 0 1.1rem; border: 1px solid var(--border-strong);
-    border-radius: 24px; background: var(--surface-raised); color: var(--text-brand); cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: var(--fw-semibold);
-  }
-  .paint__next:hover { background: var(--action-primary); color: var(--text-on-brand); }
-  .paint__next:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
-  .paint__next svg { width: 20px; height: 20px; }
 
   /* the seal and its impression: the seal floats above everything; the red mark sits on the paper, fully opaque */
   .scroll__stamps { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
   .scroll__stamp { position: absolute; width: clamp(64px, 7vw, 96px); aspect-ratio: 1; }
-  .scroll__seal { position: absolute; left: 0; top: 0; z-index: 5; width: 52px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
+  .scroll__seal { position: absolute; left: 0; top: 0; z-index: 6; width: 52px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
   .scroll__paper.is-sealing, .scroll__paper.is-sealing .paint__canvas { cursor: none; }
 
   @media (max-width: 47.99rem) {
@@ -159,6 +161,6 @@ import SealStamp from './SealStamp.astro';
 
 <script>
   import { initScrollPaint } from '../scripts/scroll-paint';
-  const root = document.querySelector<HTMLElement>('[data-scroll-paint]');
+  const root = document.querySelector<HTMLElement>('[data-scroll-paint]'); // home page only
   if (root) initScrollPaint(root);
 </script>

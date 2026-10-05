@@ -108,3 +108,10 @@ Hero clouds v3 (more swirls), Seedream off `7fe457e1`: xiangyun `9e43e9ac`, `f28
 - Seal at a gentle 30° view: `a72c3c02`, `355ed3f1` (used). Brush leaning 30° right: `0c498bfe` (bamboo), `1731582b` (used, blue).
 - Scenes in the hero's bold cobalt with cloud scrolls (off hero `7fe457e1`): Twelve Apostles `ad2d8bef`, `65939bca` (used); Wilsons Promontory `486d92a6` (used), `853d088c`.
 - Flying pig drawn from the About piglet (ref `45d0028d`): `f4bc4623` (used), `e4d4a018`.
+
+## Round 9, 2026-10-05 (sources in `art/round9/`, contact sheet `art/round9/sheet.png`)
+
+- References uploaded: current scroll pig `a6dfc031`, hanfu figure `0360fb58`. Nano Banana 2.
+- Flying pig options (from the scroll pig): crane wings `c8aead0b`, riding a ruyi cloud `e181000d`, lifted by lanterns `f0952aa1`, feitian ribbons `7720bace`, lucky-bat wings `2ff02a21`. Ed first picked the cloud (`e181000d`), then switched to the crane wings (`c8aead0b`, flood-fill cutout `art/round9/pig-cut.mjs`, recoloured 1.3, `public/scroll/pig.webp`). An unused crane-pig regeneration: `b32ddeb2`.
+- Hanfu with two shawl ends (edits of `0360fb58`): A, hip tail removed `8c16f4b1`; B, arm streamer removed (hip tail redrawn) `bfbe0ee4`. Ed picked A, with the ribbon higher: edits of A, updraft `cf3e1472` (used), celestial `ecc358a8` (grew extra ends).
+- Pointing hand (from the hanfu's hands): with sleeve `537e7e30`, plain manicule `1e785172` (Ed's pick, cutout `9d873e98`, recoloured `recolor.mjs … 1.3`, `public/about/hand.webp`).

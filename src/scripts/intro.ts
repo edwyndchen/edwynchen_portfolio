@@ -40,9 +40,9 @@ export function initIntro(): void {
       // phones whose nav shows the mark alone: the name (everything after the mark) lets go once it lands
       if (!wide) tl.to(word.querySelectorAll('path:not(:first-child)'), { opacity: 0, duration: 0.2 }, 2.0); // only once it has landed
     } else tl.to(lockup, { opacity: 0, duration: 0.4 }, 1.3); // no nav logo to land on (never expected)
-    // 3. the porcelain behind it melts away to the page; the logo itself never fades, it lands and hands over to the
-    //    nav's own logo when the timeline completes
-    tl.to(paper, { opacity: 0, duration: 0.6, ease: 'power1.out' }, 1.5);
+    // 3. only once the logo has landed does the porcelain behind it melt away to the page, so it never crosses the
+    //    hero's heading or a second logo on its way; it hands over to the nav's own logo when the timeline completes
+    tl.to(paper, { opacity: 0, duration: 0.5, ease: 'power1.out' }, 2.15);
   };
   // hold the doors shut until the page (and its fonts and the doors' own painting) are in, then linger at least
   // INTRO_LINGER more; never longer than 3s before they open

@@ -17,6 +17,14 @@ async function toPin(page: Page, p: number) {
   await page.waitForTimeout(1600);
 }
 
+/** Scroll to where the choreography starts: DESCEND.lead (0.55) of a screen before the pin (Ed, round 9: the walls
+ * start parting while the last work cards are leaving). */
+async function toLeadStart(page: Page) {
+  await expect(page.locator('#about')).toHaveAttribute('data-pin-end', /\d/);
+  await page.evaluate(() => window.scrollTo(0, Math.round(Number((document.querySelector('#about') as HTMLElement).dataset.pinStart) - window.innerHeight * 0.55) + 2));
+  await page.waitForTimeout(1600);
+}
+
 /** Inner (billowing) edge of each cloud wall, in viewport px: box left + the wall's --inner fraction of its width. */
 const wallEdges = (page: Page) =>
   page.evaluate(() => {
@@ -84,10 +92,15 @@ test('motion allowed, desktop: the walls part, Ed descends, then glides to the r
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
 
-  await toPin(page, 0.002);
+  await toLeadStart(page);
   let w = await wallEdges(page);
-  expect(w.left).toBeGreaterThan(w.vw / 2); // closed: the left wall reaches past the centre
-  expect(await edOpacity(page)).toBeLessThan(0.2);
+  expect(w.left).toBeGreaterThan(w.vw / 2); // closed: the left wall reaches past the centre, Ed already behind it
+  expect(await edOpacity(page)).toBeGreaterThan(0.95);
+  // by the time the stage pins, the walls have already begun to part and Ed is on his way down
+  await toPin(page, 0.002);
+  w = await wallEdges(page);
+  expect(w.left).toBeLessThan(w.vw / 2);
+  expect(await edOpacity(page)).toBeGreaterThan(0.95);
 
   await toPin(page, 0.45);
   w = await wallEdges(page);
@@ -112,8 +125,8 @@ test('motion allowed, mobile: Ed descends centred and lands below the text', asy
   test.skip(!isMobile, 'mobile choreography');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  await toPin(page, 0.002);
-  expect(await edOpacity(page)).toBeLessThan(0.2);
+  await toLeadStart(page);
+  expect(await edOpacity(page)).toBeGreaterThan(0.95); // already there, behind the closed walls
   await toPin(page, 1);
   await expect.poll(() => edOpacity(page)).toBeGreaterThan(0.95);
   const ed = await page.locator('.about__ed').boundingBox();
@@ -257,4 +270,19 @@ test('costume change with motion: a puff of cloud, then the new outfit', async (
   // mid-puff, at least one cloud is showing
   await expect.poll(() => page.locator('[data-puff] img').evaluateAll((els) => Math.max(...els.map((e) => Number(getComputedStyle(e).opacity))))).toBeGreaterThan(0.3);
   await expect.poll(() => page.locator('.about__outfit:not([hidden])').getAttribute('data-outfit')).toBe('pig');
+});
+
+test('magic trick hint: a hand and "Tap me" point at Ed until the first trick, and come back next visit', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const swap = page.getByRole('button', { name: /magic trick/ });
+  const hint = page.locator('[data-magic-hint]');
+  await swap.scrollIntoViewIfNeeded();
+  await expect(hint).toBeVisible();
+  await expect(hint).toHaveText('Tap me');
+  await swap.click();
+  await expect(hint).toBeHidden();
+  await page.reload();
+  await page.getByRole('button', { name: /magic trick/ }).scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-magic-hint]')).toBeVisible();
 });

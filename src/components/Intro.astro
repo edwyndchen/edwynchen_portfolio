@@ -33,7 +33,8 @@ import Logo from './Logo.astro';
      moon window, whose inside is ~47% of the painting's height */
   :global(html.intro) .intro { display: block; position: fixed; inset: 0; z-index: 1000; pointer-events: none; --mark: calc(max(100vh, 56.25vw) * 0.36); }
   :global(html.intro) { overflow: hidden; }
-  :global(html.intro) .nav__brand svg { visibility: hidden; }
+  /* the nav's own logo stays hidden until the flying one has landed on it (global: the nav isn't in this component) */
+  :global(html.intro .nav__brand svg) { visibility: hidden; }
   .intro__stage { position: absolute; inset: 0; display: grid; place-items: center; }
   .intro__paper { position: absolute; inset: 0; background: var(--surface-page); }
   .intro__lockup { position: relative; }

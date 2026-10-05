@@ -11,8 +11,9 @@ import { gsap } from 'gsap';
  */
 export type Step = 'paint' | 'pig' | 'seal' | 'done';
 export const SCENES = [
-  { key: 'apostles', label: 'the Twelve Apostles', src: '/scroll/apostles.webp', sketch: '/scroll/apostles-sketch.webp' },
-  { key: 'prom', label: 'Wilsons Promontory', src: '/scroll/prom.webp', sketch: '/scroll/prom-sketch.webp' },
+  // land: the side the cliffs or headland are on; the flying pig always heads towards it (Ed, round 9)
+  { key: 'apostles', label: 'the Twelve Apostles', src: '/scroll/apostles.webp', sketch: '/scroll/apostles-sketch.webp', land: 'right' },
+  { key: 'prom', label: 'Wilsons Promontory', src: '/scroll/prom.webp', sketch: '/scroll/prom-sketch.webp', land: 'left' },
 ] as const;
 /** How much of the scene must be painted before the pig prompt (fraction of the scene's own area). */
 export const PAINTED_ENOUGH = 0.35;
@@ -20,14 +21,16 @@ export const PAINTED_ENOUGH = 0.35;
 export const SEAL_TIP = { x: 0.5, y: 0.97 };
 /** The seal leans a little to the right, as if in a right hand (degrees). */
 export const SEAL_TILT = 10;
+/** How soft a stroke's edge is, as a share of the brush's radius. */
+export const SOFTNESS = 0.45;
 /** The brush's tip, as a fraction of its painting (bottom left: it leans right, as in a right hand). */
 export const BRUSH_TIP = { x: 0.01, y: 0.99 };
-/** What each step asks for (shown on the scroll and read out by screen readers). */
+/** What each step says (above the scroll, read out by screen readers): a little cheekier as it goes (Ed, round 9). */
 export const PROMPTS: Record<Step, (scene: string) => string> = {
-  paint: (scene) => `Pick up the brush and paint ${scene}.`,
-  pig: () => 'Lovely. Now add a flying pig: click or tap anywhere in the sky.',
-  seal: () => 'Sign it with my seal.',
-  done: () => 'Signed and sealed. Thanks for painting with me.',
+  paint: (scene) => `Grab the brush. ${scene[0].toUpperCase()}${scene.slice(1)} won’t paint ${scene.startsWith('the ') ? 'themselves' : 'itself'}.`,
+  pig: () => 'Looking good. Now tap the sky: today’s the day you do see pigs fly.',
+  seal: () => 'Pigs: airborne. Sign it with my seal to make it official.',
+  done: () => 'Signed, sealed and flying. Told you pigs could fly.',
 };
 /** The step after this one. Pure, for tests. */
 export const nextStep = (s: Step): Step => (s === 'paint' ? 'pig' : s === 'pig' ? 'seal' : 'done');
@@ -45,6 +48,10 @@ const bristles = (n = 18): Bristle[] => Array.from({ length: n }, (_, k) => {
 function dab(ctx: CanvasRenderingContext2D, ax: number, ay: number, bx: number, by: number, r: number, br: Bristle[]) {
   const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
   ctx.lineCap = 'round';
+  // a soft halo on every hair feathers the stroke's edges into the paper (Ed: no harsh edges). shadowBlur is in device
+  // pixels and ignores the transform, so it is scaled by the canvas's own pixel ratio
+  ctx.shadowColor = '#000';
+  ctx.shadowBlur = r * SOFTNESS * ctx.getTransform().a;
   for (const b of br) {
     ctx.globalAlpha = b.a;
     ctx.lineWidth = r * b.w;
@@ -54,6 +61,7 @@ function dab(ctx: CanvasRenderingContext2D, ax: number, ay: number, bx: number, 
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 }
 /** A zig-zag of brush strokes that sweeps a box, for the automatic reveals (the pig, "Paint it for me"). */
 function sweep(x: number, y: number, w: number, h: number, rows: number): [number, number][] {
@@ -104,7 +112,12 @@ export function initScrollPaint(root: HTMLElement): () => void {
       pctx.setTransform(1, 0, 0, 1, 0, 0);
       pctx.clearRect(0, 0, pigLayer.width, pigLayer.height);
       pctx.globalCompositeOperation = 'source-over';
-      pctx.drawImage(pigArt, pig.x * dpr, pig.y * dpr, pig.w * dpr, pig.h * dpr);
+      // the painting faces right; mirrored when this scene's land is on the left
+      if (SCENES[scene].land === 'left') {
+        pctx.setTransform(-1, 0, 0, 1, (pig.x * 2 + pig.w) * dpr, 0);
+        pctx.drawImage(pigArt, pig.x * dpr, pig.y * dpr, pig.w * dpr, pig.h * dpr);
+        pctx.setTransform(1, 0, 0, 1, 0, 0);
+      } else pctx.drawImage(pigArt, pig.x * dpr, pig.y * dpr, pig.w * dpr, pig.h * dpr);
       pctx.globalCompositeOperation = 'destination-in';
       pctx.drawImage(pigMask, 0, 0);
       ctx.drawImage(pigLayer, 0, 0);
@@ -195,7 +208,8 @@ export function initScrollPaint(root: HTMLElement): () => void {
 
   const placePig = async (x: number, y: number) => {
     if (!pigArt) pigArt = await img('/scroll/pig.webp');
-    const w = Math.max(90, Math.min(W * 0.18, 220)), h = w * (pigArt.naturalHeight / pigArt.naturalWidth || 0.7);
+    // the crane-winged pig (Ed's pick, round 9), 30% smaller than the first cut
+    const w = Math.max(80, Math.min(W * 0.154, 196)), h = w * (pigArt.naturalHeight / pigArt.naturalWidth || 0.7);
     const topLimit = 8;
     pig = { x: Math.min(Math.max(8, x - w / 2), W - w - 8), y: Math.min(Math.max(topLimit, y - h / 2), H - h - 8), w, h };
     busy = true;
@@ -222,11 +236,20 @@ export function initScrollPaint(root: HTMLElement): () => void {
     if (on === brushShown) return;
     brushShown = on;
     paper.classList.toggle('is-painting', on);
-    gsap.to(brush, { opacity: on ? 1 : 0, duration: on ? 0.35 : 0.2, ease: 'sine.out', overwrite: 'auto' });
+    // like the seal (Ed liked it): it swings in from a little off-upright and settles as it appears, and swings away
+    gsap.to(brush, on
+      ? { opacity: 1, scale: 1, rotation: 0, duration: 0.6, ease: 'sine.out', overwrite: 'auto' }
+      : { opacity: 0, scale: 0.88, rotation: -12, duration: 0.3, ease: 'sine.in', overwrite: 'auto' });
   };
-  gsap.set(brush, { opacity: 0, transformOrigin: `${BRUSH_TIP.x * 100}% ${BRUSH_TIP.y * 100}%` });
-  const placeBrush = (px: number, py: number) => gsap.set(brush, { x: px - brush.offsetWidth * BRUSH_TIP.x, y: py - brush.offsetHeight * BRUSH_TIP.y });
-  const placeSeal = (px: number, py: number) => gsap.set(seal, { x: px - seal.offsetWidth * SEAL_TIP.x, y: py - seal.offsetHeight * SEAL_TIP.y });
+  gsap.set(brush, { opacity: 0, scale: 0.88, rotation: -12, transformOrigin: `${BRUSH_TIP.x * 100}% ${BRUSH_TIP.y * 100}%` });
+  // the brush and seal live on the scroll (above rods and mount), not the paper: paper coordinates are shifted by where
+  // the paper sits on the scroll
+  const onScroll = () => {
+    const a = paper.getBoundingClientRect(), b = (brush.offsetParent ?? paper).getBoundingClientRect();
+    return [a.left - b.left, a.top - b.top] as const;
+  };
+  const placeBrush = (px: number, py: number) => { const [ox, oy] = onScroll(); gsap.set(brush, { x: ox + px - brush.offsetWidth * BRUSH_TIP.x, y: oy + py - brush.offsetHeight * BRUSH_TIP.y }); };
+  const placeSeal = (px: number, py: number) => { const [ox, oy] = onScroll(); gsap.set(seal, { x: ox + px - seal.offsetWidth * SEAL_TIP.x, y: oy + py - seal.offsetHeight * SEAL_TIP.y }); };
   const stamp = (px: number, py: number) => {
     const mark = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
     mark.style.left = `${px}px`; mark.style.top = `${py}px`;
@@ -313,7 +336,7 @@ export function initScrollPaint(root: HTMLElement): () => void {
   };
   const actions: Record<string, () => void> = {
     auto: () => { if (step === 'paint') paintAll(); },
-    pig: () => { if (step === 'pig' && !pig) placePig(W * 0.3, H * 0.34); },
+    pig: () => { if (step === 'pig' && !pig) placePig(W * 0.3, H * 0.2); },
     seal: () => {
       if (step !== 'seal' || !pig) return;
       const r = canvas.getBoundingClientRect(), pr = paper.getBoundingClientRect();

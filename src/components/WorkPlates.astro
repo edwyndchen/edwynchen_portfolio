@@ -7,11 +7,11 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
 <section id="work" class="work wrap" aria-labelledby="work-title">
   <h2 id="work-title">Selected work</h2>
   <ol class="work__list">
-    {studies.map((s, i) => (
+    {studies.map((s) => (
       <li data-reveal-on-scroll>
         <Plate as="article" class="work__plate">
           {s.data.cover && <div class="work__media"><img class="work__cover" src={s.data.cover} alt="" width="800" height="450" loading="lazy" /></div>}
-          <p class="label work__meta"><span class="work__num">{String(i + 1).padStart(2, '0')}</span> {s.data.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
+          <p class="label work__meta">{s.data.discipline === 'design-system' ? 'Design system' : 'Product design'}</p>
           <h3><a href={`/work/${s.id}/`}>{s.data.title}</a></h3>
           <p class="work__outcome">{s.data.outcome}</p>
         </Plate>
@@ -38,7 +38,6 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
   .work__media { overflow: hidden; margin-bottom: var(--space-m); }
   .work__cover { width: 100%; height: auto; mix-blend-mode: multiply; }
   .work__meta { margin-bottom: 0; color: var(--text-secondary); }
-  .work__num { color: var(--gold-text); margin-right: 0.5rem; }
   .work h3 { font-size: var(--fluid-display-md); margin: var(--space-xs) 0 var(--space-s); }
   .work h3 a { color: var(--cobalt); text-decoration: none; }
   .work h3 a::after { content: ''; position: absolute; inset: 0; }
