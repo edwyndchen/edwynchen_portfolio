@@ -109,9 +109,20 @@ export function stillnessMap(spots: StillSpot[] = WIND.still): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+/**
+ * Where the wind runs. Not on Apple's WebKit (Safari, and every browser on an iPhone or iPad), which can't apply an
+ * SVG displacement filter with a feImage to HTML reliably and may draw the figure blank; and not on touch-first
+ * devices (phones, tablets), which can't afford redrawing it every frame (Ed, round 10: no Ed on his phone in
+ * Chrome). They get the still painting.
+ */
+export function windSupported(): boolean {
+  const webkit = navigator.vendor === 'Apple Computer, Inc.';
+  return !webkit && !window.matchMedia('(pointer: coarse)').matches;
+}
+
 export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () => void {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (reduce.matches) return () => {};
+  if (reduce.matches || !windSupported()) return () => {};
   const turb = filter.querySelector('feTurbulence');
   const disp = filter.querySelector('feDisplacementMap');
   const map = filter.querySelector('feImage');

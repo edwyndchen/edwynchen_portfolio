@@ -127,6 +127,7 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Hero paintings have a srcset (1200/1800/2400w, `npm run hero:sizes`, chained into `npm run hero`).
 - Phones drop two of the cloud-only hero layers (depth 0.12 and 0.35).
 - Hero name letter spacing 0.03em -> 0.01em (Ed).
+- Ed didn't show on Ed's phone (Chrome). Likely the wind filter: Apple's WebKit (Safari and every iPhone browser) can draw an element blank under an SVG displacement filter with feImage. The wind now runs only off WebKit and off touch-first devices (`windSupported()` in fabric-wind.ts); they get the still painting. Not yet confirmed on the real phone.
 
 ## Next steps
 
