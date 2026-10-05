@@ -70,12 +70,6 @@ test('contact: no form now (Ed, 2026-10-05), just the heading and icon links tha
   await expect(contact.getByRole('link', { name: /LinkedIn/ })).toBeVisible();
 });
 
-test('thanks page exists and is kept out of search', async ({ page }) => {
-  await page.goto('/thanks/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Thanks, message sent.');
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
-});
-
 test('Acknowledgement of Country sits below the footer, headed, with the Aboriginal flag', async ({ page }) => {
   await page.goto('/');
   const country = page.getByRole('complementary', { name: 'Acknowledgement of Country' });

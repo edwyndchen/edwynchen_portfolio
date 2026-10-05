@@ -1,6 +1,6 @@
 # Porcelain portfolio — handoff
 
-_Last updated 2026-10-05. Read this first in any new session, then the spec._
+_Last updated 2026-10-05 (after the round 3–8 commit). Read this first in any new session, then the spec._
 
 ## What this is
 
@@ -23,7 +23,7 @@ Or use the `porcelain-portfolio` entry in `/Users/ed/Claude/Cowork/.claude/launc
 
 ## State at handoff
 
-Committed up to the latest commit on `main` (unit 61, e2e 175). Built:
+Committed up to the latest commit on `main` (unit 66, e2e 160 passing, 18 skipped). The State section below describes round 2; rounds 3 to 8 follow it. Built:
 
 - Colours: "Kiln cobalt", the blue ramp sampled from the painted art (primary `#3231b0`), in the site tokens and the design system.
 - Hero: one line ("Melbourne-based product designer making the world more accessible and beautiful, one screen at a time."), View work under it. Clouds: 8 new (v1-v4 long bands, v5-v8 soft billows, few curls), recoloured pale; 2 gentlest old ones kept; 20% faster. `npm run hero` rebuilds them and no longer touches the hand-cropped right About wall.
@@ -31,7 +31,7 @@ Committed up to the latest commit on `main` (unit 61, e2e 175). Built:
 - About: pinned cloud-wall stage on desktop/tablet/phone; fabric wind with a stillness map per outfit (tune at `/?wind` in dev). Ed is a button: a puff of cloud and a costume change through three different outfits and poses (hanfu; Tang-style festival jacket with pig mask and piglet; Song-style robe pouring a vase), `src/scripts/outfit-swap.ts`.
 - Workshop (`/workshop/`): lattice header titled Workshop, statuses On the easel / Fired / Sketch, "Brushes and tools" filter, placeholder frames until images are added. The waratah, gum and wattle live here now (none on the home page). Two draft entries (HYROX Lap Timer, Our Attachments) for Ed to edit and publish.
 - Case studies: image across the top (Keystatic `hero`, falls back to the cover), then a cobalt band (title, tags, `overview` field, at a glance; no Results), then the story with the On this page column (sticky; a strip on phones). Problem has a Section image block; Outcomes and Process have Gallery (carousel) blocks with four placeholder slides.
-- Contact: a hanging scroll (painted wooden rods, silk mount, pale range and clouds from `npm run range`, cobalt Southern Cross) holding the heading, links and the Netlify form (works once deployed). `/thanks/` for no-JS.
+- Contact: a hanging scroll (painted wooden rods, silk mount, pale range and clouds from `npm run range`, cobalt Southern Cross) holding the heading and links (form removed in round 5).
 - Footer: "Product designer making the world more accessible and beautiful one screen at a time.", LinkedIn and Behance, copyright line with Privacy policy, Terms of use, Back to top; Acknowledgement of Country band below with the Aboriginal and Torres Strait Islander flags (the latter's copyright: Torres Strait Island Regional Council). `/privacy/` and `/terms/` drafted in plain English (Ed to review; not legal advice).
 - Page transition, two stages: brush strokes paint the old page cobalt, then paint the new page in (cross-document view transition; Chrome/Safari; none with reduced motion). Sprites and CSS built by `npm run transition` (`scripts/brush-reveal.mjs`).
 - Dev gotcha: after adding imports or `markdoc.config.mjs` changes, restart the dev server (Vite's "Outdated Optimize Dep" breaks Keystatic until then). Screenshots: block Google Fonts in Playwright scripts, they hang from here.
@@ -52,20 +52,19 @@ Committed up to the latest commit on `main` (unit 61, e2e 175). Built:
 - About: the outfit paintings are decoded up front and the swap waits for them; a solid mist sits behind the billows, which now land opaque within 0.06s. "Tap me" is gone: a cobalt magic-wand cursor over Ed, and three sparkles glint by him every few seconds (rest when motion is paused).
 - Intro: first page of a visit, two cobalt doors carry the secondary mark; they part and the top-left quarter shrinks onto the nav logo (`Intro.astro`, `src/scripts/intro.ts`). Skipped with reduced motion, paused motion, or in Playwright; preview any time with `/?intro`. 4.5s fail-safe.
 - Workshop header: painted begonia lattice (`public/workshop/`), pending Ed's pick.
-- `/lab/` (noindex, unlinked; delete before launch): four page-transition styles (straight, waves, loops, vortex; `npm run brush-lab`) and the four lattices.
+- `/lab/` held alternative page transitions and lattices (removed 2026-10-05; recover from commit `1183d45` if needed).
 - Dev hook: `window.__puff` (dev only) is the last puff timeline. Headless Chromium skips GSAP timelines when you scrub it, so judge the puff in a real browser (`__puff.timeScale(0.1)`).
 
 ## Round 5 (2026-10-05)
 
 - Hero: the back layer (far range plus the Southern Cross) is `data-static`: it sits at its settled position and never moves on scroll or pointer.
 - About: a "Let’s make some magic" tag follows the wand cursor. The new outfit is hidden at the swap and fades in only as the billows thin away (`PUFF_REVEAL`). The hanfu is repainted (shawl over both arms, rounded hem) and, like the others, only its shawl moves in the wind.
-- Contact: the form is gone (heading, line and icons, centred). `/thanks/` is now unused. The seal stands upright, face down, and drifts in softly; the stamp is a round seal-red disc with the mark cut through (see-through).
-- `/lab/` adds a mist transition and two lattice-door transitions with the secondary mark in the moon window.
+- Contact: the form is gone (heading, line and icons, centred). The seal stands upright, face down, and drifts in softly; the stamp is a round seal-red disc with the mark cut through (see-through).
 
 ## Round 6 (2026-10-05)
 
 - Landing: Door B painted doors with the secondary mark in the moon window (`Intro.astro`, `intro.ts`). Shown on every fresh arrival or reload (not on in-site clicks), held until the page is ready plus at least 0.5s (`INTRO_LINGER`). Preview: `/?intro`.
-- Page transitions stay the brush strokes. `/lab/` still holds the alternatives (delete before launch).
+- Page transitions stay the brush strokes.
 - Workshop: octagon and plum blossom lattice; no flora anywhere on the page.
 - Contact is now "Let’s make something beautiful together." with the icon links, above a scroll you paint on (`scroll-paint.ts`): a pulsing skeleton of the scene, a bristle brush that reveals the painting, then a flying pig, then the seal; next-scene arrow (mountains, river), Start again, and a button for every step. Stamp is fully opaque.
 - Footer: Ed's seal (named image) instead of the Southern Cross; flags stacked at the same size (Aboriginal flag redrawn at its official 1:2); Pause motion moved here from the nav (still needed for WCAG 2.2.2).
@@ -88,16 +87,15 @@ Committed up to the latest commit on `main` (unit 61, e2e 175). Built:
 
 ## Next steps
 
-Nothing from rounds 3 to 8 is committed yet.
+Rounds 3 to 8 committed (`1183d45`); `/thanks/` and `/lab/` removed in the following commit.
 
-1. Ed decides: delete `/thanks/` (unused since the form went), the old scroll files (`public/hero/contact-*.webp`, `scripts/contact-range.mjs`, unused rods/range in `public/scroll/` from earlier rounds) and `/lab/`?
-2. Commit this round when Ed says so.
-3. Ed uploads real images for Workshop entries and case studies in Keystatic, and replaces the placeholder Workshop write-ups.
-4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Worth checking live: the cloth drag on the descent, the flowing water, the brush cursor.
-5. Handoff README, then deploy when Ed asks.
+1. Ed uploads real images for Workshop entries and case studies in Keystatic, and replaces the placeholder Workshop write-ups.
+2. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Worth checking live: the cloth drag on the descent, the flowing water, the brush cursor.
+3. Handoff README, then deploy when Ed asks.
 
 ## Open items for Ed
 
+- Old scroll files kept for now (Ed, 2026-10-05): `public/hero/contact-*.webp`, `scripts/contact-range.mjs` (`npm run range`), and unused `public/scroll/` cloud-a to d, range, range-sketch, river, river-sketch. Revisit before launch.
 - LinkedIn URL and resume link (Contact shows them only when set in `src/data/site.ts`).
 - Hero assets are 728KB (over the original 600KB budget; 7 layers). Accepted for now.
 - Small dark mound between the Flinders Street dome and clock tower comes from `art/hero-source/1-far-range.png`.

@@ -123,16 +123,6 @@ const bbox = ({ d, w, h }, x0 = 0, x1 = w, y0 = 0, y1 = h, thr = 40) => {
   console.log('seal', box);
 }
 
-// --- /lab/ transition tests (round5): the mist bank and two pairs of lattice doors, resized for the web ---
-{
-  const { mkdirSync } = await import('node:fs');
-  mkdirSync('public/lab', { recursive: true });
-  await sharp(`${SRC}/../round5/mist-2.png`).resize({ height: 1400 }).webp({ quality: 74 }).toFile('public/lab/mist-bank.webp');
-  await sharp(`${SRC}/../round5/mist-1.png`).resize({ width: 1800 }).webp({ quality: 72 }).toFile('public/lab/mist-fill.webp');
-  for (const n of [1, 2]) await sharp(`${SRC}/../round5/doors-${n}.png`).resize({ width: 2400 }).webp({ quality: 76 }).toFile(`public/lab/doors-${n}.webp`);
-  console.log('lab art');
-}
-
 // --- the paint-the-scroll scenes (round 6): each painting keyed onto the paper, plus a pale "skeleton" of it (its
 // edges traced into thin cobalt lines) that pulses until the visitor paints ---
 async function sketchOf(file, out) {
