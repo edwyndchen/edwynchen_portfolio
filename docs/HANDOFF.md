@@ -127,6 +127,7 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Hero paintings have a srcset (1200/1800/2400w, `npm run hero:sizes`, chained into `npm run hero`).
 - Phones drop two of the cloud-only hero layers (depth 0.12 and 0.35).
 - Hero name letter spacing 0.03em -> 0.01em (Ed).
+- Hosting: switched to Vercel (`@astrojs/vercel`, `site` https://edwynchen-portfolio.vercel.app); privacy page rewritten for Vercel and for no contact form (it still described Netlify Forms).
 - Ed didn't show on Ed's phone (Chrome). Likely the wind filter: Apple's WebKit (Safari and every iPhone browser) can draw an element blank under an SVG displacement filter with feImage. The wind now runs only off WebKit and off touch-first devices (`windSupported()` in fabric-wind.ts); they get the still painting. Not yet confirmed on the real phone.
 
 ## Next steps
@@ -135,7 +136,9 @@ Everything through round 9 is committed and pushed to GitHub: https://github.com
 
 1. Ed uploads real images for Workshop entries and case studies in Keystatic, and replaces the placeholder Workshop write-ups.
 2. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Worth checking live: the cloth drag on the descent, the flowing water, the brush cursor.
-3. Handoff README, then deploy when Ed asks.
+3. Handoff README.
+
+Live on Vercel: https://edwynchen-portfolio.vercel.app (Ed set it up, deploys on every push to `main`). The project uses `@astrojs/vercel` and that `site` since 2026-10-06 (it was configured for Netlify before). Keystatic uses local storage, so content is edited with `npm run dev` and pushed; `/keystatic` doesn't edit the live site.
 
 ## Open items for Ed
 
