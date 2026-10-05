@@ -18,7 +18,7 @@
 
   /* type: --font-display (Cormorant Garamond) and --font-cjk (Cactus Classical Serif, swapped from the DS's Ma Shan Zheng) come from the DS */
   --font-body: var(--font-sans);         /* Manrope */
-  --font-wordmark: 'Poppins', var(--font-sans); /* the logo's face (Poppins Bold), for the hero name only */
+  --font-wordmark: 'Poppins', var(--font-sans); /* the logo's family (Poppins), SemiBold for the hero name only */
 
   /* fluid versions of the DS display scale: DS size at desktop, sensible at 375px */
   --fluid-display-2xl: clamp(3rem, 1.95rem + 4.5vw, var(--text-display-2xl));  /* 48 → 88 */
