@@ -71,12 +71,13 @@ const year = new Date().getFullYear();
 </style>
 
 <script>
+  import { scrollToY } from '../scripts/smooth-scroll';
   // Back to top: smooth only when motion is fine, and focus lands at the top so keyboard users start over too
   const top = document.querySelector<HTMLAnchorElement>('[data-back-to-top]');
   top?.addEventListener('click', (e) => {
     e.preventDefault();
     const smooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    scrollToY(0, { immediate: !smooth });
     document.querySelector<HTMLElement>('.nav__brand')?.focus({ preventScroll: true });
     history.replaceState(null, '', location.pathname + location.search);
   });

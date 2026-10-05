@@ -5,15 +5,20 @@ describe('About descent', () => {
   it('starts Ed hidden, a little above his rest spot (inside the walls\' cover)', () => {
     expect(ED_START.yPercent).toBeLessThan(-20);
     expect(ED_START.yPercent).toBeGreaterThan(-50);
-    expect(ED_START.opacity).toBe(1); // there from the start, behind the walls
+    expect(ED_START.opacity).toBe(0); // hidden until the walls start to part (round 10: his ribbon peeked over them)
   });
-  it('walls part first, Ed descends while they part, then glides once he has landed', () => {
+  it('fades Ed in at the very start of the parting, while the walls still cover him', () => {
+    expect(DESCEND.appear[0]).toBe(DESCEND.phases.part[0]);
+    expect(DESCEND.appear[1]).toBeLessThanOrEqual(0.1);
+  });
+  it('walls part first, Ed descends while they part, and the glide starts before he settles (no lingering)', () => {
     const { part, descend, glide } = DESCEND.phases;
     expect(part[0]).toBe(0);
     expect(descend[0]).toBeGreaterThanOrEqual(part[0]);
     expect(descend[0]).toBeLessThan(part[1]);
-    expect(glide[0]).toBeGreaterThanOrEqual(descend[1]);
-    expect(glide[1]).toBe(1);
+    expect(glide[0]).toBeLessThan(descend[1]);
+    expect(glide[0]).toBeGreaterThan(descend[0]);
+    expect(glide[1]).toBeLessThanOrEqual(1);
   });
   it('pins longer on desktop than on phones', () => {
     expect(DESCEND.pin.desktop).toBeGreaterThan(DESCEND.pin.mobile);

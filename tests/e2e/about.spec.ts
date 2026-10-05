@@ -94,8 +94,8 @@ test('motion allowed, desktop: the walls part, Ed descends, then glides to the r
 
   await toLeadStart(page);
   let w = await wallEdges(page);
-  expect(w.left).toBeGreaterThan(w.vw / 2); // closed: the left wall reaches past the centre, Ed already behind it
-  expect(await edOpacity(page)).toBeGreaterThan(0.95);
+  expect(w.left).toBeGreaterThan(w.vw / 2); // closed: the left wall reaches past the centre
+  expect(await edOpacity(page)).toBeLessThan(0.05); // and Ed hidden behind it until it starts to part (round 10)
   // by the time the stage pins, the walls have already begun to part and Ed is on his way down
   await toPin(page, 0.002);
   w = await wallEdges(page);

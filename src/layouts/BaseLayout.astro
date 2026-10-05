@@ -58,6 +58,8 @@ const { title, description, noindex = false } = Astro.props;
     <script>
       import { initReveals } from '../scripts/reveal';
       import { initIntro } from '../scripts/intro';
+      import { initSmoothScroll } from '../scripts/smooth-scroll';
+      initSmoothScroll();
       initIntro();
       initReveals();
     </script>

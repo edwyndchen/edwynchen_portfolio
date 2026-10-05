@@ -203,12 +203,14 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   };
   const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
   const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+  // paused, the filter comes off altogether (a still filter still costs a redraw whenever he is repainted) (round 10)
+  const onPause = () => ed.classList.toggle('is-windy', !isMotionPaused());
 
   // runs only while the figure is on screen and motion is not paused
   let visible = false;
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !isMotionPaused()) start(); else stop(); });
   io.observe(ed);
-  const offMotion = whilePlaying(() => { if (visible) start(); }, stop);
+  const offMotion = whilePlaying(() => { onPause(); if (visible) start(); }, () => { onPause(); stop(); });
   const off = () => {
     stop(); io.disconnect(); ro.disconnect(); offMotion();
     window.removeEventListener('wind:retune', paint); window.removeEventListener('wind:outfit', onOutfit);

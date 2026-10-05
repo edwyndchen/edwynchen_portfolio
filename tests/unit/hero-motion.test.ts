@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { cloudDuration, collapsePercent, parallaxOffset, scrollShift, spreadPercent } from '../../src/scripts/hero-motion';
+import { cloudDuration, collapsePercent, parallaxOffset, scrollShift, spreadPercent, zoomScale } from '../../src/scripts/hero-motion';
 
 describe('parallaxOffset', () => {
   test('centre pointer gives no offset', () => expect(parallaxOffset(0, 0.5)).toBe(0));
@@ -56,4 +56,13 @@ describe('collapsePercent', () => {
     expect(collapsePercent(1)).toBeLessThan(0);
   });
   test('is gentler than the spread', () => expect(Math.abs(collapsePercent(0.04))).toBeLessThan(Math.abs(spreadPercent(0.04))));
+});
+
+describe('zoomScale', () => {
+  test('a slight zoom that grows with nearness, so it keeps the parallax depth', () => {
+    expect(zoomScale(0.04)).toBeGreaterThan(1);
+    expect(zoomScale(0.04)).toBeLessThan(zoomScale(0.5));
+    expect(zoomScale(0.5)).toBeLessThan(zoomScale(1));
+    expect(zoomScale(1)).toBeLessThanOrEqual(1.12);
+  });
 });

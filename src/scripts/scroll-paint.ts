@@ -12,8 +12,8 @@ import { gsap } from 'gsap';
 export type Step = 'paint' | 'pig' | 'seal' | 'done';
 export const SCENES = [
   // land: the side the cliffs or headland are on; the flying pig always heads towards it (Ed, round 9)
-  { key: 'apostles', label: 'the Twelve Apostles', src: '/scroll/apostles.webp', sketch: '/scroll/apostles-sketch.webp', land: 'right' },
-  { key: 'prom', label: 'Wilsons Promontory', src: '/scroll/prom.webp', sketch: '/scroll/prom-sketch.webp', land: 'left' },
+  { key: 'apostles', label: 'the Twelve Apostles', place: 'The Twelve Apostles, Victoria', src: '/scroll/apostles.webp', sketch: '/scroll/apostles-sketch.webp', land: 'right' },
+  { key: 'prom', label: 'Wilsons Promontory', place: 'Wilsons Promontory, Victoria', src: '/scroll/prom.webp', sketch: '/scroll/prom-sketch.webp', land: 'left' },
 ] as const;
 /** How much of the scene must be painted before the pig prompt (fraction of the scene's own area). */
 export const PAINTED_ENOUGH = 0.35;
@@ -78,6 +78,8 @@ export function initScrollPaint(root: HTMLElement): () => void {
   const canvas = root.querySelector<HTMLCanvasElement>('[data-paint-canvas]');
   const sketch = root.querySelector<HTMLImageElement>('[data-paint-sketch]');
   const prompt = root.querySelector<HTMLElement>('[data-paint-prompt]');
+  // the caption under the scroll names the place it's after (Ed, round 10)
+  const place = root.querySelector<HTMLElement>('[data-scroll-place]');
   const seal = root.querySelector<HTMLImageElement>('[data-seal]');
   const brush = root.querySelector<HTMLImageElement>('[data-brush]');
   const stamps = root.querySelector<HTMLElement>('[data-stamps]');
@@ -331,6 +333,7 @@ export function initScrollPaint(root: HTMLElement): () => void {
     sketch.src = s.sketch;
     art = await img(s.src);
     btn('next').setAttribute('aria-label', `Next scene: ${SCENES[(i + 1) % SCENES.length].label}`);
+    if (place) place.textContent = s.place;
     reset();
     layout();
   };

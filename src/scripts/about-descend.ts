@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { isMotionPaused, whilePlaying } from './motion';
+import { scrollToY } from './smooth-scroll';
 
 /**
  * Work -> About, retune here. Timeline positions are fractions of the pinned scroll; pin lengths are % of the
@@ -10,9 +11,14 @@ import { isMotionPaused, whilePlaying } from './motion';
 export const DESCEND = {
   // Ed is already there behind the walls before they start to part, and comes down as they open (Ed, round 9), so
   // the opening reveals him rather than him arriving after it
-  phases: { part: [0, 0.4], descend: [0, 0.6], glide: [0.65, 1], clear: [0.58, 0.92] },
+  // Round 10 (Ed: he lingered too long in the centre, and felt choppy): the glide starts while he is still settling, so
+  // the drop curves into the glide in one movement, with no pause between them
+  phases: { part: [0, 0.4], descend: [0, 0.45], glide: [0.28, 0.85], clear: [0.3, 0.75] },
   // phones: the walls part and slide off the sides (the text reads from the first part) while he descends behind them
   phasesMobile: { part: [0, 0.35], descend: [0, 0.5], glide: [1, 1], clear: [0.28, 0.6] },
+  // Ed stays hidden behind the walls (his ribbon reached up through their feathered top) and fades in over this first
+  // stretch of the timeline, as the walls start to part (Ed, round 10)
+  appear: [0, 0.05],
   pin: { desktop: 180, mobile: 140 },
   // the walls start parting this far (fraction of a screen) before the pin, while the last work cards are still on
   // their way off screen (Ed, round 9); the timeline's phases run across this lead-in and the pin together
@@ -22,12 +28,14 @@ export const DESCEND = {
   // that he stays inside the walls' cover until they open (any higher and his head shows above the clouds) (phones much less: the bio sits right above him and stays
   // readable the whole way, so he must not sweep across it)
   dropFrom: { desktop: -30, mobile: -18 },
-  scrub: 1,
+  // the page scroll is already smoothed (smooth-scroll.ts), so the scrub only needs a short catch-up (it was 1s,
+  // which with the smooth scroll on top made the scene trail the scroll)
+  scrub: 0.4,
 } as const;
 
-/** Ed waits behind the closed walls, centred and already there (Ed, round 9: never popping in), with a slight tilt
- * that settles as he comes down. */
-export const ED_START = { yPercent: DESCEND.dropFrom.desktop, rotation: 2, opacity: 1 };
+/** Ed waits behind the closed walls, centred, with a slight tilt that settles as he comes down. He is faded out until
+ * the walls start to part (DESCEND.appear), still fully behind them, so he never pops in and never peeks over them. */
+export const ED_START = { yPercent: DESCEND.dropFrom.desktop, rotation: 2, opacity: 0 };
 
 /** The two-column layout (and its choreography) starts at tablet width; keep in step with About.astro. */
 export const SPLIT = '48rem';
@@ -89,7 +97,9 @@ export function initAboutDescend(root: HTMLElement): () => void {
 
       // explicit sets, not fromTo: a scrubbed timeline sitting at progress 0 never renders its children,
       // so on a page loaded already scrolled to this point the start state would otherwise never apply
-      gsap.set([left, right], { x: 0 });
+      gsap.set([left, right], { x: 0, force3D: true });
+      // decode the walls ahead of time, so their first frame on screen doesn't stall the scroll (round 10)
+      for (const w of [left, right]) (w as HTMLImageElement).decode?.().catch(() => {});
       gsap.set(ed, { ...ED_START, yPercent: desktop ? DESCEND.dropFrom.desktop : DESCEND.dropFrom.mobile, x: edX });
       if (desktop) gsap.set(text, { y: 24, opacity: 0 });
 
@@ -112,7 +122,9 @@ export function initAboutDescend(root: HTMLElement): () => void {
         },
       });
       const tl = gsap.timeline({
-        defaults: { ease: 'none' },
+        // force3D: stay on the GPU between phases too (GSAP's default drops to a 2D transform whenever a tween ends,
+        // which made the browser repaint the huge wall paintings mid-scroll: the jitter, round 10)
+        defaults: { ease: 'none', force3D: true },
         scrollTrigger: {
           start: () => Math.max(0, pin.start - window.innerHeight * DESCEND.lead),
           end: () => pin.end,
@@ -128,14 +140,16 @@ export function initAboutDescend(root: HTMLElement): () => void {
       // phase 1: the walls part, opening from the first scroll (they start while the last work cards are leaving)
       tl.to(left, { x: leftPart, duration: p1 - p0, ease: 'power1.out' }, p0)
         .to(right, { x: rightPart, duration: p1 - p0, ease: 'power1.out' }, p0)
-        // phase 2: Ed comes down through the opening, inked quickly, the tilt settling as he lands
-        .to(ed, { yPercent: 0, rotation: 0, duration: d1 - d0, ease: 'power2.out' }, d0)
+        // Ed fades in behind the walls as they begin to part
+        .to(ed, { opacity: 1, duration: DESCEND.appear[1] - DESCEND.appear[0] }, DESCEND.appear[0])
+        // phase 2: Ed comes down through the opening, the tilt settling as he lands (sine: no hard stop to linger on)
+        .to(ed, { yPercent: 0, rotation: 0, duration: d1 - d0, ease: 'sine.out' }, d0)
         // phase 3: the walls drift off the sides, a touch ahead of the glide so the text rises into clear page
         .to(left, { x: leftOff, duration: c1 - c0, ease: 'sine.inOut' }, c0)
         .to(right, { x: rightOff, duration: c1 - c0, ease: 'sine.inOut' }, c0);
       // ...and on desktop Ed glides into his column while the text rises in on the left
       if (desktop) {
-        tl.to(ed, { x: 0, duration: g1 - g0, ease: 'power2.inOut' }, g0)
+        tl.to(ed, { x: 0, duration: g1 - g0, ease: 'sine.inOut' }, g0)
           .to(text, { y: 0, opacity: 1, duration: (g1 - g0) * 0.8, ease: 'power2.out' }, g0 + (g1 - g0) * 0.2);
       }
 
@@ -163,7 +177,7 @@ export function initAboutDescend(root: HTMLElement): () => void {
         const a = (e.target as Element).closest?.('a[href="#about"], a[href="/#about"]');
         if (!a || location.pathname !== '/' || !tl.scrollTrigger) return;
         e.preventDefault();
-        window.scrollTo({ top: tl.scrollTrigger.end, behavior: 'smooth' });
+        scrollToY(tl.scrollTrigger.end);
         history.pushState(null, '', '#about');
         focusAbout();
       };
@@ -171,7 +185,7 @@ export function initAboutDescend(root: HTMLElement): () => void {
       if (location.hash === '#about' && tl.scrollTrigger) {
         const st = tl.scrollTrigger;
         requestAnimationFrame(() => {
-          window.scrollTo(0, st.end);
+          scrollToY(st.end, { immediate: true });
           focusAbout();
         });
       }

@@ -126,8 +126,9 @@ const wallR = size(WALL_R);
   /* the figure is a button with nothing of a button's look: the hint below and the pointer say it's alive */
   .about__swap {
     display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit;
-    /* a little cobalt magic wand, its star tip the hotspot, haloed in white so it never gets lost over the painting */
-    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10 10 L28 28' stroke='%23fff' stroke-width='8' stroke-linecap='round'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%23fff' stroke-width='3.5' stroke-linejoin='round'/><path d='M15 2 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M3 15 l.6 1.3 1.3 .6 -1.3 .6 -.6 1.3 -.6 -1.3 -1.3 -.6 1.3 -.6 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M10 10 L28 28' stroke='%230d0b45' stroke-width='5' stroke-linecap='round'/><path d='M10 10 L28 28' stroke='%233231b0' stroke-width='3' stroke-linecap='round'/><path d='M20.5 20.5 L23.5 23.5' stroke='%23fff' stroke-width='3'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%233231b0' stroke-width='1.2' stroke-linejoin='round'/></svg>") 7 7, pointer;
+    /* a cobalt magic wand, its star tip the hotspot, haloed in white so it never gets lost over the painting; drawn at
+       72px so it holds its own beside the Contact brush and seal (Ed, round 10; browsers cap cursors at 128px) */
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 32 32'><path d='M10 10 L28 28' stroke='%23fff' stroke-width='8' stroke-linecap='round'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%23fff' stroke-width='3.5' stroke-linejoin='round'/><path d='M15 2 l.7 1.6 1.6 .7 -1.6 .7 -.7 1.6 -.7 -1.6 -1.6 -.7 1.6 -.7 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M3 15 l.6 1.3 1.3 .6 -1.3 .6 -.6 1.3 -.6 -1.3 -1.3 -.6 1.3 -.6 Z' fill='%235353c4' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round' paint-order='stroke'/><path d='M10 10 L28 28' stroke='%230d0b45' stroke-width='5' stroke-linecap='round'/><path d='M10 10 L28 28' stroke='%233231b0' stroke-width='3' stroke-linecap='round'/><path d='M20.5 20.5 L23.5 23.5' stroke='%23fff' stroke-width='3'/><path d='M7 1 L8.6 5.4 L13 7 L8.6 8.6 L7 13 L5.4 8.6 L1 7 L5.4 5.4 Z' fill='%23fff' stroke='%233231b0' stroke-width='1.2' stroke-linejoin='round'/></svg>") 16 16, pointer;
   }
   /* now and then three sparkles glint by him (for phones too, where there's no cursor); they rest while motion is paused */
   .about__glints { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
@@ -167,6 +168,10 @@ const wallR = size(WALL_R);
   @media (max-width: 47.99rem) { :global(.js) .about__hint { left: -15%; bottom: -2%; } }
   @media (prefers-reduced-motion: reduce) { .about__hint-hand { animation: none; } }
   :global(html.motion-paused) .about__hint-hand { animation: none; }
+  /* the painted ruyi wand (magic-wand.ts) takes over from the cursor once its painting has loaded */
+  .about__swap.has-wand { cursor: none; }
+  :global(.magic-spark) { position: fixed; left: 0; top: 0; z-index: 61; pointer-events: none; will-change: transform, opacity; }
+  :global(.magic-wand) { position: fixed; left: 0; top: 0; z-index: 60; width: 120px; height: auto; pointer-events: none; opacity: 0; will-change: transform; }
   .about__swap:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 8px; }
   .about__puff { position: absolute; inset: 0; pointer-events: none; }
   .about__puff { z-index: 1; }
@@ -192,6 +197,9 @@ const wallR = size(WALL_R);
     mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
   }
   .about.is-staged .about__walls { display: block; }
+  /* the walls and Ed move on every scroll frame: keep each on its own GPU layer for the whole stage, so the browser
+     slides the already-drawn pictures instead of repainting them (and Ed's wind filter) each frame (round 10) */
+  .about.is-staged .about__wall, .about.is-staged .about__ed { will-change: transform; }
   .about__wall {
     --w: max(160vh, 120vw); /* tall enough to overfill the box; wide enough that, closed, the outer cut side stays off-screen (right wall: 0.43w >= 50vw) */
     --overlap: 0.14;
@@ -239,6 +247,7 @@ const wallR = size(WALL_R);
   import { initAboutDescend } from '../scripts/about-descend';
   import { initFabricWind } from '../scripts/fabric-wind';
   import { initOutfitSwap } from '../scripts/outfit-swap';
+  import { initMagicWand, burst } from '../scripts/magic-wand';
   const el = document.querySelector<HTMLElement>('[data-about]');
   if (el) initAboutDescend(el);
   const ed = el?.querySelector<HTMLElement>('.about__ed');
@@ -246,6 +255,9 @@ const wallR = size(WALL_R);
   if (ed && filter) initFabricWind(ed, filter);
   const swap = el?.querySelector<HTMLButtonElement>('[data-outfit-button]');
   if (swap) initOutfitSwap(swap);
+  if (swap && window.matchMedia('(hover: hover)').matches) initMagicWand(swap);
+  // phones: no wand to hold, but a tap on him still throws the stars
+  else if (swap) swap.addEventListener('pointerdown', (e) => burst(e.clientX, e.clientY));
   // dev only: /?wind opens the wind tuner
   if (import.meta.env.DEV && new URLSearchParams(location.search).has('wind')) {
     import('../scripts/wind-tuner').then((m) => m.mountWindTuner());
