@@ -47,14 +47,14 @@ test('nav brand is the wordmark (the brush mark alone on phones) with an accessi
   await expect(page.locator(isMobile ? '.nav__brand svg.logo--mark' : '.nav__brand svg.nav__logo')).toBeVisible();
 });
 
-test('footer: summary, Southern Cross, legal links and back to top on the copyright line', async ({ page }) => {
+test('footer: summary, Ed\'s seal (a named image), legal links and back to top on the copyright line', async ({ page }) => {
   await page.goto('/');
   const footer = page.locator('footer');
   await expect(footer).not.toContainText('Made in Melbourne');
   await expect(footer).toContainText('Product designer making the world more accessible and beautiful one screen at a time.');
   await expect(footer.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', 'https://www.linkedin.com/in/edwynchen/');
   await expect(footer.getByRole('link', { name: /Behance/ })).toHaveAttribute('href', 'https://www.behance.net/edwynchen');
-  await expect(footer.locator('.footer__cross')).toHaveAttribute('aria-hidden', 'true');
+  await expect(footer.getByRole('img', { name: /seal/ })).toBeVisible();
   const base = footer.locator('.footer__base');
   await expect(base).toContainText('© ');
   await expect(base.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy/');

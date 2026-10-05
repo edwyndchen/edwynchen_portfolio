@@ -1,11 +1,12 @@
 ---
-import SouthernCross from './SouthernCross.astro';
+import SealStamp from './SealStamp.astro';
 import Logo from './Logo.astro';
+import SocialIcon from './SocialIcon.astro';
 import { site } from '../data/site';
 const year = new Date().getFullYear();
 const socials = [
-  { label: 'LinkedIn', href: site.linkedin },
-  { label: 'Behance', href: site.behance },
+  { label: 'LinkedIn', icon: 'linkedin' as const, href: site.linkedin },
+  { label: 'Behance', icon: 'behance' as const, href: site.behance },
 ].filter((s) => s.href);
 ---
 <footer class="footer">
@@ -18,12 +19,13 @@ const socials = [
       <nav class="footer__social" aria-label="Elsewhere">
         <ul>
           {socials.map((s) => (
-            <li><a href={s.href} rel="me noopener" target="_blank">{s.label}<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></li>
+            <li><a href={s.href} rel="me noopener" target="_blank" aria-label={`${s.label} (opens in a new tab)`} title={s.label}><SocialIcon name={s.icon} /></a></li>
           ))}
         </ul>
       </nav>
     )}
-    <SouthernCross class="footer__cross" />
+    <!-- Ed's seal signs off the footer (it replaced the Southern Cross here) -->
+    <span class="footer__seal"><SealStamp id="seal-footer" title={`${site.name}'s seal`} /></span>
   </div>
   <div class="wrap footer__base">
     <p class="label">© {year} {site.name}</p>
@@ -38,7 +40,7 @@ const socials = [
 <aside class="country" aria-labelledby="country-title">
   <div class="wrap country__inner">
     <ul class="country__flags" aria-label="Flags">
-      <li><img src="/flags/aboriginal.svg" alt="Australian Aboriginal flag" width="60" height="36" /></li>
+      <li><img src="/flags/aboriginal.svg" alt="Australian Aboriginal flag" width="72" height="36" /></li>
       <!-- copyright: Torres Strait Island Regional Council; shown here as part of the Acknowledgement -->
       <li><img src="/flags/torres-strait-islander.svg" alt="Torres Strait Islander flag" width="72" height="36" /></li>
     </ul>
@@ -59,10 +61,10 @@ const socials = [
   @media (min-width: 48rem) { .footer__main { grid-template-columns: minmax(0, 1fr) auto auto; column-gap: var(--space-xl); } }
   .footer__brand { display: inline-flex; min-height: 44px; align-items: center; }
   .footer__summary { margin: var(--space-s) 0 0; max-width: 34ch; font-family: var(--font-display); font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--text-on-invert); }
-  .footer__social ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
-  .footer__social a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); }
-  /* the svg is rendered by SouthernCross, so the class needs :global to reach it */
-  .footer :global(.footer__cross) { width: 1.75rem; height: 1.75rem; color: var(--wattle-gold); flex: none; }
+  .footer__social ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-s); }
+  .footer__social a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; font-size: 24px; }
+  /* the seal: seal red on the navy reads at 3.4:1, clear of the 3:1 non-text contrast minimum */
+  .footer__seal { display: block; width: 4rem; height: 4rem; flex: none; }
   .footer__base {
     display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l);
     padding-block: var(--space-m); border-top: 1px solid var(--border-invert);
@@ -74,8 +76,9 @@ const socials = [
 
   .country { background: var(--surface-page); border-top: 4px solid var(--surface-invert); }
   .country__inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-m) var(--space-l); padding-block: var(--space-l); }
-  .country__flags { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-s); }
-  .country__flags img { display: block; width: auto; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
+  .country__flags { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-xs); }
+  /* stacked, exactly the same size (both drawn at 1:2) */
+  .country__flags img { display: block; width: 72px; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
   .country h2 { color: var(--gold-text); margin: 0 0 var(--space-2); }
   .country p { margin: 0; max-width: 70ch; font-size: var(--text-sm); color: var(--text-primary); }
 </style>

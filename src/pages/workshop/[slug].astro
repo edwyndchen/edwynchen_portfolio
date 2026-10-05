@@ -1,7 +1,10 @@
 ---
+// A Workshop project page (Ed, 2026-10-05): the case study layout, lighter. The image across the top, the cobalt
+// band (title, tags, overview, at a glance and the live link), then the write-up with its On this page links.
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Plate from '../../components/Plate.astro';
+import PlaceholderFrame from '../../components/PlaceholderFrame.astro';
+import CaseToc from '../../components/CaseToc.astro';
 import Contact from '../../components/Contact.astro';
 import { publishedWorkshop, hasWriteup, STATUS_LABEL } from '../../lib/workshop';
 import { site } from '../../data/site';
@@ -14,33 +17,55 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 const month = d.date.toLocaleDateString('en-AU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const external = d.link && /^https?:/.test(d.link);
+const overview = (d.overview || d.blurb).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+const glance = [
+  ['Status', STATUS_LABEL[d.status]], ['Started', month], ['Role', d.role], ['Timeline', d.timeline],
+  ['Tools', d.skills.join(', ')],
+].filter(([, v]) => v);
 ---
 <BaseLayout title={`${d.title} | Workshop | ${site.name}`} description={d.blurb}>
   <article>
-    <header class="wrap wsp-head">
-      <p class="wsp-back"><a href="/workshop/"><span aria-hidden="true">← </span>Workshop</a></p>
-      <Plate>
-        <p class="label wsp-head__kicker">{STATUS_LABEL[d.status]} · <time datetime={d.date.toISOString().slice(0, 10)}>{month}</time></p>
-        <h1>{d.title}</h1>
-        <p class="wsp-head__dek">{d.blurb}</p>
-        {(d.skills.length > 0 || d.link) && (
-          <div class="wsp-head__foot">
-            {d.skills.length > 0 && <ul class="wsp-head__skills" aria-label="Skills and tools">{d.skills.map((s) => <li>{s}</li>)}</ul>}
-            {d.link && (
-              <a class="button" href={d.link} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
-                {d.linkLabel || 'Visit'}<span aria-hidden="true"> ↗</span>{external && <span class="visually-hidden"> (opens in a new tab)</span>}
-              </a>
-            )}
-          </div>
-        )}
-      </Plate>
-      {d.image && <img class="wsp-head__image" src={d.image} alt={d.imageAlt} loading="eager" />}
+    <!-- 1. the image, edge to edge -->
+    <div class="wsp-hero">
+      {d.image
+        ? <img class="wsp-hero__img" src={d.image} alt={d.imageAlt} width="1600" height="900" fetchpriority="high" />
+        : <PlaceholderFrame id="wsp-hero" ratio="16 / 9" hint="Add an image in Keystatic" />}
+    </div>
+
+    <!-- 2. the blue band: what it is, at a glance, and where to try it -->
+    <header class="wsp-band">
+      <div class="wrap wsp-band__inner">
+        <div>
+          <p class="wsp-back"><a href="/workshop/"><span aria-hidden="true">← </span>Workshop</a></p>
+          <h1>{d.title}</h1>
+          <ul class="wsp-band__tags" aria-label="Tags">
+            <li>{STATUS_LABEL[d.status]}</li>
+            {d.skills.map((s) => <li>{s}</li>)}
+          </ul>
+          <section class="wsp-band__overview" aria-labelledby="wsp-overview-title">
+            <h2 id="wsp-overview-title" class="label">Overview</h2>
+            {overview.map((para) => <p>{para}</p>)}
+          </section>
+          {d.link && (
+            <a class="button wsp-band__live" href={d.link} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+              {d.linkLabel || 'See it live'}<span aria-hidden="true"> ↗</span>{external && <span class="visually-hidden"> (opens in a new tab)</span>}
+            </a>
+          )}
+        </div>
+        <section class="wsp-glance" aria-labelledby="wsp-glance-title">
+          <h2 id="wsp-glance-title" class="label">At a glance</h2>
+          <dl>{glance.map(([k, v]) => <div><dt class="label">{k}</dt><dd>{v}</dd></div>)}</dl>
+        </section>
+      </div>
     </header>
+
+    <!-- 3. the write-up, with its On this page links beside it -->
     <div class="wrap wsp-body">
+      <CaseToc headings={headings} />
       <div class="prose"><Content /></div>
     </div>
   </article>
@@ -48,15 +73,39 @@ const external = d.link && /^https?:/.test(d.link);
 </BaseLayout>
 
 <style>
-  .wsp-head { padding-top: var(--space-l); }
-  .wsp-back { margin: 0 0 var(--space-m); }
-  .wsp-back a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); }
-  .wsp-head__kicker { color: var(--gold-text); margin: 0; }
-  .wsp-head h1 { font-size: var(--fluid-display-xl); margin: var(--space-s) 0 var(--space-m); }
-  .wsp-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 40ch; }
-  .wsp-head__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-m); margin-top: var(--space-l); }
-  .wsp-head__skills { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
-  .wsp-head__skills li { padding: 4px 9px; font-size: var(--text-xs); border: 1px solid var(--border-hairline); color: var(--text-brand); }
-  .wsp-head__image { display: block; margin-top: var(--space-l); width: 100%; height: auto; mix-blend-mode: multiply; }
-  .wsp-body { padding-block: var(--space-xl); }
+  .wsp-hero { overflow: hidden; }
+  .wsp-hero__img {
+    display: block; width: 100%; height: auto; max-height: min(78svh, 56.25vw); object-fit: cover; mix-blend-mode: multiply;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 8%); mask-image: linear-gradient(to bottom, transparent, #000 8%);
+  }
+  /* the band repaints the tokens its children use, as on the case studies (paper 9.5:1 on blue-700) */
+  .wsp-band {
+    --text-primary: var(--paper-50); --text-secondary: var(--blue-100); --gold-text: var(--gold-300);
+    --border-hairline: rgba(255, 255, 255, 0.28); --focus-ring: var(--paper-0);
+    background: var(--surface-brand); color: var(--text-primary); padding-block: var(--space-xl);
+  }
+  .wsp-band__inner { display: grid; gap: var(--space-xl); }
+  @media (min-width: 60rem) { .wsp-band__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: var(--space-2xl); } }
+  .wsp-back { margin: 0 0 var(--space-s); }
+  .wsp-back a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); color: var(--paper-0); }
+  .wsp-band h1 { font-size: var(--fluid-display-xl); color: var(--paper-0); margin: 0 0 var(--space-m); max-width: 16ch; }
+  .wsp-band__tags { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .wsp-band__tags li {
+    padding: 5px 11px; font-size: var(--text-xs); font-weight: var(--fw-semibold); letter-spacing: var(--ls-caps); text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: var(--radius-round); color: var(--paper-0);
+  }
+  .wsp-band__overview h2, .wsp-glance h2 { color: var(--gold-text); margin: 0 0 var(--space-s); }
+  .wsp-band__overview p { margin: 0 0 var(--space-m); max-width: 60ch; line-height: var(--lh-relaxed); }
+  .wsp-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--paper-0); }
+  /* the live link: a porcelain button on the cobalt */
+  .wsp-band__live { background: var(--paper-0); color: var(--blue-700); border-color: var(--paper-0); margin-top: var(--space-xs); }
+  .wsp-band__live:hover { background: var(--blue-50); color: var(--blue-900); }
+  .wsp-glance dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-m) var(--space-l); margin: 0; }
+  .wsp-glance dl div { border-top: var(--rule-hair); padding-top: var(--space-3); }
+  .wsp-glance dt { margin-bottom: var(--space-1); color: var(--text-secondary); }
+  .wsp-glance dd { margin: 0; }
+  .wsp-body { padding-block: var(--space-2xl) var(--space-xl); display: grid; gap: var(--space-l); }
+  @media (min-width: 60rem) { .wsp-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
+  .wsp-body :global(.prose h2) { scroll-margin-top: 6rem; }
+  @media (max-width: 59.99rem) { .wsp-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }
 </style>

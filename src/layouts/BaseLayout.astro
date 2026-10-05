@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/brush-transition.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Intro from '../components/Intro.astro';
 interface Props { title: string; description: string; noindex?: boolean }
 const { title, description, noindex = false } = Astro.props;
 ---
@@ -14,6 +15,22 @@ const { title, description, noindex = false } = Astro.props;
       document.documentElement.classList.add('js');
       // the visitor's Pause motion choice, before first paint (see src/scripts/motion.ts)
       try { if (localStorage.getItem('motion') === 'paused') document.documentElement.classList.add('motion-paused'); } catch (e) {}
+      // the landing doors (Intro.astro): whenever the visitor arrives fresh or reloads, never on a click from page to
+      // page inside the site (that has the brush transition), and only with motion allowed
+      try {
+        var r = document.documentElement;
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        var type = nav ? nav.type : 'navigate';
+        var internal = false;
+        try { internal = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+        var fresh = type === 'reload' || (type === 'navigate' && !internal);
+        var forced = /[?&]intro\b/.test(location.search); // preview it any time with ?intro
+        if (forced || (fresh && !r.classList.contains('motion-paused') && !matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.webdriver)) {
+          r.classList.add('intro');
+          // fail-safe: if the script never runs, the doors still get out of the way
+          setTimeout(function () { r.classList.remove('intro'); }, 8000);
+        }
+      } catch (e) {}
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
@@ -31,12 +48,15 @@ const { title, description, noindex = false } = Astro.props;
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&text=%E9%99%B3&display=swap" />
   </head>
   <body>
+    <Intro />
     <a class="skip-link" href="#main">Skip to content</a>
     <Nav />
     <main id="main"><slot /></main>
     <Footer />
     <script>
       import { initReveals } from '../scripts/reveal';
+      import { initIntro } from '../scripts/intro';
+      initIntro();
       initReveals();
     </script>
   </body>

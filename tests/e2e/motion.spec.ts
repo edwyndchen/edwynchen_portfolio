@@ -33,7 +33,7 @@ test('Pause motion: one press stops the endless animations, says so, and is reme
 test('Pause motion is reachable on phones too, in the bar beside Menu', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phone bar');
   await page.goto('/');
-  const toggle = page.getByRole('button', { name: 'Pause motion' });
+  const toggle = page.locator('.nav').getByRole('button', { name: 'Pause motion' });
   await expect(toggle).toBeVisible();
   const box = (await toggle.boundingBox())!;
   expect(box.width).toBeGreaterThanOrEqual(44);

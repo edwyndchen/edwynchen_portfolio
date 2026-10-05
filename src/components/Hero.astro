@@ -12,18 +12,19 @@ import { site } from '../data/site';
     </div>
   </div>
   <div class="hero__scene" aria-hidden="true">
-    <div class="hero__layer" data-depth="0.04" data-scroll="0">
+    <!-- the back layer (the furthest range and the Southern Cross) stays still: stars don't move, no parallax -->
+    <div class="hero__layer hero__layer--back" data-depth="0.04" data-scroll="0" data-static>
       <img class="hero__fill" src="/hero/far.webp" alt="" width="2400" height="1021" decoding="async" fetchpriority="high" />
-      <img class="hero__cloud" src="/hero/cloud-s4.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:26%" />
-      <img class="hero__cloud" src="/hero/cloud-r1.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;--rest:60%;width:16%" />
-      <img class="hero__cloud" src="/hero/cloud-r4.webp" alt="" decoding="async" loading="lazy" style="top:8%;left:0;--rest:86%;width:13%" />
       <svg class="hero__cross" viewBox="0 0 100 100"><g fill="currentColor">
         <circle cx="50" cy="8" r="4"/><circle cx="44" cy="92" r="4.6"/><circle cx="14" cy="46" r="4"/><circle cx="80" cy="36" r="3.4"/><circle cx="62" cy="62" r="2.2"/>
       </g></svg>
+      <img class="hero__cloud" src="/hero/cloud-s4.webp" alt="" decoding="async" loading="lazy" style="top:44%;left:0;--rest:12%;width:26%" />
+      <img class="hero__cloud" src="/hero/cloud-v1.webp" alt="" decoding="async" loading="lazy" style="top:24%;left:0;--rest:58%;width:24%" />
+      <img class="hero__cloud" src="/hero/cloud-r4.webp" alt="" decoding="async" loading="lazy" style="top:8%;left:0;--rest:86%;width:13%" />
     </div>
     <div class="hero__layer" data-depth="0.12" data-scroll="0.15">
       <img class="hero__cloud" src="/hero/cloud-r2.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:30%;width:15%" />
-      <img class="hero__cloud" src="/hero/cloud-s2.webp" alt="" decoding="async" loading="lazy" style="top:32%;left:0;--rest:78%;width:14%" />
+      <img class="hero__cloud" src="/hero/cloud-v6.webp" alt="" decoding="async" loading="lazy" style="top:30%;left:0;--rest:76%;width:15%" />
       <img class="hero__cloud" src="/hero/cloud-r3.webp" alt="" decoding="async" loading="lazy" style="top:40%;left:0;--rest:36%;width:12%" />
     </div>
     <div class="hero__layer" data-depth="0.22" data-scroll="0.3">
@@ -34,7 +35,7 @@ import { site } from '../data/site';
     </div>
     <div class="hero__layer" data-depth="0.35" data-scroll="0.45">
       <img class="hero__cloud" src="/hero/cloud-s1.webp" alt="" decoding="async" loading="lazy" style="top:54%;left:0;--rest:8%;width:20%" />
-      <img class="hero__cloud" src="/hero/cloud-r4.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;--rest:55%;width:13%" />
+      <img class="hero__cloud" src="/hero/cloud-v3.webp" alt="" decoding="async" loading="lazy" style="top:58%;left:0;--rest:52%;width:22%" />
     </div>
     <div class="hero__layer" data-depth="0.5" data-scroll="0.65">
       <img class="hero__fill" src="/hero/mid.webp" alt="" width="2400" height="1021" decoding="async" />
@@ -42,7 +43,7 @@ import { site } from '../data/site';
     </div>
     <div class="hero__layer" data-depth="1" data-scroll="1.1">
       <img class="hero__cloud" src="/hero/cloud-s3.webp" alt="" decoding="async" loading="lazy" style="top:3%;left:0;--rest:2%;width:20%" />
-      <img class="hero__cloud" src="/hero/cloud-s2.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:40%;width:18%" />
+      <img class="hero__cloud" src="/hero/cloud-v5.webp" alt="" decoding="async" loading="lazy" style="top:12%;left:0;--rest:40%;width:17%" />
       <img class="hero__cloud" src="/hero/cloud-r3.webp" alt="" decoding="async" loading="lazy" style="top:22%;left:0;--rest:74%;width:15%" />
     </div>
   </div>
@@ -79,9 +80,16 @@ import { site } from '../data/site';
   /* layers keep the painting's aspect, sit on the bottom of the scene and are slightly oversized so parallax never reveals an edge */
   .hero__layer { position: absolute; inset: auto -3% -3% -3%; height: 91.4%; /* 106% width at the painting aspect, inside the 1540-tall scene */ will-change: transform; }
   .hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* the far range's painted sky is a touch whiter than the page: its top edge feathers away, so no line ever shows
+     between the copy and the mountains */
+  .hero__layer--back .hero__fill {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 34%);
+    mask-image: linear-gradient(to bottom, transparent, #000 34%);
+  }
   .hero__cloud { position: absolute; height: auto; }
   .hero__tram { position: absolute; left: 31%; top: 77%; width: 3.6%; height: auto; opacity: 0; }
-  .hero__cross { position: absolute; top: 6%; left: 46%; width: 3%; color: #B8862B; /* artwork keeps its painted gold */ opacity: 0.8; }
+   /* in the back layer, 50% bigger than in the painting, in the sky above the big right-hand peak */
+  .hero__cross { position: absolute; top: 14%; left: 71%; width: 4.5%; height: auto; color: var(--cobalt); opacity: 0.85; }
   @media (prefers-reduced-motion: reduce) { .hero__tram { opacity: 1; left: 47%; } .hero__cloud { left: var(--rest) !important; /* beats inline left:0 */ } }
   @media (max-width: 48rem) {
     /* Layers keep the art's aspect (2400/1021) and overflow the scene, so %-positioned items stay on
@@ -90,6 +98,8 @@ import { site } from '../data/site';
     .hero__scene { aspect-ratio: 1.49; }
     .hero__layer { inset: auto; bottom: -3%; height: 91.3%; width: 144%; left: -27%; }
     .hero__cloud ~ .hero__cloud ~ .hero__cloud { display: none; }
+    /* phones crop the art: the right peak sits near the right edge */
+    .hero__cross { left: 70%; top: 18%; width: 5%; }
   }
 </style>
 

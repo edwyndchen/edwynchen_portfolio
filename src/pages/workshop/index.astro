@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Lattice from '../../components/Lattice.astro';
-import Flora from '../../components/Flora.astro';
 import WorkshopCard from '../../components/WorkshopCard.astro';
 import Contact from '../../components/Contact.astro';
 import { publishedWorkshop, skillsOf, skillKey } from '../../lib/workshop';
@@ -14,9 +12,9 @@ const skills = skillsOf(entries);
 <BaseLayout title={`Workshop | ${site.name}`} description="Personal projects and experiments by Edwyn Chen.">
   <!-- the header is a lattice screen, not a card: the window lattice fills the band and clears behind the words -->
   <header class="ws-head">
-    <Lattice id="ws-head-lattice" class="ws-head__lattice" tile={52} />
+    <!-- a painted window lattice (Seedream, see image-prompts.md; options on /lab/): swap the file to change it -->
+    <div class="ws-head__lattice" style="--lattice: url(/workshop/lattice-octagon.webp)"></div>
     <div class="wrap ws-head__inner">
-      <Flora plant="waratah" side="right" class="flora--ws-head" />
       <h1>Workshop</h1>
       <p class="ws-head__dek">Side projects and experiments from my bench. Some get fired and glazed. Others stay sketches, and that’s fine.</p>
     </div>
@@ -25,7 +23,6 @@ const skills = skillsOf(entries);
   <section class="wrap ws" aria-labelledby="ws-skills-title" data-workshop>
     {skills.length > 0 && (
       <div class="ws__skills">
-        <Flora plant="gum" side="right" class="flora--ws-skills" />
         <h2 id="ws-skills-title" class="label">Brushes and tools</h2>
         <!-- a plain list without JS; the script turns each item into a filter toggle -->
         <ul class="ws__chips" data-chips>
@@ -41,7 +38,6 @@ const skills = skillsOf(entries);
     ) : (
       <p class="ws__empty">The bench is empty for now. Back soon.</p>
     )}
-    <div class="ws__end"><Flora plant="wattle" side="right" class="flora--ws-end" /></div>
   </section>
   <Contact />
 </BaseLayout>
@@ -49,8 +45,8 @@ const skills = skillsOf(entries);
 <style>
   .ws-head { position: relative; overflow: hidden; padding-block: clamp(3.5rem, 10vh, 7rem); }
   /* the lattice fades out towards the words, so they sit in a clearing, never on top of the bars */
-  .ws-head :global(.ws-head__lattice) {
-    position: absolute; inset: 0; color: var(--blue-200);
+  .ws-head .ws-head__lattice {
+    position: absolute; inset: 0; background: var(--lattice) center / cover;
     /* ...and feathers into the paper top and bottom, so the screen never ends on a ruled edge */
     -webkit-mask-image: radial-gradient(ellipse 60% 85% at 22% 50%, transparent 35%, #000 80%), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
     mask-image: radial-gradient(ellipse 60% 85% at 22% 50%, transparent 35%, #000 80%), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
@@ -58,19 +54,10 @@ const skills = skillsOf(entries);
   }
   .ws-head__inner { position: relative; }
   .ws-head h1 { font-size: var(--step-4); margin: 0 0 var(--space-m); max-width: 12ch; }
-  /* the Australian flora lives here now: the waratah in the lattice, the gum by the tools, the wattle at the end */
-  .ws-head__inner :global(.flora--ws-head) { top: 50%; translate: 0 -50%; z-index: 1; }
   .ws__skills { position: relative; }
-  .ws__skills :global(.flora--ws-skills) { top: calc(var(--space-l) * -1); width: clamp(96px, 12vw, 180px); }
-  .ws__end { position: relative; height: clamp(110px, 14vw, 200px); margin-top: var(--space-l); }
-  .ws__end :global(.flora--ws-end) { top: 0; }
-  @media (max-width: 47.99rem) {
-    .ws-head__inner :global(.flora--ws-head) { top: auto; bottom: calc(var(--space-xl) * -1); translate: none; }
-    .ws__skills :global(.flora--ws-skills) { display: none; }
-  }
   .ws-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 34ch; }
   @media (max-width: 47.99rem) {
-    .ws-head :global(.ws-head__lattice) {
+    .ws-head .ws-head__lattice {
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 32%, transparent 82%, #000 92%, transparent);
       mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 32%, transparent 82%, #000 92%, transparent);
       -webkit-mask-composite: source-over; mask-composite: add;

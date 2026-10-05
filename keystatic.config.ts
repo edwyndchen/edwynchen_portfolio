@@ -125,14 +125,17 @@ export default config({
           defaultValue: 'in-progress',
         }),
         blurb: fields.text({ label: 'Blurb', description: 'One or two lines for the card', multiline: true, validation: { length: { min: 1 } } }),
+        overview: fields.text({ label: 'Overview', description: 'A short paragraph or two for the blue band on the project page. Blank lines start new paragraphs.', multiline: true }),
+        role: text('Role', 'e.g. "Design and build". Shows in the At a glance block.'),
+        timeline: text('Timeline', 'e.g. "Two weekends", "Aug 2026 to now".'),
         skills: fields.array(fields.text({ label: 'Skill or tool' }), {
           label: 'Skills and tools',
           description: 'e.g. Figma, React, GSAP. These build the skills filter on the Workshop page.',
           itemLabel: (p) => p.value,
         }),
-        image: fields.image({ label: 'Image', directory: 'public/images/workshop', publicPath: '/images/workshop/' }),
+        image: fields.image({ label: 'Image', description: 'The card image, and the image across the top of the project page.', directory: 'public/images/workshop', publicPath: '/images/workshop/' }),
         imageAlt: text('Image alt text', 'Describe the image for screen readers. Required when an image is set.'),
-        link: fields.url({ label: 'Link', description: 'Live demo, GitHub, Figma, etc. Optional.' }),
+        link: fields.url({ label: 'Link', description: 'Live demo, GitHub, Figma, etc. Optional. Shows as a button on the card and the project page.' }),
         linkLabel: text('Link text', 'e.g. "Try it", "View on GitHub". Defaults to "Visit".'),
         body: fields.markdoc({
           label: 'Write-up (optional)',
@@ -144,6 +147,8 @@ export default config({
               schema: { alt: fields.text({ label: 'Alt text', validation: { length: { min: 1 } } }) },
             },
           },
+          // the same blocks as the case studies: a full-width image, and a carousel of screens
+          components: { sectionImage, gallery },
         }),
       },
     }),

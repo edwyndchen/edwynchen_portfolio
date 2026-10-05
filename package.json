@@ -12,7 +12,9 @@
     "hero": "node art/hero-source/build.mjs",
     "shots": "node scripts/screenshots.mjs",
     "transition": "node scripts/brush-reveal.mjs",
-    "range": "node scripts/contact-range.mjs"
+    "range": "node scripts/contact-range.mjs",
+    "scroll": "node scripts/scroll-art.mjs",
+    "brush-lab": "node scripts/brush-lab.mjs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^2.0.9",

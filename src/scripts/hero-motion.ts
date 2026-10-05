@@ -67,7 +67,10 @@ export function initHero(root: HTMLElement): () => void {
     endless.push(gsap.to('.hero__cross circle', { opacity: 0.35, duration: 2.4, stagger: { each: 0.5, repeat: -1, yoyo: true }, ease: 'sine.inOut' }));
     const offMotion = whilePlaying(() => endless.forEach((t) => t.resume()), () => endless.forEach((t) => t.pause()));
 
-    const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]')];
+    // the back layer (furthest range and the Southern Cross) is data-static: it sits where the others settle and
+    // never moves, neither on scroll nor with the pointer (Ed: stars don't move)
+    scene.querySelectorAll<HTMLElement>('[data-static]').forEach((l) => gsap.set(l, { yPercent: collapsePercent(Number(l.dataset.depth), window.matchMedia('(max-width: 48rem)').matches ? 6 : 10) }));
+    const layers = [...scene.querySelectorAll<HTMLElement>('[data-depth]:not([data-static])')];
     // One scrubbed timeline per layer: phase 1 (page top -> scene top reaches viewport top) collapses the
     // tall spread into a tighter landscape; phase 2 is the scroll-out parallax from there.
     const mobile = window.matchMedia('(max-width: 48rem)');

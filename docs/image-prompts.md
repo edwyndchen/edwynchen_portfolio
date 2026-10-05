@@ -64,3 +64,47 @@ Nano Banana 2 off Ed's final portrait (uploaded `a41400c8`). Festival wear with 
 Ed: three completely different outfits and poses. Nano Banana 2 off portrait `a41400c8`: Tang-style festival jacket with pig mask and piglet `c3f27e06` (A), `86f5f69a` (B, used, cutout `9e5c738b`); Song-style layered robe pouring a vase over the shoulder `98c46691` (A), `4fe8a026` (B, used, cutout `26974e28`). Recoloured (`recolor.mjs … 1.3`) and centred on the portrait's 1100x1538 canvas.
 Scroll rods, Seedream 5.0 Pro: `fd318044` (A), `c494b96d` (B, used), sliced into `public/scroll/rod-{left,mid,right}.webp`.
 Hero clouds v3 (more swirls), Seedream off `7fe457e1`: xiangyun `9e43e9ac`, `f2874f32`, `1b4c06ad`, `4a097d4c` (s1-s4), ruyi `8ea99bb1`, `1ad95269`, `b21d1457`, `8f5c35ca` (r1-r4). Built by `npm run hero`; the scroll's pale copies by `npm run range`.
+
+## Round 3 fixes, 2026-10-05 (sources in `art/round3/`)
+
+- Pig outfit, ribbon over both arms: Nano Banana 2 edit of the old pig (`86f5f69a`): `1e8faed7` (A, ribbon unchanged), `45d0028d` (B, used). Cutout `47960fdf`.
+- Aquarius, one stream only: Nano Banana 2 edit of the old water bearer (`4fe8a026`): `86450536` (A, used), `4f6cb69a` (B, second stream kept). Cutout `d8b37b29`.
+- Both framed and recoloured by `node art/round3/frame.mjs` (cobalt ramp, depth 1.3, fitted into the old outfit's box). Wind maps (only ribbon and water move): hand-traced body polygons in `art/round3/wind-maps.mjs`. Red-fill mask attempts (`6bf18c7d`, `17d3f7e7`) and layer splits (`f5b2cefa`, `b5bcae14`) didn't work.
+- Scroll, painted in the art's style (Seedream 5.0 Pro off `7fe457e1`): rods `cab11f7b` (A, plain caps), `21d920e4` (B, lotus caps, used); ranges `6bf76ef8` (A, low and gentle, used), `89740acc` (B, bolder); clouds `344977b3` (three xiangyun, used as a–c), `b17db4f6` (lower band used as d). Built by `npm run scroll`.
+- Hero clouds moved onto the mountains' cobalt ramp in `build.mjs` (shared `art/portrait/cobalt.mjs`), outlines softened less (0.5); the hand-cropped right wall recoloured by `art/about/recolor-wall.mjs`.
+
+## Round 4, 2026-10-05 (sources in `art/round4/`, all Seedream 5.0 Pro off `7fe457e1`)
+
+- Scroll painting with the clouds painted in: `5154b1a6` (A), `e4d4fa4b` (B, used). Built into `public/scroll/range.webp` by `npm run scroll`.
+- Workshop header lattices: cracked ice `a958b870`, key fret `e649cf14`, begonia and circles `6c293bd6` (live for now), octagons and plum blossom `d6980391`. Pale cobalt copies in `public/workshop/`; compare on `/lab/`.
+- Contact seal (follows the pointer): lion-knob chop `4a46b4da` (used), tasselled cylinder `35a516ef`. Cut out to `public/scroll/seal.webp`.
+- The stamp impression is Ed's Logo Mark Secondary in `--seal-500`, drawn in `src/components/SealStamp.astro` (no generation).
+
+## Round 5, 2026-10-05 (sources in `art/round5/`)
+
+- Hanfu repaint, ribbon over both arms and a soft hem (Nano Banana 2 edit of the live hanfu): `22e47cbd` (A), `2d94d515` (B, used: swirling rounded hem). Cutout `380b7eb4`, framed with `frame.mjs … 45` (45px extra margin). Wind map traced in `wind-maps.mjs`.
+- Seal standing on its face: `925e4262` (Nano Banana 2, used), `86402235` (Seedream, three-quarter view).
+- Lab tests (Seedream off `7fe457e1`): mist fill `9e6abde9`, mist bank `64331fda`; lattice doors with a blank moon window `3b9e91ba` (A), `42fd5830` (B). Ed's secondary mark is overlaid in the window in code.
+
+## Round 6, 2026-10-05 (sources in `art/round6/`)
+
+- Hanfu, new shawl over both shoulders and a softer centre hem, edited from the round-4 hanfu: `d2b4f2da` (A, used; cutout `8608d83b`, framed full width with 16px margins so it matches the other outfits' size), `e6cad3fa` (B).
+- Aquarius with both feet and outlined hands: `aa36c05a` (A, used; cutout `c2ccd1e0`), `7aea8957` (B).
+- Foreshortened seal (lion towards the viewer, face down): `ec7943ad` (Nano Banana 2, used), `6f16da45`.
+- Paint-the-scroll: river scenes `d760f1ac`, `0643fce4` (used); flying pigs `09ea2d8e` (plum blossom, used), `786b1a66`. The mountains scene is the round-4 scroll painting. Skeletons are edge-traced from the paintings by `npm run scroll`.
+- Landing doors: Doors B `42fd5830` (`public/intro/doors.webp`).
+
+## Round 7, 2026-10-05 (sources in `art/round7/`)
+
+- Door B cleaned up (real mitred lattice corners): `478d7619` (A, used), `04a99b42` (B, plain realistic joinery with a carved apron).
+- Hanfu with a high floating shawl and smaller sleeves (edit of `d2b4f2da`): `ad59d72a` (A, came with a stray frame), `1abc5bd6` (B, used; cutout `1850f94d`).
+- Flying pig in the hanfu's style, realistic: `32ce0df1` (used), `73ba981e` (hatched).
+- Scroll scenes: Twelve Apostles `60822054`, `ec60f5dc` (used); Wilsons Promontory `6960a3f4` (used), `d59e534b`.
+- Foreshortened brush, leaning right: `ec91ebcb`, `5333eddd` (used).
+- The pig outfit was re-framed smaller (`frame.mjs … 80`) to match the others; its wind trace was mapped by the same scale and offset.
+
+## Round 8, 2026-10-05 (sources in `art/round8/`)
+
+- Seal at a gentle 30° view: `a72c3c02`, `355ed3f1` (used). Brush leaning 30° right: `0c498bfe` (bamboo), `1731582b` (used, blue).
+- Scenes in the hero's bold cobalt with cloud scrolls (off hero `7fe457e1`): Twelve Apostles `ad2d8bef`, `65939bca` (used); Wilsons Promontory `486d92a6` (used), `853d088c`.
+- Flying pig drawn from the About piglet (ref `45d0028d`): `f4bc4623` (used), `e4d4a018`.

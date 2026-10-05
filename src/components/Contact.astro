@@ -1,76 +1,98 @@
 ---
 import { site } from '../data/site';
-import SouthernCross from './SouthernCross.astro';
+import SocialIcon from './SocialIcon.astro';
+import SealStamp from './SealStamp.astro';
 ---
-<section id="contact" class="contact wrap" aria-labelledby="contact-title">
-  <!-- a hanging scroll: a rod above and below, a silk mount, and paper with mountains, clouds and the Southern Cross -->
+<section id="contact" class="contact wrap" aria-labelledby="contact-title" data-scroll-paint>
+  <!-- the invitation and the ways to reach Ed, above the scroll -->
+  <!-- the invitation and how to play, above the scroll -->
+  <div class="contact__head">
+    <h2 id="contact-title">Let’s make something beautiful together.</h2>
+    <ol class="paint__steps" aria-label="How to paint the scroll">
+      <li data-step-item="paint"><span class="paint__num" aria-hidden="true">1</span>Paint the scene with the brush</li>
+      <li data-step-item="pig"><span class="paint__num" aria-hidden="true">2</span>Add a flying pig</li>
+      <li data-step-item="seal"><span class="paint__num" aria-hidden="true">3</span>Sign it with my seal</li>
+    </ol>
+  </div>
+
+  <!-- a hanging scroll to paint on (scroll-paint.ts): the scene, then a flying pig, then Ed's seal -->
   <div class="scroll">
     <span class="scroll__rod" aria-hidden="true"></span>
     <div class="scroll__mount">
-      <div class="scroll__paper">
-        <div class="scroll__art" aria-hidden="true">
-          <SouthernCross class="scroll__cross" />
-          <img class="scroll__range" src="/hero/contact-range.webp" alt="" width="1800" height="715" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--a" src="/hero/contact-cloud-s4.webp" alt="" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--b" src="/hero/contact-cloud-r2.webp" alt="" loading="lazy" decoding="async" />
-          <img class="scroll__cloud scroll__cloud--c" src="/hero/contact-cloud-r3.webp" alt="" loading="lazy" decoding="async" />
+      <div class="scroll__paper" data-paint>
+        <p class="visually-hidden" id="paint-help">A painting to make: paint the scene with your pointer or finger, add a flying pig, then sign it with Edwyn's seal. Each step also has a button.</p>
+        <div class="paint__art" aria-hidden="true">
+          <img class="paint__sketch" src="/scroll/apostles-sketch.webp" alt="" data-paint-sketch />
+          <canvas class="paint__canvas" data-paint-canvas></canvas>
         </div>
-  <div class="contact__grid">
-    <div class="contact__intro">
-      <h2 id="contact-title">Have a project or a role in mind?</h2>
-      <p>Keen to hear about it. Send a note here, or email me directly.</p>
-      <ul class="contact__links">
-        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-        {site.linkedin && <li><a href={site.linkedin} rel="me">LinkedIn</a></li>}
-        {site.behance && <li><a href={site.behance} rel="me">Behance</a></li>}
-        {site.resume && <li><a href={site.resume}>Resume</a></li>}
-      </ul>
-    </div>
+        <div class="scroll__stamps" aria-hidden="true" data-stamps></div>
+        <img class="paint__brush" src="/scroll/brush.webp" alt="" width="200" height="242" aria-hidden="true" loading="lazy" decoding="async" data-brush />
+        <img class="scroll__seal" src="/scroll/seal.webp" alt="" width="220" height="537" aria-hidden="true" loading="lazy" decoding="async" data-seal />
+        <template data-stamp-tpl><span class="scroll__stamp"><SealStamp /></span></template>
 
-    <!-- Netlify Forms: Netlify finds this form in the built HTML and emails each submission (it only works once
-         deployed). Without JS it posts and lands on /thanks/; with JS it sends in place and says so here. -->
-    <form class="contact__form" name="contact" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="company" data-contact-form>
-      <input type="hidden" name="form-name" value="contact" />
-      <p class="visually-hidden" aria-hidden="true">
-        <label>Leave this empty <input name="company" tabindex="-1" autocomplete="off" /></label>
-      </p>
-      <div class="field">
-        <label for="cf-name">Name</label>
-        <input id="cf-name" name="name" type="text" autocomplete="name" required aria-describedby="cf-name-err" />
-        <p class="field__err" id="cf-name-err" data-err></p>
-      </div>
-      <div class="field">
-        <label for="cf-email">Email</label>
-        <input id="cf-email" name="email" type="email" autocomplete="email" required aria-describedby="cf-email-err" />
-        <p class="field__err" id="cf-email-err" data-err></p>
-      </div>
-      <div class="field">
-        <label for="cf-message">Message</label>
-        <textarea id="cf-message" name="message" rows="5" required aria-describedby="cf-message-err"></textarea>
-        <p class="field__err" id="cf-message-err" data-err></p>
-      </div>
-      <div class="contact__send">
-        <button class="button button--primary" type="submit">Send message</button>
-        <p class="contact__status" role="status" data-status></p>
-      </div>
-    </form>
-  </div>
       </div>
     </div>
     <span class="scroll__rod" aria-hidden="true"></span>
+  </div>
+  <!-- the prompt and the step buttons sit under the scroll, off the painting -->
+  <div class="paint__bar" data-paint-ui>
+    <p class="paint__prompt" role="status" aria-describedby="paint-help" data-paint-prompt>Pick up the brush and paint the Twelve Apostles.</p>
+    <div class="paint__buttons">
+      <button class="button" type="button" data-paint-action="auto">Paint it for me</button>
+      <button class="button" type="button" data-paint-action="pig" hidden>Add a flying pig</button>
+      <button class="button" type="button" data-paint-action="seal" hidden>Add the seal</button>
+      <button class="button paint__quiet" type="button" data-paint-action="reset">Start again</button>
+      <button class="paint__next" type="button" data-paint-action="next" aria-label="Next scene: Wilsons Promontory">Next scene
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+    </div>
+  </div>
+  <!-- then the real thing: the ways to reach Ed -->
+  <div class="contact__foot">
+    <p class="contact__more">Contact me to make more beautiful work together.</p>
+      <ul class="contact__links">
+        <li><a href={`mailto:${site.email}`} aria-label={`Email ${site.email}`} title={site.email}><SocialIcon name="mail" /></a></li>
+        {site.linkedin && <li><a href={site.linkedin} rel="me noopener" target="_blank" aria-label="LinkedIn (opens in a new tab)" title="LinkedIn"><SocialIcon name="linkedin" /></a></li>}
+        {site.behance && <li><a href={site.behance} rel="me noopener" target="_blank" aria-label="Behance (opens in a new tab)" title="Behance"><SocialIcon name="behance" /></a></li>}
+        {site.resume && <li><a class="contact__resume" href={site.resume}>Resume</a></li>}
+      </ul>
   </div>
 </section>
 
 <style>
   .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
+  .contact__head { display: grid; gap: var(--space-m); margin-bottom: var(--space-l); }
+  .contact h2 { font-size: var(--step-3); max-width: 22ch; margin: 0; }
+  /* the three steps; the current one is marked as the visitor goes (scroll-paint.ts sets data-step on the section) */
+  .paint__steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
+  .paint__steps li { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--text-secondary); font-size: var(--text-md); }
+  .paint__num {
+    display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; flex: none;
+    border: 1px solid var(--border-default); font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-brand);
+  }
+  [data-step='paint'] [data-step-item='paint'], [data-step='pig'] [data-step-item='pig'], [data-step='seal'] [data-step-item='seal'] { color: var(--text-brand); font-weight: var(--fw-semibold); }
+  [data-step='paint'] [data-step-item='paint'] .paint__num, [data-step='pig'] [data-step-item='pig'] .paint__num, [data-step='seal'] [data-step-item='seal'] .paint__num { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
+  .contact__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-m) var(--space-l); margin-top: var(--space-xl); padding-top: var(--space-l); border-top: var(--rule-hair); }
+  .contact__more { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); max-width: 30ch; }
+  .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
+  /* 48px round targets holding a 26px icon, ringed in cobalt like a porcelain seal */
+  .contact__links a {
+    display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; font-size: 26px;
+    border: 1px solid var(--border-default); border-radius: 50%; color: var(--text-brand); background: var(--surface-raised);
+    transition: background var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
+  }
+  .contact__links a:hover { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
+  .contact__links a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+  .contact__links .contact__resume { width: auto; padding-inline: var(--space-s); border-radius: 24px; font-size: var(--text-sm); font-weight: var(--fw-semibold); }
+
   /* the scroll: rods wider than the paper, with knobbed ends; a pale silk mount; the paper itself */
-  .scroll { position: relative; }
-  /* painted wooden rods (Seedream, see image-prompts.md): a turned knob at each end, the plain rod repeating between
-     them (clipped to the padding, so it never shows past a knob). Wider than the mount, as on a real scroll. */
+  .scroll { position: relative; --rod-h: 34px; }
+  /* rods painted in the art's own cobalt brushwork (npm run scroll): a lotus cap and patterned band at each end, the
+     plain shaft repeating between them. The knob sprite is 149x96, so --knob = height * 1.55. */
   .scroll__rod {
-    --knob: 44px;
-    display: block; position: relative; z-index: 2; height: 27px; margin-inline: calc(var(--knob) * -0.6);
-    padding-inline: calc(var(--knob) - 6px);
+    --knob: 53px;
+    display: block; position: relative; z-index: 2; height: var(--rod-h); margin-inline: calc(var(--knob) * -0.5);
+    padding-inline: calc(var(--knob) - 2px);
     background:
       url(/scroll/rod-left.webp) left center / auto 100% no-repeat,
       url(/scroll/rod-right.webp) right center / auto 100% no-repeat,
@@ -78,109 +100,65 @@ import SouthernCross from './SouthernCross.astro';
     background-clip: border-box, border-box, content-box;
     background-origin: border-box, border-box, content-box;
   }
-  .scroll__mount { padding: 12px; background: var(--blue-50); border-inline: 1px solid var(--border-hairline); }
-  .scroll__paper { position: relative; overflow: hidden; background: var(--paper-100); box-shadow: inset 0 0 0 1px var(--border-hairline); padding: clamp(1.5rem, 1rem + 3vw, 4rem); padding-bottom: clamp(9rem, 22vw, 18rem); }
-  /* the painting on the paper: the sky with its stars up top, the range and clouds along the foot */
-  .scroll__art { position: absolute; inset: 0; pointer-events: none; }
-  .scroll__range { position: absolute; left: 0; bottom: 0; width: 100%; height: auto; }
-  .scroll__cloud { position: absolute; height: auto; }
-  .scroll__cloud--a { width: clamp(120px, 16%, 220px); left: 4%; bottom: clamp(4rem, 12vw, 10rem); }
-  .scroll__cloud--b { width: clamp(100px, 12%, 170px); left: 34%; bottom: clamp(3rem, 9vw, 7.5rem); }
-  .scroll__cloud--c { width: clamp(140px, 20%, 280px); right: 3%; bottom: clamp(2rem, 6vw, 5rem); }
-  /* the Southern Cross hangs in the open sky above the range, in cobalt (gold vanished on the paper) */
-  .scroll__art :global(.scroll__cross) { position: absolute; top: 44%; left: 30%; width: clamp(3.5rem, 7vw, 6rem); height: auto; color: var(--blue-700); }
-  /* narrow screens: beside the short link lines, clear of the heading */
-  @media (max-width: 59.99rem) { .scroll__art :global(.scroll__cross) { top: 15.5rem; left: auto; right: 10%; width: 3.25rem; } }
-  .contact__grid { position: relative; z-index: 1; display: grid; gap: var(--space-xl); align-items: start; }
-  @media (min-width: 60rem) {
-    .contact__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-2xl); }
+  /* the silk tucks under each rod to the middle of the shaft, so no strip of page shows between them */
+  .scroll__rod:first-child { margin-bottom: calc(var(--rod-h) * -0.5); }
+  .scroll__rod:last-child { margin-top: calc(var(--rod-h) * -0.5); }
+  .scroll__mount { position: relative; z-index: 1; padding: calc(12px + var(--rod-h) * 0.5) 12px; background: var(--blue-50); border-inline: 1px solid var(--border-default); }
+  /* glaze-white paper with a fine cobalt keyline; a fixed shape so the painting always fits */
+  .scroll__paper {
+    position: relative; overflow: hidden; aspect-ratio: 2 / 1; background: var(--paper-0);
+    box-shadow: inset 0 0 0 1px var(--border-default), inset 0 0 0 5px var(--paper-0), inset 0 0 0 6px var(--border-hairline);
   }
+  /* the painting area sits inside the inner keyline with a margin; its ends and foot fade into the paper */
+  .paint__art { position: absolute; inset: 18px; }
+  .paint__canvas, .paint__sketch { position: absolute; }
+  .paint__canvas {
+    inset: 0; width: 100%; height: 100%; touch-action: pan-y; /* horizontal strokes paint; a vertical swipe still scrolls the page */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to top, transparent, #000 10%);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to top, transparent, #000 10%);
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  /* the skeleton of the scene breathes slowly until the first stroke */
+  .paint__sketch { opacity: 0.35; animation: paint-breathe 3.2s ease-in-out infinite; transition: opacity 1s var(--ease-standard); pointer-events: none; }
+  .paint__sketch.is-gone { animation: none; opacity: 0; }
+  @keyframes paint-breathe { 50% { opacity: 0.08; } }
+  @media (prefers-reduced-motion: reduce) { .paint__sketch { animation: none; } }
+  :global(html.motion-paused) .paint__sketch { animation: none; }
+  /* while painting, the painted brush follows the pointer in place of the cursor (scroll-paint.ts) */
+  .paint__brush { position: absolute; left: 0; top: 0; z-index: 5; width: 110px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
+  .scroll__paper.is-painting, .scroll__paper.is-painting .paint__canvas { cursor: none; }
+
+  /* under the scroll: the prompt on the left, the step buttons and the next-scene arrow on the right */
+  .paint__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-s) var(--space-m); margin-top: var(--space-m); }
+  .paint__prompt { margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--fluid-display-sm); color: var(--text-brand); max-width: 30ch; }
+  .paint__buttons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); }
+  .paint__buttons [hidden] { display: none; }
+  .paint__quiet { background: var(--surface-raised); }
+  .paint__next {
+    display: inline-flex; align-items: center; gap: 0.4rem; min-height: 48px; padding: 0 0.9rem 0 1.1rem; border: 1px solid var(--border-strong);
+    border-radius: 24px; background: var(--surface-raised); color: var(--text-brand); cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  }
+  .paint__next:hover { background: var(--action-primary); color: var(--text-on-brand); }
+  .paint__next:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+  .paint__next svg { width: 20px; height: 20px; }
+
+  /* the seal and its impression: the seal floats above everything; the red mark sits on the paper, fully opaque */
+  .scroll__stamps { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .scroll__stamp { position: absolute; width: clamp(64px, 7vw, 96px); aspect-ratio: 1; }
+  .scroll__seal { position: absolute; left: 0; top: 0; z-index: 5; width: 52px; height: auto; opacity: 0; pointer-events: none; will-change: transform; }
+  .scroll__paper.is-sealing, .scroll__paper.is-sealing .paint__canvas { cursor: none; }
+
   @media (max-width: 47.99rem) {
-    .scroll__rod { --knob: 34px; height: 21px; margin-inline: calc(var(--knob) * -0.3); }
-    .scroll__mount { padding: 8px; }
-    .scroll__cloud--b { display: none; }
+    .scroll { --rod-h: 25px; }
+    .scroll__rod { --knob: 39px; margin-inline: calc(var(--knob) * -0.3); }
+    .scroll__mount { padding: calc(8px + var(--rod-h) * 0.5) 8px; }
+    /* phones: a taller sheet so the scene keeps its size */
+    .scroll__paper { aspect-ratio: 1.4; }
   }
-  .contact h2 { font-size: var(--step-3); max-width: 14ch; margin: 0; }
-  .contact__intro > p { margin: var(--space-m) 0 var(--space-s); max-width: 36ch; }
-  .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-  .contact__links a { display: inline-flex; align-items: center; min-height: 48px; font-size: var(--fluid-display-sm); font-family: var(--font-display); font-weight: var(--fw-medium); overflow-wrap: anywhere; }
-
-  /* the form sits on a porcelain plate: white body, double keyline, like the work cards */
-  .contact__form {
-    display: grid; gap: var(--space-m);
-    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -7px;
-    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); background: var(--surface-raised); box-shadow: var(--shadow-sm);
-  }
-  .field { display: grid; gap: var(--space-2); }
-  .field label { font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--text-primary); }
-  .field input, .field textarea {
-    width: 100%; min-height: 48px; padding: 12px 14px; font: inherit; color: var(--text-primary);
-    background: var(--surface-page); border: 1px solid var(--border-ink); border-radius: 0;
-  }
-  .field textarea { resize: vertical; min-height: 8.5rem; }
-  .field input:hover, .field textarea:hover { border-color: var(--border-strong); }
-  .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; border-color: var(--border-strong); }
-  .field [aria-invalid='true'] { border-color: var(--text-seal); }
-  .field__err { margin: 0; min-height: 0; font-size: var(--text-sm); color: var(--text-seal); }
-  .field__err:empty { display: none; }
-  .contact__send { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s) var(--space-m); }
-  .contact__status { margin: 0; font-size: var(--text-sm); color: var(--text-secondary); }
-  .contact__status:empty { display: none; }
-  .contact__done { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); }
-  .contact__done:focus { outline: none; }
-
 </style>
 
 <script>
-  // Inline errors, then send in place. Without JS the browser validates and the form posts to /thanks/.
-  const MESSAGES: Record<string, (el: HTMLInputElement | HTMLTextAreaElement) => string> = {
-    name: () => 'Add your name.',
-    email: (el) => (el.validity.valueMissing ? 'Add your email so I can reply.' : 'That email looks incomplete, e.g. name@example.com.'),
-    message: () => 'Write a short message.',
-  };
-  for (const form of document.querySelectorAll<HTMLFormElement>('[data-contact-form]')) {
-    form.noValidate = true;
-    const status = form.querySelector<HTMLElement>('[data-status]')!;
-    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-    const fields = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.field input, .field textarea')];
-    const check = (el: HTMLInputElement | HTMLTextAreaElement) => {
-      const err = el.parentElement!.querySelector<HTMLElement>('[data-err]')!;
-      const ok = el.value.trim() !== '' && el.checkValidity();
-      el.setAttribute('aria-invalid', String(!ok));
-      err.textContent = ok ? '' : MESSAGES[el.name]?.(el) ?? 'Check this field.';
-      return ok;
-    };
-    // once a field has been flagged, re-check it as the visitor fixes it
-    for (const el of fields) el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') check(el); });
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const bad = fields.filter((el) => !check(el));
-      if (bad.length) { bad[0].focus(); return; }
-      button.disabled = true;
-      status.textContent = 'Sending…';
-      try {
-        const res = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        const done = document.createElement('p');
-        done.className = 'contact__done';
-        done.tabIndex = -1;
-        done.textContent = 'Thanks, message sent. I’ll get back to you soon.';
-        form.replaceChildren(done);
-        done.focus();
-      } catch {
-        button.disabled = false;
-        status.textContent = '';
-        const a = document.createElement('a');
-        const email = form.closest('.contact')?.querySelector<HTMLAnchorElement>('a[href^="mailto:"]');
-        a.href = email?.href ?? '#contact';
-        a.textContent = 'email me directly';
-        status.append('That didn’t send. Try again, or ', a, '.');
-      }
-    });
-  }
+  import { initScrollPaint } from '../scripts/scroll-paint';
+  const root = document.querySelector<HTMLElement>('[data-scroll-paint]');
+  if (root) initScrollPaint(root);
 </script>

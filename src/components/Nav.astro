@@ -53,16 +53,6 @@ const inWorkshop = here.startsWith(site.workshop.href);
   /* a hairline between the page links and the Workshop, which is a place of its own */
   .nav__rule { align-self: center; width: 1px; height: 1.25rem; background: var(--border-default); }
   .nav__links a[aria-current='page'] { text-decoration: underline; text-underline-offset: 0.45em; text-decoration-thickness: 1px; }
-  .nav__motion {
-    display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; cursor: pointer;
-    color: var(--text-brand); background: none; border: 1px solid var(--border-default); border-radius: 50%;
-    transition: background-color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
-  }
-  .nav__motion:hover { background: var(--surface-brand-soft); border-color: var(--border-strong); }
-  .nav__motion svg { width: 14px; height: 14px; }
-  .nav__motion .nav__motion-play { display: none; }
-  .nav__motion[aria-pressed='true'] .nav__motion-pause { display: none; }
-  .nav__motion[aria-pressed='true'] .nav__motion-play { display: block; }
   .nav__menu { display: none; background: none; border: 0; padding: 0 var(--space-2); font: inherit; cursor: pointer; }
   .nav__menu::after { content: ''; width: 0.5rem; height: 0.5rem; margin-left: 0.5rem; border: solid currentColor; border-width: 0 1.5px 1.5px 0; translate: 0 -2px; rotate: 45deg; transition: rotate var(--dur-med) var(--ease-standard); }
   .nav__menu[aria-expanded='true']::after { rotate: 225deg; translate: 0 2px; }
@@ -84,6 +74,15 @@ const inWorkshop = here.startsWith(site.workshop.href);
     :global(html:not(.js)) .nav__menu { display: none; }
     :global(html:not(.js)) .nav__links { gap: var(--space-2); }
   }
+  .nav__motion {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none; padding: 0; cursor: pointer;
+    color: var(--text-brand); background: none; border: 1px solid var(--border-default); border-radius: 50%;
+  }
+  .nav__motion:hover { background: var(--surface-brand-soft); border-color: var(--border-strong); }
+  .nav__motion svg { width: 14px; height: 14px; }
+  .nav__motion .nav__motion-play { display: none; }
+  .nav__motion[aria-pressed='true'] .nav__motion-pause { display: none; }
+  .nav__motion[aria-pressed='true'] .nav__motion-play { display: block; }
 </style>
 
 <script>

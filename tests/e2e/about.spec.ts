@@ -179,9 +179,9 @@ test('motion allowed: only the fabric moves in the wind, and only while on scree
   // one painting showing at a time (the costume change keeps the others hidden), warped in place
   await expect(page.locator('.about__outfit:visible')).toHaveCount(1);
   await expect(page.locator('.about__ed-still')).toHaveCSS('filter', /url\("?#ed-wind"?\)/);
-  // the stillness map is painted and laid over the painting (face, hands and torso held still)
+  // the stillness map is laid over the painting: the hanfu's painted map (only the shawl moves), inlined once fetched
   const map = page.locator('#ed-wind feImage');
-  expect(await map.getAttribute('href')).toMatch(/^data:image\/svg\+xml,/);
+  await expect.poll(() => map.getAttribute('href')).toMatch(/^data:image\/(png|svg\+xml)/);
   expect(Number(await map.getAttribute('width'))).toBeGreaterThan(0);
   const freq = () => page.locator('#ed-wind feTurbulence').getAttribute('baseFrequency');
   // off-screen (top of the page): paused

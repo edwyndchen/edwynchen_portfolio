@@ -1,3 +1,4 @@
+import { gsap } from 'gsap';
 import { isMotionPaused, whilePlaying } from './motion';
 
 /**
@@ -33,22 +34,47 @@ export const WIND = {
 /** Where each outfit holds still (the About costume change swaps these in via a 'wind:outfit' event). */
 export const OUTFIT_STILL: Record<string, StillSpot[]> = {
   hanfu: WIND.still,
-  // festival jacket (Tang style): face, the pig mask on his head, the piglet and both hands hold; the jacket barely
-  // moves, the loose trousers sway a little, the long scarf flies
-  pig: [
-    { name: 'jacket', cx: 38, cy: 37, rx: 18, ry: 16, hold: 0.85 },
-    { name: 'legs', cx: 30, cy: 70, rx: 18, ry: 25, hold: 0.6 },
-    { name: 'face', cx: 33, cy: 16, rx: 8, ry: 7, hold: 1 },
-    { name: 'mask', cx: 39, cy: 10, rx: 8, ry: 6, hold: 1 },
-    { name: 'piglet and hands', cx: 38, cy: 38, rx: 15, ry: 9, hold: 1 },
-  ],
-  // the water bearer: face, the vase and both hands hold; the robes, ribbons and the stream of water all move
-  water: [
-    { name: 'torso', cx: 47, cy: 42, rx: 12, ry: 18, hold: 0.8 },
-    { name: 'face', cx: 52, cy: 22, rx: 7, ry: 7, hold: 1 },
-    { name: 'vase and hands', cx: 36, cy: 18, rx: 14, ry: 12, hold: 1 },
-  ],
+  // the pig and the water bearer use painted maps instead (OUTFIT_MAP): only the ribbon, and the water, move
 };
+
+/**
+ * Outfits whose stillness comes from a painted map rather than ellipses (2026-10-05, Ed: on all three only the
+ * ribbon, and the water, ripple; the whole body holds). White = the cloth or water, a little past its edge so it
+ * can sway out into the air; black = everything else. Each map already includes the WIND_MARGIN border.
+ * Rebuild with `node art/round3/wind-maps.mjs`.
+ */
+export const OUTFIT_MAP: Record<string, string> = {
+  hanfu: '/images/ed-porcelain-wind.png', // round 5 repaint: only its shawl ripples too
+  pig: '/images/ed-pig-wind.png',
+  water: '/images/ed-water-wind.png',
+};
+
+/** How fast the water bearer's ripples travel, px per second (x, y): along the stream, out and down from the vase. */
+export const WATER_FLOW: [number, number] = [-26, 18];
+
+/**
+ * Drag (Ed, 2026-10-05: the cloth should feel the motion, like real physics). While the scroll choreography moves him
+ * (the descent, the glide), his speed pushes the cloth harder and streams the ripples the opposite way, so the robes
+ * and ribbons trail behind him. `full` is the speed (px/s) at which the drag peaks; `push` the extra displacement
+ * (px) at full drag; `trail` how far the ripples stream per px he moves; `ease` how quickly the cloth catches up.
+ */
+export const DRAG = { full: 900, push: 16, trail: 0.7, ease: 0.12, settle: 0.86 };
+/** The water's flow repeats every this many px; two copies half a period apart cross-fade, so it never jumps. */
+export const FLOW_PERIOD = 140;
+
+/**
+ * The two cross-faded copies of the flowing ripples at time t: each one's shift along the flow and its weight. A copy
+ * fades to nothing just as its shift wraps round, so the hand-over is invisible. Pure, for tests.
+ */
+export function flowCopies(t: number, speed: number, period = FLOW_PERIOD) {
+  const p = (((t * speed) % period) + period) % period;
+  const q = (p + period / 2) % period;
+  const w = (x: number) => 1 - Math.abs(1 - (2 * x) / period);
+  return [{ shift: p, weight: w(p) }, { shift: q, weight: w(q) }];
+}
+
+/** How hard the cloth drags at a given speed (px/s), 0..1. Pure, for tests. */
+export const dragAmount = (speed: number) => Math.min(1, Math.abs(speed) / DRAG.full);
 
 /** The filter reaches this far past the painting's box on every side (% of the box), so the map covers it too. */
 export const WIND_MARGIN = 6;
@@ -87,6 +113,8 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   const turb = filter.querySelector('feTurbulence');
   const disp = filter.querySelector('feDisplacementMap');
   const map = filter.querySelector('feImage');
+  const [flowA, flowB] = [...filter.querySelectorAll('feOffset')];
+  const mix = filter.querySelectorAll('feComposite')[0];
   if (!turb || !disp || !map) return () => {};
   ed.classList.add('is-windy');
 
@@ -98,7 +126,22 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
     map.setAttribute('width', String(w * (1 + 2 * k)));
     map.setAttribute('height', String(h * (1 + 2 * k)));
   };
-  const paint = () => map.setAttribute('href', stillnessMap());
+  let outfit = 'hanfu';
+  // painted maps are fetched once and inlined as data URIs: feImage with an external URL is flaky in some browsers
+  const inlined = new Map<string, Promise<string>>();
+  const inline = (src: string) => {
+    if (!inlined.has(src)) inlined.set(src, fetch(src).then((r) => r.blob()).then((b) => new Promise<string>((res, rej) => {
+      const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = rej; fr.readAsDataURL(b);
+    })));
+    return inlined.get(src)!;
+  };
+  for (const src of Object.values(OUTFIT_MAP)) inline(src).catch(() => {});
+  const paint = () => {
+    const src = OUTFIT_MAP[outfit];
+    if (!src) { map.setAttribute('href', stillnessMap()); return; }
+    const want = outfit;
+    inline(src).then((uri) => { if (outfit === want) map.setAttribute('href', uri); }).catch(() => map.setAttribute('href', stillnessMap()));
+  };
   place();
   paint();
   const ro = new ResizeObserver(place);
@@ -107,22 +150,47 @@ export function initFabricWind(ed: HTMLElement, filter: SVGFilterElement): () =>
   window.addEventListener('wind:retune', paint);
   // the costume change: a new outfit brings its own still places
   const onOutfit = (e: Event) => {
-    const spots = OUTFIT_STILL[(e as CustomEvent<string>).detail];
-    if (spots) { WIND.still = spots; paint(); }
+    outfit = (e as CustomEvent<string>).detail;
+    const spots = OUTFIT_STILL[outfit];
+    if (spots) WIND.still = spots;
+    paint();
   };
   window.addEventListener('wind:outfit', onOutfit);
 
   let raf = 0;
   let last = 0;
+  // where the choreography has put the box (its x/y plus x/yPercent, in px)
+  const g = (p: string) => Number(gsap.getProperty(ed, p)) || 0;
+  const where = (): [number, number] => [g('x') + (g('xPercent') * ed.offsetWidth) / 100, g('y') + (g('yPercent') * ed.offsetHeight) / 100];
+  let [lastX, lastY] = where(), lastAt = performance.now();
+  let vx = 0, vy = 0, trailX = 0, trailY = 0;
   const t0 = performance.now();
   const tick = (now: number) => {
     raf = requestAnimationFrame(tick);
     if (now - last < 1000 / WIND.fps) return;
     last = now;
     const t = (now - t0) / 1000;
+    // his velocity from the choreography's own transform on the box (not page scrolling), smoothed
+    const [px, py] = where();
+    const dt = Math.max(0.001, (now - lastAt) / 1000);
+    vx += ((px - lastX) / dt - vx) * DRAG.ease; vy += ((py - lastY) / dt - vy) * DRAG.ease;
+    // the trail springs back once he slows, so it stays a short drag behind him and never builds up
+    trailX = trailX * DRAG.settle - (px - lastX) * DRAG.trail; trailY = trailY * DRAG.settle - (py - lastY) * DRAG.trail;
+    lastX = px; lastY = py; lastAt = now;
+    const drag = dragAmount(Math.hypot(vx, vy));
     const [x, y] = windFrequency(t);
     turb.setAttribute('baseFrequency', `${x.toFixed(5)} ${y.toFixed(5)}`);
-    disp.setAttribute('scale', windScale(t).toFixed(2));
+    // the water bearer: the noise streams along (and pushes a little harder), so the water reads as flowing
+    const water = outfit === 'water';
+    disp.setAttribute('scale', (windScale(t) * (water ? 1.35 : 1) + drag * DRAG.push).toFixed(2));
+    if (flowA && flowB && mix) {
+      // the water flows along its direction; everything else only carries the drag trail
+      const speed = Math.hypot(WATER_FLOW[0], WATER_FLOW[1]), ux = WATER_FLOW[0] / speed, uy = WATER_FLOW[1] / speed;
+      const [a, b] = water ? flowCopies(t, speed) : [{ shift: 0, weight: 1 }, { shift: 0, weight: 0 }];
+      flowA.setAttribute('dx', (ux * a.shift + trailX).toFixed(1)); flowA.setAttribute('dy', (uy * a.shift + trailY).toFixed(1));
+      flowB.setAttribute('dx', (ux * b.shift + trailX).toFixed(1)); flowB.setAttribute('dy', (uy * b.shift + trailY).toFixed(1));
+      mix.setAttribute('k2', a.weight.toFixed(3)); mix.setAttribute('k3', b.weight.toFixed(3));
+    }
   };
   const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
   const stop = () => { cancelAnimationFrame(raf); raf = 0; };

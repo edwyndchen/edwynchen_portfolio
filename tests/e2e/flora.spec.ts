@@ -1,26 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('the home page carries no flora; it lives on the Workshop', async ({ page }) => {
+test('the home page carries no flora', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('img.flora')).toHaveCount(0);
 });
 
-test('flora spots are decorative and load', async ({ page }) => {
+test('the Workshop carries no flora either (Ed, 2026-10-05: it wasn\'t working there)', async ({ page }) => {
   await page.goto('/workshop/');
-  const flora = page.locator('img.flora');
-  expect(await flora.count()).toBeGreaterThanOrEqual(3);
-  // (on phones the gum by the tools steps aside, so check the ones that show)
-  for (const img of await page.locator('img.flora:visible').all()) {
-    await expect(img).toHaveAttribute('alt', '');
-    await img.scrollIntoViewIfNeeded();
-    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
-  }
-});
-
-test('flora never causes horizontal scroll', async ({ page }) => {
-  await page.goto('/workshop/');
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(0);
+  await expect(page.locator('img.flora')).toHaveCount(0);
 });
 
 test('home card covers are decorative (the title link names the card) and load', async ({ page }) => {
@@ -41,7 +28,7 @@ test('the case study cover keeps its descriptive alt text', async ({ page }) => 
 
 // art rule: no cropped edges. Each painting is trimmed tight, so its whole box must sit inside the viewport and
 // inside every ancestor that clips it.
-for (const path of ['/workshop/', '/work/form-guide-redesign/']) {
+for (const path of ['/work/form-guide-redesign/']) {
   for (const width of [320, 768, 1440]) {
     test(`flora is never cropped at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });

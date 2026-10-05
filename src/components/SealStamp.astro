@@ -1,0 +1,38 @@
+---
+// Ed's logo mark (Logo Mark Secondary) as a round cinnabar seal, in the DS red (--seal-500): a red disc with a fine
+// ring and the mark cut clean through it (a mask, so the scroll shows through the mark, never white). Turbulence
+// gives it slight imperfections: gently wavering edges and a couple of tiny specks, the ink otherwise solid.
+interface Props { id?: string; title?: string }
+const { id = 'seal', title } = Astro.props;
+---
+<svg class="seal-stamp" viewBox="0 0 180 180" focusable="false" role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'}>
+  {title && <title>{title}</title>}
+  <defs>
+    <mask id={`${id}-cut`} maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180">
+      <circle cx="90" cy="90" r="86" fill="#fff" />
+      <circle cx="90" cy="90" r="78" fill="none" stroke="#000" stroke-width="3" />
+      <g fill="#000" transform="translate(21.4 21.4) scale(0.857)">
+        <path d="M74.8232 54.8232H36.5137C40.9046 47.2328 47.2328 40.9036 54.8232 36.5127V44.8232H64.8232V21.7129C43.739 27.1395 27.1395 43.739 21.7129 64.8232H74.8232V74.8232H10C12.4472 40.1484 40.1484 12.4472 74.8232 10V54.8232Z" />
+        <path d="M74.8232 104.823H36.5137C40.9046 112.414 47.2328 118.743 54.8232 123.134V114.823H64.8232V137.934C43.739 132.507 27.1395 115.907 21.7129 94.8232H74.8232V84.8232H10C12.4472 119.498 40.1484 147.199 74.8232 149.646V104.823Z" />
+        <path d="M84.8232 54.8232H123.133C118.742 47.2328 112.414 40.9036 104.823 36.5127V44.8232H94.8232V21.7129C115.907 27.1395 132.507 43.739 137.934 64.8232H84.8232V74.8232H149.646C147.199 40.1484 119.498 12.4472 84.8232 10V54.8232Z" />
+        <path d="M84.8232 104.823H123.133C118.742 112.414 112.414 118.743 104.823 123.134V114.823H94.8232V137.934C115.907 132.507 132.507 115.907 137.934 94.8232H84.8232V84.8232H149.646C147.199 119.498 119.498 147.199 84.8232 149.646V104.823Z" />
+      </g>
+    </mask>
+    <filter id={`${id}-ink`} x="-5%" y="-5%" width="110%" height="110%">
+      <!-- a clean chop with slight imperfections (Ed, 2026-10-05: about 95% perfect): the edges waver very gently and
+           a couple of tiny specks miss the ink; the red is solid -->
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="grain" />
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2" result="rough" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.12" numOctaves="2" seed="23" result="wear" />
+      <feColorMatrix in="wear" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -22 16.4" result="flecks" />
+      <feComposite in="rough" in2="flecks" operator="in" />
+    </filter>
+  </defs>
+  <g filter={`url(#${id}-ink)`}>
+    <rect width="180" height="180" fill="var(--seal-500)" mask={`url(#${id}-cut)`} />
+  </g>
+</svg>
+
+<style>
+  .seal-stamp { display: block; width: 100%; height: 100%; }
+</style>

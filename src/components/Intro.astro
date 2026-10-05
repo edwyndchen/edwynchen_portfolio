@@ -1,0 +1,52 @@
+---
+// The landing (Ed, 2026-10-05): painted lattice doors with Ed's secondary mark in the moon window. When the page is
+// ready (and at least half a second later) the doors slide apart, each carrying its half of the mark, and reveal Ed's
+// logo and name on the porcelain behind them; then that lockup shrinks into the nav's corner and the page shows.
+// Shown only when an inline script in BaseLayout adds html.intro (arriving fresh or reloading, motion allowed), so it
+// can never block the page.
+import Logo from './Logo.astro';
+---
+<div class="intro" aria-hidden="true" data-intro>
+  <!-- behind the doors: the logo and name, the same wordmark the nav uses, so it can land exactly on it -->
+  <div class="intro__stage">
+    <!-- only the porcelain fades; the logo stays solid until it sits exactly on the nav logo -->
+    <span class="intro__paper" data-intro-paper></span>
+    <span class="intro__lockup" data-intro-lockup><Logo class="intro__logo" /></span>
+  </div>
+  <div class="intro__door intro__door--left" data-door="left">
+    <div class="intro__art">
+      <img src="/intro/doors.webp" alt="" width="2000" height="1116" fetchpriority="high" decoding="async" />
+      <svg class="intro__mark" viewBox="0 0 160 160"><path d="M74.8232 54.8232H36.5137C40.9046 47.2328 47.2328 40.9036 54.8232 36.5127V44.8232H64.8232V21.7129C43.739 27.1395 27.1395 43.739 21.7129 64.8232H74.8232V74.8232H10C12.4472 40.1484 40.1484 12.4472 74.8232 10V54.8232Z" /><path d="M74.8232 104.823H36.5137C40.9046 112.414 47.2328 118.743 54.8232 123.134V114.823H64.8232V137.934C43.739 132.507 27.1395 115.907 21.7129 94.8232H74.8232V84.8232H10C12.4472 119.498 40.1484 147.199 74.8232 149.646V104.823Z" /></svg>
+    </div>
+  </div>
+  <div class="intro__door intro__door--right" data-door="right">
+    <div class="intro__art">
+      <img src="/intro/doors.webp" alt="" width="2000" height="1116" fetchpriority="high" decoding="async" />
+      <svg class="intro__mark" viewBox="0 0 160 160"><path d="M84.8232 54.8232H123.133C118.742 47.2328 112.414 40.9036 104.823 36.5127V44.8232H94.8232V21.7129C115.907 27.1395 132.507 43.739 137.934 64.8232H84.8232V74.8232H149.646C147.199 40.1484 119.498 12.4472 84.8232 10V54.8232Z" /><path d="M84.8232 104.823H123.133C118.742 112.414 112.414 118.743 104.823 123.134V114.823H94.8232V137.934C115.907 132.507 132.507 115.907 137.934 94.8232H84.8232V84.8232H149.646C147.199 119.498 119.498 147.199 84.8232 149.646V104.823Z" /></svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  .intro { display: none; }
+  /* the doors' painting covers the screen (16:9, cropped like background-size: cover); the mark fills most of the
+     moon window, whose inside is ~47% of the painting's height */
+  :global(html.intro) .intro { display: block; position: fixed; inset: 0; z-index: 1000; pointer-events: none; --mark: calc(max(100vh, 56.25vw) * 0.36); }
+  :global(html.intro) { overflow: hidden; }
+  :global(html.intro) .nav__brand svg { visibility: hidden; }
+  .intro__stage { position: absolute; inset: 0; display: grid; place-items: center; }
+  .intro__paper { position: absolute; inset: 0; background: var(--surface-page); }
+  .intro__lockup { position: relative; }
+  .intro__lockup { display: block; color: var(--text-brand); transform-origin: 0 0; }
+  .intro__lockup :global(.intro__logo) { height: clamp(44px, 9vw, 96px); width: auto; }
+  /* two doors meeting in the middle (1px overlap); each holds the whole painting clipped to its half, so the moon
+     window and the mark split exactly at the seam and each door carries its half away */
+  .intro__door { position: absolute; top: 0; bottom: 0; width: calc(50% + 1px); overflow: hidden; background: var(--surface-brand); }
+  .intro__door--left { left: 0; }
+  .intro__door--right { right: 0; }
+  .intro__art { position: absolute; top: 0; width: 100vw; height: 100vh; }
+  .intro__door--left .intro__art { left: 0; }
+  .intro__door--right .intro__art { right: 0; }
+  .intro__art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .intro__mark { position: absolute; left: 50%; top: 50%; width: var(--mark); height: var(--mark); translate: -50% -50%; fill: var(--paper-0); }
+</style>

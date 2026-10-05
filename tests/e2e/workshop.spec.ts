@@ -62,57 +62,12 @@ test('Workshop has no axe violations', async ({ page }) => {
   expect(r.violations).toEqual([]);
 });
 
-test('contact form: labelled fields, Netlify wiring, honeypot, posts to /thanks/ without JS', async ({ page }) => {
+test('contact: no form now (Ed, 2026-10-05), just the heading and icon links that name themselves', async ({ page }) => {
   await page.goto('/');
-  const form = page.locator('form[name="contact"]');
-  await expect(form).toHaveAttribute('data-netlify', 'true');
-  await expect(form).toHaveAttribute('netlify-honeypot', 'company');
-  await expect(form).toHaveAttribute('action', '/thanks/');
-  await expect(form.locator('input[name="form-name"]')).toHaveValue('contact');
-  for (const name of ['Name', 'Email', 'Message']) await expect(form.getByLabel(name, { exact: true })).toBeVisible();
-  await expect(form.getByLabel('Email', { exact: true })).toHaveAttribute('type', 'email');
-});
-
-test('contact form: inline errors name each problem and focus the first one', async ({ page }) => {
-  await page.goto('/');
-  const form = page.locator('form[name="contact"]');
-  await form.getByLabel('Email', { exact: true }).fill('not-an-email');
-  await form.getByRole('button', { name: 'Send message' }).click();
-  const name = form.getByLabel('Name', { exact: true });
-  await expect(name).toBeFocused();
-  await expect(name).toHaveAttribute('aria-invalid', 'true');
-  await expect(page.locator('#cf-name-err')).toHaveText('Add your name.');
-  await expect(page.locator('#cf-email-err')).toContainText('looks incomplete');
-  await expect(page.locator('#cf-message-err')).toHaveText('Write a short message.');
-  // fixing a field clears its error as you type
-  await name.fill('Ed');
-  await expect(name).toHaveAttribute('aria-invalid', 'false');
-  await expect(page.locator('#cf-name-err')).toHaveText('');
-});
-
-test('contact form: a good message sends in place and confirms', async ({ page }) => {
-  await page.route('**/', (route) => (route.request().method() === 'POST' ? route.fulfill({ status: 200, body: '' }) : route.continue()));
-  await page.goto('/');
-  const form = page.locator('form[name="contact"]');
-  await form.getByLabel('Name', { exact: true }).fill('Test Person');
-  await form.getByLabel('Email', { exact: true }).fill('test@example.com');
-  await form.getByLabel('Message', { exact: true }).fill('Hello');
-  await form.getByRole('button', { name: 'Send message' }).click();
-  await expect(page.locator('.contact__done')).toHaveText(/message sent/);
-  await expect(page.locator('.contact__done')).toBeFocused();
-});
-
-test('contact form: a failed send keeps the message and offers email instead', async ({ page }) => {
-  await page.route('**/', (route) => (route.request().method() === 'POST' ? route.fulfill({ status: 500, body: '' }) : route.continue()));
-  await page.goto('/');
-  const form = page.locator('form[name="contact"]');
-  await form.getByLabel('Name', { exact: true }).fill('Test Person');
-  await form.getByLabel('Email', { exact: true }).fill('test@example.com');
-  await form.getByLabel('Message', { exact: true }).fill('Hello');
-  await form.getByRole('button', { name: 'Send message' }).click();
-  await expect(form.locator('[data-status]')).toContainText('didn’t send');
-  await expect(form.locator('[data-status] a[href^="mailto:"]')).toBeVisible();
-  await expect(form.getByLabel('Message', { exact: true })).toHaveValue('Hello');
+  const contact = page.locator('#contact');
+  await expect(contact.locator('form')).toHaveCount(0);
+  await expect(contact.getByRole('link', { name: /^Email / })).toHaveAttribute('href', /^mailto:/);
+  await expect(contact.getByRole('link', { name: /LinkedIn/ })).toBeVisible();
 });
 
 test('thanks page exists and is kept out of search', async ({ page }) => {

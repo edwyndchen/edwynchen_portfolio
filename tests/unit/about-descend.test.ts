@@ -59,11 +59,44 @@ describe('fabric wind', () => {
   });
 });
 
-import { nextOutfit } from '../../src/scripts/outfit-swap';
+import { existsSync } from 'node:fs';
+import { nextOutfit, PUFF_LAYOUT, PUFF_SWAP, PUFF_CLEAR, PUFF_REVEAL } from '../../src/scripts/outfit-swap';
+import { OUTFIT_MAP } from '../../src/scripts/fabric-wind';
 describe('costume change', () => {
   it('goes hanfu, Pig, Aquarius and round again', () => {
     expect(nextOutfit('hanfu')).toBe('pig');
     expect(nextOutfit('pig')).toBe('water');
     expect(nextOutfit('water')).toBe('hanfu');
+  });
+  it('changes clothes only once every cloud has landed, and before any start to clear', () => {
+    const lastLands = (PUFF_LAYOUT.length - 1) * 0.01 + 0.3;
+    expect(PUFF_SWAP).toBeGreaterThanOrEqual(lastLands);
+    expect(PUFF_CLEAR).toBeGreaterThan(PUFF_SWAP);
+  });
+  it('brings the new outfit back only as the clouds thin away, never through dense cloud', () => {
+    expect(PUFF_REVEAL).toBeGreaterThanOrEqual(PUFF_CLEAR + 0.3);
+    expect(PUFF_REVEAL + 0.35).toBeLessThanOrEqual(PUFF_CLEAR + 0.8 + 0.2); // done by the time the last billow fades
+  });
+  it('covers the figure head to feet and sleeve to sleeve', () => {
+    const ys = PUFF_LAYOUT.map(([, y]) => y), xs = PUFF_LAYOUT.map(([x]) => x);
+    expect(Math.min(...ys)).toBeLessThanOrEqual(-0.35);
+    expect(Math.max(...ys)).toBeGreaterThanOrEqual(0.35);
+    expect(Math.min(...xs)).toBeLessThanOrEqual(-0.24);
+    expect(Math.max(...xs)).toBeGreaterThanOrEqual(0.24);
+  });
+  it('has a wind map on disk for every painted-map outfit', () => {
+    for (const src of Object.values(OUTFIT_MAP)) expect(existsSync(`public${src}`)).toBe(true);
+  });
+});
+
+import { flowCopies, FLOW_PERIOD } from '../../src/scripts/fabric-wind';
+describe('flowing water', () => {
+  it('cross-fades two copies that always add up to one, each fading out as it wraps', () => {
+    for (let t = 0; t < 30; t += 0.37) {
+      const [a, b] = flowCopies(t, 31);
+      expect(a.weight + b.weight).toBeCloseTo(1, 6);
+      expect(a.shift).toBeGreaterThanOrEqual(0); expect(a.shift).toBeLessThan(FLOW_PERIOD);
+    }
+    expect(flowCopies(0, 31)[0].weight).toBe(0); // at the wrap point the copy is invisible
   });
 });

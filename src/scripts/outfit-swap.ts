@@ -12,8 +12,19 @@ export type Outfit = (typeof OUTFITS)[number];
 /** The outfit after this one, round and round. Pure, for tests. */
 export const nextOutfit = (o: Outfit): Outfit => OUTFITS[(OUTFITS.indexOf(o) + 1) % OUTFITS.length];
 
+/** Where each puff cloud settles, as fractions of the figure's box from its centre: a tight, overlapping cover of
+ *  the whole tall figure, head to feet and sleeve to sleeve. */
+export const PUFF_LAYOUT: [number, number][] = [
+  [0, 0], [0, -0.43], [-0.24, -0.3], [0.24, -0.3], [-0.28, -0.08], [0.28, -0.08],
+  [0, 0.2], [-0.24, 0.16], [0.24, 0.16], [-0.18, 0.38], [0.18, 0.38], [0, -0.18],
+];
+/** Seconds into the puff: when the outfit changes (every cloud is in place) and when the clouds start to clear. */
+export const PUFF_SWAP = 0.52;
+export const PUFF_CLEAR = 0.62;
+/** ...and when the new outfit fades in: once the clouds are about half gone, done as they vanish. */
+export const PUFF_REVEAL = 1.02;
+
 export function initOutfitSwap(button: HTMLButtonElement): () => void {
-  // the paintings sit in their own wrapper, so the fade never fights the scroll choreography on .about__ed
   const ed = button.querySelector<HTMLElement>('.about__outfits');
   const puff = button.querySelector<HTMLElement>('[data-puff]');
   const status = document.querySelector<HTMLElement>('[data-outfit-status]');
@@ -32,20 +43,41 @@ export function initOutfitSwap(button: HTMLButtonElement): () => void {
     window.dispatchEvent(new CustomEvent('wind:outfit', { detail: o }));
   };
 
-  // the puff: clouds burst from his middle to cover the whole figure, then drift outward and thin away
+  // the puff, a magic trick: big billows close over the whole figure, the outfit changes while he is completely
+  // hidden, and when the clouds drift apart and thin away the new outfit is already standing there
   const clouds = [...puff.querySelectorAll<HTMLElement>('img')];
-  const burst = () => {
+  const mist = puff.querySelector<HTMLElement>('[data-puff-mist]');
+  // every outfit is fetched and decoded up front: a painting still loading when it is swapped in would pop in
+  // after the clouds had gone, which gives the trick away
+  for (const img of imgs.values()) { img!.loading = 'eager'; img!.decode().catch(() => {}); }
+  const burst = (ready: Promise<unknown>, swap: () => void) => {
+    const ed = button.querySelector<HTMLElement>('.about__outfits')!;
     const tl = gsap.timeline();
     const w = puff.clientWidth, h = puff.clientHeight;
+    // a soft, solid bank of porcelain mist behind the billows: whatever gaps they leave, he can't be seen through it
+    if (mist) {
+      tl.fromTo(mist, { opacity: 0, scale: 0.75 }, { opacity: 1, scale: 1, duration: 0.14, ease: 'power2.out' }, 0)
+        .to(mist, { opacity: 0, scale: 1.15, duration: 0.6, ease: 'power1.in' }, PUFF_CLEAR + 0.12);
+    }
     clouds.forEach((c, i) => {
-      const a = (i / clouds.length) * Math.PI * 2 + 0.35;
-      // spread: an ellipse over the figure (it is taller than wide); the first cloud stays at the heart
-      const rx = i === 0 ? 0 : w * 0.26, ry = i === 0 ? 0 : h * 0.3;
+      const [px, py] = PUFF_LAYOUT[i % PUFF_LAYOUT.length];
+      const x = px * w, y = py * h, flip = i % 2 ? -1 : 1;
+      // each billow bursts out already solid (opaque within 0.06s), so he is never seen through a half-formed cloud
       tl.fromTo(c,
-        { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.2, opacity: 0, rotation: (i % 2 ? -1 : 1) * 10 },
-        { x: Math.cos(a) * rx, y: Math.sin(a) * ry, scale: i === 0 ? 1.5 : 1.1, opacity: 1, rotation: 0, duration: 0.32, ease: 'power3.out' }, i * 0.02)
-        .to(c, { x: Math.cos(a) * rx * 1.7, y: Math.sin(a) * ry * 1.5 - h * 0.06, scale: i === 0 ? 2 : 1.5, opacity: 0, duration: 0.75, ease: 'power1.in' }, 0.42 + i * 0.025);
+        { xPercent: -50, yPercent: -50, x: x * 0.35, y: y * 0.35, scale: 0.5, rotation: flip * 12 },
+        { x, y, scale: 1, rotation: 0, duration: 0.3, ease: 'power3.out' }, i * 0.01)
+        .fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.06, ease: 'none' }, i * 0.01)
+        .to(c, { x: x * 1.8 + flip * w * 0.05, y: y * 1.5 - h * 0.05, scale: 1.25, opacity: 0, duration: 0.8, ease: 'power1.in' }, PUFF_CLEAR + i * 0.02);
     });
+    // fully covered: he steps out of sight, changes under the cloud (the cover holds until the new painting is
+    // decoded), and only reappears as the billows thin away, so he is never glimpsed through them
+    tl.set(ed, { opacity: 0 }, PUFF_SWAP - 0.02)
+      .to(ed, { opacity: 1, duration: 0.35, ease: 'power1.out' }, PUFF_REVEAL);
+    tl.call(() => {
+      tl.pause();
+      ready.then(() => { swap(); requestAnimationFrame(() => requestAnimationFrame(() => tl.resume())); });
+    }, [], PUFF_SWAP);
+    if (import.meta.env.DEV) (window as unknown as { __puff?: gsap.core.Timeline }).__puff = tl; // e2e/dev: scrub frames
     return tl;
   };
 
@@ -54,14 +86,31 @@ export function initOutfitSwap(button: HTMLButtonElement): () => void {
     const to = nextOutfit(current);
     if (reduce.matches) { show(to); return; }
     busy = true;
-    const tl = gsap.timeline({ onComplete: () => { busy = false; } });
-    tl.add(burst(), 0)
-      .to(ed, { opacity: 0, scale: 0.94, duration: 0.25, ease: 'power2.in' }, 0.05)
-      .call(() => show(to), [], 0.32)
-      .to(ed, { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 0.5);
+    const ready = imgs.get(to)!.decode().catch(() => {});
+    burst(ready, () => show(to)).eventCallback('onComplete', () => { busy = false; });
   };
+  // the wand's label follows the pointer while it is over him (hover devices only)
+  const tip = document.querySelector<HTMLElement>('[data-wand-tip]');
+  const fig = button.parentElement;
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const onTipMove = (e: PointerEvent) => {
+    if (!tip || !fig || !fine.matches || e.pointerType !== 'mouse') return;
+    const r = fig.getBoundingClientRect();
+    // below-right of the wand, flipped to its left when it would run off the screen
+    const flip = e.clientX + 26 + tip.offsetWidth > document.documentElement.clientWidth - 8;
+    const x = e.clientX - r.left + (flip ? -tip.offsetWidth - 10 : 26);
+    tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(e.clientY - r.top + 24)}px)`;
+    tip.classList.add('is-on');
+  };
+  const onTipLeave = () => tip?.classList.remove('is-on');
+  button.addEventListener('pointermove', onTipMove);
+  button.addEventListener('pointerleave', onTipLeave);
   button.addEventListener('click', onClick);
   show('hanfu');
   status.textContent = ''; // say nothing until the first change
-  return () => button.removeEventListener('click', onClick);
+  return () => {
+    button.removeEventListener('click', onClick);
+    button.removeEventListener('pointermove', onTipMove);
+    button.removeEventListener('pointerleave', onTipLeave);
+  };
 }
