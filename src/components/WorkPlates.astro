@@ -36,7 +36,7 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
   .work :global(.work__plate) { position: relative; transition: outline-color var(--dur-med) var(--ease-standard); }
   .work :global(.work__plate:hover), .work :global(.work__plate:focus-within) { outline-color: var(--cobalt); }
   .work__media { overflow: hidden; margin-bottom: var(--space-m); }
-  .work__cover { width: 100%; height: auto; mix-blend-mode: multiply; }
+  .work__cover { width: 100%; height: auto; } /* no multiply: the plate is pure white, so it changed nothing and cost a blend on every scroll frame (round 10) */
   .work__meta { margin-bottom: 0; color: var(--text-secondary); }
   .work h3 { font-size: var(--fluid-display-md); margin: var(--space-xs) 0 var(--space-s); }
   .work h3 a { color: var(--cobalt); text-decoration: none; }

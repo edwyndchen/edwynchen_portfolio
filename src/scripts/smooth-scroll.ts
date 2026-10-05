@@ -11,7 +11,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
  */
 export const SMOOTH = {
   // 0..1, how much of the remaining distance each frame covers: lower glides longer
-  lerp: 0.09,
+  // (0.13, round 10: 0.09 trailed the wheel by ~0.4s, which stacked with the scrubs and felt heavy)
+  lerp: 0.13,
   wheelMultiplier: 1,
 };
 

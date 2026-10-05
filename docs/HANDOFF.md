@@ -115,6 +115,19 @@ Committed up to the latest commit on `main` (unit 66, e2e 160 passing, 18 skippe
 - Wand: ruyi A live (Ed's pick). Two traditional porcelain star wands to compare (`/about/wand-a.webp`, `wand-b.webp`, cut by `art/round10/wand-cut.mjs`): open `/?wand=star-a`, `/?wand=star-b` or `/?wand=ruyi` (remembered in localStorage, `WANDS` in magic-wand.ts). A click throws a burst of cobalt stars and sparkles from the tip (`SPARKS`, `burst()`); a tap on a phone bursts from the finger.
 - Landing doors: the frame's inner edge moved 14px in to cover the old painting's wobbly inner moulding (a broken double line), and the moon mask is fitted to the ring (`cy 568.5, r 358`), so the seam-side frame runs into the ring with no key-fret stub (`art/round9/door-frame.mjs`).
 
+## Round 10b, scroll performance (2026-10-06)
+
+Measured first: the main thread holds 120fps down the whole page with no long frames, so the "slow and laggy" feel was
+latency, plus GPU load that hurts weaker devices. Fixes:
+- Less stacked smoothing: Lenis `lerp` 0.09 -> 0.13, hero scrub 0.6 -> 0.2, descent scrub 0.4 -> 0.15.
+- Descent pin shorter: 180% -> 120% desktop, 140% -> 100% phones (phases unchanged, so it all plays over less scroll).
+- Hero clouds and tram pause while the scene is off screen (IntersectionObserver alongside the Pause switch).
+- Work covers: `mix-blend-mode: multiply` removed (the plate is pure white, so it changed nothing and cost a blend per
+  frame). Still on the case-study and Workshop images, which sit on paper.
+- Hero paintings have a srcset (1200/1800/2400w, `npm run hero:sizes`, chained into `npm run hero`).
+- Phones drop two of the cloud-only hero layers (depth 0.12 and 0.35).
+- Hero name letter spacing 0.03em -> 0.01em (Ed).
+
 ## Next steps
 
 Everything through round 9 is committed and pushed to GitHub: https://github.com/edwyndchen/edwynchen_portfolio (public, `main`).

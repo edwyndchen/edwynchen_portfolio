@@ -19,7 +19,8 @@ export const DESCEND = {
   // Ed stays hidden behind the walls (his ribbon reached up through their feathered top) and fades in over this first
   // stretch of the timeline, as the walls start to part (Ed, round 10)
   appear: [0, 0.05],
-  pin: { desktop: 180, mobile: 140 },
+  // (round 10: 180/140 held the page still for almost two screens; shorter so the scroll keeps answering)
+  pin: { desktop: 120, mobile: 100 },
   // the walls start parting this far (fraction of a screen) before the pin, while the last work cards are still on
   // their way off screen (Ed, round 9); the timeline's phases run across this lead-in and the pin together
   lead: 0.55,
@@ -30,7 +31,7 @@ export const DESCEND = {
   dropFrom: { desktop: -30, mobile: -18 },
   // the page scroll is already smoothed (smooth-scroll.ts), so the scrub only needs a short catch-up (it was 1s,
   // which with the smooth scroll on top made the scene trail the scroll)
-  scrub: 0.4,
+  scrub: 0.15,
 } as const;
 
 /** Ed waits behind the closed walls, centred, with a slight tilt that settles as he comes down. He is faded out until

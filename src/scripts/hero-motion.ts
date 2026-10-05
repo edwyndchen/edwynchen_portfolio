@@ -82,7 +82,13 @@ export function initHero(root: HTMLElement): () => void {
       endless.push(tween);
     });
 
-    const offMotion = whilePlaying(() => endless.forEach((t) => t.resume()), () => endless.forEach((t) => t.pause()));
+    // they run only while the scene is on screen (round 10: they kept animating, unseen, all the way down the page)
+    // and motion isn't paused
+    let onScreen = true, playing = true;
+    const apply = () => endless.forEach((t) => (onScreen && playing ? t.resume() : t.pause()));
+    const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; apply(); });
+    io.observe(scene);
+    const offMotion = whilePlaying(() => { playing = true; apply(); }, () => { playing = false; apply(); });
 
     // a data-static layer never moves, neither on scroll nor with the pointer (none at the moment)
     scene.querySelectorAll<HTMLElement>('[data-static]').forEach((l) => gsap.set(l, { yPercent: 0 }));
@@ -97,7 +103,7 @@ export function initHero(root: HTMLElement): () => void {
     const builders = layers.map((layer) => {
       const depth = Number(layer.dataset.depth);
       const factor = Number(layer.dataset.scroll);
-      const tl = gsap.timeline({ scrollTrigger: { trigger: scene, start: 0, end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true } });
+      const tl = gsap.timeline({ scrollTrigger: { trigger: scene, start: 0, end: 'bottom top', scrub: 0.2, invalidateOnRefresh: true } });
       const build = () => {
         const share = settleShare();
         tl.clear();
@@ -134,6 +140,7 @@ export function initHero(root: HTMLElement): () => void {
 
     return () => {
       offMotion();
+      io.disconnect();
       if (onMove) scene.removeEventListener('pointermove', onMove);
       ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
     };
