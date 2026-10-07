@@ -63,15 +63,22 @@ const startFrame = frameFor(ENERGY.start);
         <div class="coffee__bar" role="meter" aria-labelledby="coffee-hp" aria-valuemin="0" aria-valuemax="100" aria-valuenow={ENERGY.start} data-energy-bar>
           <span class="coffee__fill" data-energy-fill style={`transform: scaleX(${ENERGY.start / 100})`}></span>
         </div>
+        <!-- what he says sits right under the bar, so the two read together (Ed, round 12) -->
+        <p class="coffee__line" role="status" data-coffee-line>{LINES[startState]}</p>
       </div>
-      <!-- Ed is the button: carry the cup over and click him (or tap, or Enter) to give him a coffee -->
+      <!-- Ed is the button: carry the cup over and click him (or tap, or Enter) to give him a coffee. On touch screens a
+           cup rises from his lower left and tips to his mouth (data-sip-cup, Ed, round 12). -->
+      <div class="coffee__stage">
       <button class="coffee__face" type="button" data-coffee data-coffee-face aria-label="Give Ed a coffee">
         {Array.from({ length: FRAMES }, (_, i) => (
           <img class:list={['coffee__img', { 'is-on': i === startFrame }]} data-frame={i} src={`/about/face-${i + 1}.webp`}
             alt="" width="800" height="800" loading={i === startFrame ? 'eager' : 'lazy'} decoding="async" />
         ))}
       </button>
-      <figcaption class="coffee__line" role="status" data-coffee-line>{LINES[startState]}</figcaption>
+      <img class="coffee__sip" src="/about/cup.webp" alt="" width="400" height="411" aria-hidden="true" decoding="async" data-sip-cup />
+      </div>
+      <!-- phones and tablets: a plain button to give him a coffee (Ed, round 12) -->
+      <button class="coffee__go button" type="button" data-caffeinate>Tap to caffeinate</button>
       <p class="coffee__hint"><span class="coffee__hint-mouse">Click Ed to give him a coffee.</span><span class="coffee__hint-touch">Tap Ed to give him a coffee.</span> <span class="coffee__count" data-coffee-count></span></p>
       <!-- the cup that follows the mouse over him (coffee.ts); fixed to the screen, so the page never moves it -->
       <img class="coffee__cup" src="/about/cup.webp" alt="" width="400" height="411" aria-hidden="true" decoding="async" data-cup />
@@ -111,8 +118,16 @@ const startFrame = frameFor(ENERGY.start);
     <div>
       <h2 id="ab-zodiac">Why a pig and a water vase?</h2>
       <p>Tap me on the home page and I change outfits. Two of them are my signs.</p>
-      <p><strong>The pig</strong> is my Chinese zodiac, the Year of the Pig. Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.</p>
-      <p><strong>The water bearer</strong> is Aquarius, my star sign. Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.</p>
+      <!-- each sign with its painting (Ed, round 12): the crane-winged pig from the Contact scroll, and the water
+           bearer's vase repainted on its own (art/round12/vase-cut.mjs) -->
+      <div class="ab-sign">
+        <img class="ab-sign__art ab-sign__art--pig" src="/scroll/pig.webp" alt="Brush painting of a spotted pig flying on white crane wings" width="600" height="451" loading="lazy" decoding="async" />
+        <p><strong>The pig</strong> is my Chinese zodiac, the Year of the Pig. Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.</p>
+      </div>
+      <div class="ab-sign">
+        <img class="ab-sign__art ab-sign__art--vase" src="/about/vase.webp" alt="Brush painting of a blue-and-white porcelain vase with a lotus medallion" width="436" height="900" loading="lazy" decoding="async" />
+        <p><strong>The water bearer</strong> is Aquarius, my star sign. Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.</p>
+      </div>
     </div>
   </section>
 
@@ -148,11 +163,27 @@ const startFrame = frameFor(ENERGY.start);
   .coffee__img.is-on { opacity: 1; }
   .coffee__face.is-sip { animation: coffee-sip 0.45s var(--ease-standard); }
   @keyframes coffee-sip { 40% { transform: translateY(-6px) scale(1.02); } }
-  .coffee__line { margin: 0; min-height: 1.5em; text-align: center; font-family: var(--font-display); font-style: italic; font-size: var(--text-lg); color: var(--text-brand); }
+  .coffee__line { margin: 0.15rem 0 0; min-height: 1.5em; text-align: center; font-family: var(--font-display); font-style: italic; font-size: var(--text-lg); color: var(--text-brand); }
   .coffee__face:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
   .coffee__face.has-cup { cursor: none; }
   .coffee__hint { margin: 0; text-align: center; font-size: var(--text-sm); color: var(--text-secondary); }
   .coffee__hint-touch { display: none; }
+  /* touch screens: the cup that rises to his mouth, and the Tap to caffeinate button */
+  .coffee__stage { position: relative; width: 100%; }
+  .coffee__sip {
+    position: absolute; left: 10%; top: 54%; width: 34%; height: auto; pointer-events: none; z-index: 1;
+    transform-origin: 70% 80%; opacity: 0; transform: translate(-40%, 30%) scaleX(-1) rotate(0deg);
+  }
+  .coffee__sip.is-sip { animation: coffee-drink 1.1s var(--ease-standard); }
+  @keyframes coffee-drink {
+    0% { opacity: 0; transform: translate(-40%, 30%) scaleX(-1) rotate(0deg); }
+    25% { opacity: 1; transform: translate(0, 0) scaleX(-1) rotate(0deg); }
+    55% { opacity: 1; transform: translate(12%, -6%) scaleX(-1) rotate(-32deg); }
+    80% { opacity: 1; transform: translate(0, 0) scaleX(-1) rotate(0deg); }
+    100% { opacity: 0; transform: translate(-40%, 30%) scaleX(-1) rotate(0deg); }
+  }
+  .coffee__go { display: none; }
+  @media (hover: none) { .coffee__go { display: inline-flex; } }
   @media (hover: none) { .coffee__hint-mouse { display: none; } .coffee__hint-touch { display: inline; } }
   /* the cup: its centre-left on the pointer, tilted towards him; it tips to pour on a click */
   .coffee__cup {
@@ -162,7 +193,7 @@ const startFrame = frameFor(ENERGY.start);
   .coffee__cup.is-on { opacity: 1; }
   .coffee__cup.is-pour { animation: coffee-pour 0.5s var(--ease-standard); }
   @keyframes coffee-pour { 45% { transform: translate(-30%, -55%) rotate(-38deg); } }
-  @media (prefers-reduced-motion: reduce) { .coffee__fill, .coffee__img { transition: none; } .coffee__face.is-sip { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .coffee__fill, .coffee__img { transition: none; } .coffee__face.is-sip, .coffee__sip.is-sip { animation: none; } }
 
   .ab-section { padding-block: var(--space-xl); border-top: var(--rule-hair); }
   .ab-section h2 { font-size: var(--step-3); margin: 0 0 var(--space-l); }
@@ -182,6 +213,12 @@ const startFrame = frameFor(ENERGY.start);
   .ab-two { display: grid; gap: var(--space-xl); }
   @media (min-width: 60rem) { .ab-two { grid-template-columns: 1fr 1fr; column-gap: var(--space-2xl); } }
   .ab-two p { max-width: 58ch; }
+  /* the signs: a painting beside each paragraph, the same height so the two rows line up */
+  .ab-sign { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-m); align-items: center; margin-block: var(--space-m); }
+  .ab-sign p { margin: 0; }
+  .ab-sign__art { justify-self: center; width: auto; height: 7rem; max-width: 100%; object-fit: contain; }
+  .ab-sign__art--vase { height: 8rem; }
+  @media (max-width: 29.99rem) { .ab-sign { grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--space-s); } .ab-sign__art { height: 5rem; } .ab-sign__art--vase { height: 6.5rem; } }
   .ab-tools-title { margin: var(--space-l) 0 var(--space-xs); color: var(--gold-text); font-size: var(--text-md); }
   .ab-tools { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
   .ab-tools li { padding: 0.3rem 0.75rem; border: var(--rule); background: var(--surface-raised); font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-brand); }

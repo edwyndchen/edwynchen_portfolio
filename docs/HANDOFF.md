@@ -1,6 +1,6 @@
 # Porcelain portfolio — handoff
 
-_Last updated 2026-10-05 (after the round 3–8 commit). Read this first in any new session, then the spec._
+_Last updated 2026-10-07 (round 12). Read this first in any new session, then the spec._
 
 ## What this is
 
@@ -150,14 +150,25 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Selected work heading and the brands window rise in on their own as you scroll (`[data-reveal-heading]` in `reveal.ts`).
 - EonX cover: the empty strip and stray line removed (Seedream edit `5ff641d0` of the cleaned B, then the leftover stray line painted out locally, `art/round11/eonx-fix-a-clean.png`).
 
+## Round 12 (2026-10-07)
+
+- Brands window: still, one brand centred in each of the six panes (EonX added as the sixth, logo from eonx.com via `art/round11/logos/build.mjs`). The window keeps its painted shape (no crop); pane positions are measured in `Clients.astro` (`PANE6`, `PANE3`). Every logo gets about the same ink (equal area, `AREA`). Phones: two three-pane windows stacked (`public/clients/window-3.webp`, `art/round12/window-3.mjs`, joined on a mullion).
+- About, coffee game: "Running low…" sits right under the energy bar. Touch screens get a "Tap to caffeinate" button; a coffee (button or tapping Ed) brings a cup up from his lower left and tips it to his mouth (`.coffee__sip`, `coffee-drink`).
+- About, "Why a pig and a water vase?": the crane-winged pig from the Contact scroll and the water bearer's vase, repainted on its own (Higgsfield gpt_image_2_5, options `art/round12/vase-1..3.png`, cut by `art/round12/vase-cut.mjs`; option 1, Ed's pick).
+- Contact line and links (every page) sit inside a painted cloud plaque (Seedream with hero ref, options `art/round12/cloud-1..3.png`, cut by `art/round12/cloud-cut.mjs`; option 2 live), left-aligned like an editorial title block (Ed's reference: the Social Impact Capital site). Phones stretch it taller (aspect 1.3) so the words fit.
+- Workshop header: no fades. The octagon lattice sits in a painted frame with mitred corners and hard edges (`public/workshop/frame.webp`, a nine-slice built from the brands window's moulding by `art/round12/frame-build.mjs`). Ed picked layout B: the lattice across the page, the words on a framed paper plaque set into it (phones: a taller window, the plaque low). Layout A (words left, window right) is in `docs/review/round12/workshop-a-vs-b.png`.
+- EonX cover rebuilt on a strict grid from its own painted pieces (`art/round12/eonx-rebuild.mjs`; original kept as `art/round12/eonx-cover-before.webp`): 100px margins, 30px gutters, shared edges, swatches on an exact 9x3 grid, buttons in two aligned rows, stray dots gone, contents centred with equal padding.
+- Comparison sheets: `docs/review/round12/`. Screenshot helper: `node art/round12/shot.mjs <path> <out.png> [w] [h] [selector]` (dev server on BASE, default the preview port).
+- e2e: 10 tests fail, and they fail the same way on the round 11 commit (hero layers, hero spread, footer Back to top, case-study quick links, two About wind/descent tests on mobile). They broke in rounds 10b/11 (Lenis smooth scroll, 4k hero); fix in review round 2. Unit 73 passing.
+
 ## Next steps
 
-Everything through round 11 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
+Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
 
 1. Waiting on Ed: his Formspree form ID (goes in `formspree` in `src/data/site.ts`; until then the contact form opens an email), and the Punters and Racenet logo files (drop in `public/logos/`, run them through `art/round11/logos/build.mjs` or add a cobalt version, set `logo` in `src/data/clients.ts`).
 2. Ed uploads real images for Workshop entries and case studies in Keystatic (run `npm run dev`, edit at /keystatic, push; Keystatic edits files locally, not on the live site).
 3. Ed to check the About page copy line "When I'm not designing, I'm at the gym or hunting down the next good coffee." (written from his bio).
-4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375.
+4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Start by fixing the 10 stale e2e tests.
 5. Handoff README.
 
 ## Open items for Ed

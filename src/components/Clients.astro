@@ -1,54 +1,82 @@
 ---
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { clients } from '../data/clients';
-// the strip slides one full copy of the list across, so it shows twice in a row: the second copy is hidden from
-// assistive tech (the first is the real list)
-const loop = [...clients, ...clients];
+import { webpSize } from '../lib/image-size';
+
+// The panes of the painted window, in its own pixels (public/clients/window.webp, 2400x409; measured from its
+// see-through panes). Phones get two three-pane windows stacked (window-3.webp, 1227x409, art/round12/window-3.mjs).
+const W6 = 2400, W3 = 1227, H = 409, GAP = 40;
+const PANE6 = [76, 468, 858, 1248, 1641, 2030];
+const PANE3 = [76, 468, 857];
+const PANE_W = 294, PANE_TOP = 69, PANE_H = 273;
+const pct = (n: number, of: number) => `${((n / of) * 100).toFixed(3)}%`;
+
+// Every logo gets about the same amount of ink (equal area), so a wide wordmark and a round mark weigh the same:
+// height = sqrt(AREA / aspect), capped by the pane's width (MAX_W).
+const AREA = 0.24, MAX_W = 0.76;
+const logoHeight = (src: string) => {
+  const { width, height } = webpSize(readFileSync(join(process.cwd(), 'public', src)));
+  const aspect = width / height;
+  return Math.min(Math.sqrt(AREA / aspect), MAX_W / aspect);
+};
+
+const items = clients.map((c, i) => {
+  const row = Math.floor(i / 3), col = i % 3, HH = H * 2 + GAP;
+  return {
+    ...c,
+    style: [
+      `--x:${pct(PANE6[i], W6)}`, `--w:${pct(PANE_W, W6)}`, `--y:${pct(PANE_TOP, H)}`, `--h:${pct(PANE_H, H)}`,
+      `--mx:${pct(PANE3[col], W3)}`, `--mw:${pct(PANE_W, W3)}`, `--my:${pct(row * (H + GAP) + PANE_TOP, HH)}`, `--mh:${pct(PANE_H, HH)}`,
+      c.logo ? `--lh:${(logoHeight(c.logo) * 100).toFixed(1)}%` : '',
+    ].filter(Boolean).join(';'),
+  };
+});
 ---
-<!-- Social proof (Ed, round 11): a painted lattice transom across the whole screen (Higgsfield, built by
-     art/round11/window-build.mjs, its panes see-through), and the brands drift past behind it like a view outside.
-     Pauses on hover and focus, with the Pause motion switch, and stands still for reduced motion. -->
+<!-- Social proof (Ed, rounds 11 and 12): a painted lattice window across the whole screen (Higgsfield, built by
+     art/round11/window-build.mjs, its panes see-through), one brand standing still in the middle of each pane. Phones
+     get two three-pane windows, one above the other, so the logos stay a readable size. -->
 <section class="clients" aria-labelledby="clients-title" data-reveal-heading>
   <h2 class="clients__title label wrap" id="clients-title">Brands I’ve designed for</h2>
-  <div class="clients__window">
-    <div class="clients__view">
-      <ul class="clients__track">
-        {loop.map((c, i) => (
-          <li class="clients__item" aria-hidden={i >= clients.length ? 'true' : undefined}>
-            {c.logo
-              ? <img class="clients__logo" src={c.logo} alt={i >= clients.length ? '' : c.name} loading="lazy" decoding="async" />
-              : <span class="clients__word">{c.name}</span>}
-          </li>
-        ))}
-      </ul>
-    </div>
-    <img class="clients__lattice" src="/clients/window.webp" alt="" width="2400" height="409" aria-hidden="true" decoding="async" />
-  </div>
+  <ul class="clients__window">
+    {items.map((c) => (
+      <li class="clients__pane" style={c.style}>
+        {c.logo
+          ? <img class="clients__logo" src={c.logo} alt={c.name} loading="lazy" decoding="async" />
+          : <span class="clients__word">{c.name}</span>}
+      </li>
+    ))}
+  </ul>
 </section>
 
 <style>
   .clients { padding-top: var(--space-xl); }
   .clients__title { margin: 0 auto var(--space-s); text-align: center; color: var(--text-secondary); }
-  /* the window runs the full width of the screen; the brands slide in the white behind its panes */
-  .clients__window { --h: clamp(150px, 17vw, 300px); position: relative; height: var(--h); background: var(--surface-raised); overflow: hidden; }
-  .clients__lattice {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;
-    pointer-events: none;
+  /* the window runs the full width of the screen, painted over white so the panes read as glass */
+  .clients__window {
+    list-style: none; margin: 0; padding: 0; position: relative;
+    aspect-ratio: 2400 / 409;
+    background: url(/clients/window.webp) center / 100% 100% no-repeat, var(--surface-raised);
   }
-  .clients__view { position: absolute; inset: 0; display: flex; align-items: center; }
-  .clients__track {
-    list-style: none; margin: 0; padding: 0; display: flex; width: max-content;
-    animation: clients-slide 40s linear infinite;
+  .clients__pane {
+    position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h);
+    display: grid; place-items: center; container-type: size;
   }
-  .clients__window:hover .clients__track, .clients__window:focus-within .clients__track { animation-play-state: paused; }
-  :global(html.motion-paused) .clients__track { animation-play-state: paused; }
-  @keyframes clients-slide { to { transform: translateX(-50%); } }
-  /* each brand sized to sit inside a pane (about two thirds of the window's height square) as it passes */
-  .clients__item { display: grid; place-items: center; width: calc(var(--h) * 1.5); height: calc(var(--h) * 0.3); flex: none; }
-  .clients__logo { max-width: 46%; max-height: 100%; width: auto; height: auto; }
-  .clients__word { font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: clamp(0.95rem, 0.8rem + 0.55vw, 1.4rem); letter-spacing: 0.04em; color: var(--text-brand); white-space: nowrap; }
-  /* reduced motion: the brands sit still in a row under the window, the copy hidden */
-  @media (prefers-reduced-motion: reduce) {
-    .clients__track { animation: none; width: 100%; justify-content: space-around; }
-    .clients__item[aria-hidden='true'] { display: none; }
+  .clients__logo { height: var(--lh); width: auto; max-width: 76%; }
+  .clients__word {
+    font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: 14cqw; letter-spacing: 0.04em;
+    color: var(--text-brand); white-space: nowrap;
+  }
+  /* phones: two three-pane windows, one above the other, with paper between them */
+  @media (max-width: 39.99rem) {
+    .clients__window {
+      aspect-ratio: 1227 / 858; /* two 1227x409 windows and a 40px gap */
+      background:
+        url(/clients/window-3.webp) top / 100% calc(409 / 858 * 100%) no-repeat,
+        url(/clients/window-3.webp) bottom / 100% calc(409 / 858 * 100%) no-repeat,
+        linear-gradient(var(--surface-raised), var(--surface-raised)) top / 100% calc(409 / 858 * 100%) no-repeat,
+        linear-gradient(var(--surface-raised), var(--surface-raised)) bottom / 100% calc(409 / 858 * 100%) no-repeat;
+    }
+    .clients__pane { left: var(--mx); top: var(--my); width: var(--mw); height: var(--mh); }
   }
 </style>

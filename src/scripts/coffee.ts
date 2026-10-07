@@ -90,7 +90,9 @@ export function initCoffee(root: HTMLElement): () => void {
   show(shown);
   render();
 
-  button.addEventListener('click', () => {
+  const sip = root.querySelector<HTMLElement>('[data-sip-cup]');
+  const touch = !window.matchMedia('(hover: hover)').matches;
+  const give = () => {
     const before = stateFor(energy);
     energy = topped(energy);
     cups++;
@@ -103,7 +105,11 @@ export function initCoffee(root: HTMLElement): () => void {
       const r = face.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height * 0.3);
     }
-  });
+    // touch screens: the cup rises from his lower left and tips to his mouth (Ed, round 12)
+    if (touch && sip) { sip.classList.remove('is-sip'); void sip.offsetWidth; sip.classList.add('is-sip'); }
+  };
+  button.addEventListener('click', give);
+  root.querySelector('[data-caffeinate]')?.addEventListener('click', give);
 
   // the cup: follows the mouse over his face in place of the cursor (mouse and pen only; phones just tap him)
   if (cup && window.matchMedia('(hover: hover)').matches) {

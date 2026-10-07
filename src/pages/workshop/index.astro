@@ -10,15 +10,19 @@ const entries = publishedWorkshop(await getCollection('workshop'), import.meta.e
 const skills = skillsOf(entries);
 ---
 <BaseLayout title={`Workshop | ${site.name}`} description="Personal projects and experiments by Edwyn Chen.">
-  <!-- the header is a lattice screen, not a card: the window lattice fills the band and clears behind the words -->
-  <header class="ws-head">
-    <!-- a painted window lattice (Seedream, see image-prompts.md): swap the file to change it -->
-    <div class="ws-head__lattice" style="--lattice: url(/workshop/lattice-octagon.webp)"></div>
-    <div class="wrap ws-head__inner">
+  <!-- the header: a painted lattice set in a framed window, hard edges and mitred corners, like part of the wall,
+       with the words on a framed paper plaque set into it (Ed, round 12, layout B; the frame is the brands window's own
+       moulding, art/round12/frame-build.mjs) -->
+  <header class="ws-head wrap">
+    <div class="ws-head__window" aria-hidden="true">
+      <div class="ws-head__lattice" style="--lattice: url(/workshop/lattice-octagon.webp)"></div>
+    </div>
+    <div class="ws-head__inner">
       <h1>Workshop</h1>
       <p class="ws-head__dek">Side projects and experiments from my bench. Some get fired and glazed. Others stay sketches, and that’s fine.</p>
     </div>
   </header>
+
 
   <section class="wrap ws" aria-labelledby="ws-skills-title" data-workshop>
     {skills.length > 0 && (
@@ -43,25 +47,30 @@ const skills = skillsOf(entries);
 </BaseLayout>
 
 <style>
-  .ws-head { position: relative; overflow: hidden; padding-block: clamp(3.5rem, 10vh, 7rem); }
-  /* the lattice fades out towards the words, so they sit in a clearing, never on top of the bars */
-  .ws-head .ws-head__lattice {
-    position: absolute; inset: 0; background: var(--lattice) center / cover;
-    /* ...and feathers into the paper top and bottom, so the screen never ends on a ruled edge */
-    -webkit-mask-image: radial-gradient(ellipse 60% 85% at 22% 50%, transparent 35%, #000 80%), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
-    mask-image: radial-gradient(ellipse 60% 85% at 22% 50%, transparent 35%, #000 80%), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
-    -webkit-mask-composite: source-in; mask-composite: intersect;
+  /* the frame: nine-slice of the painted moulding; the lattice fills the opening edge to edge, no fades */
+  .ws-head { --frame: clamp(14px, 1.6vw, 22px); position: relative; padding-block: var(--space-xl); display: grid; gap: var(--space-l); align-items: stretch; }
+  .ws-head__window {
+    border: var(--frame) solid transparent; border-image: url(/workshop/frame.webp) 36 stretch;
+    background: var(--surface-raised); min-height: 12rem;
   }
-  .ws-head__inner { position: relative; }
+  /* the lattice a touch deeper than the painting, nearer the frame's cobalt */
+  .ws-head__lattice { width: 100%; height: 100%; background: var(--lattice) center / cover; filter: brightness(0.8) saturate(1.35); }
+  .ws-head__inner { position: relative; align-self: center; }
   .ws-head h1 { font-size: var(--step-4); margin: 0 0 var(--space-m); max-width: 12ch; }
-  .ws__skills { position: relative; }
   .ws-head__dek { font-size: var(--step-1); line-height: var(--lh-normal); color: var(--text-secondary); margin: 0; max-width: 34ch; }
+  /* the lattice fills the band; the words sit on a framed paper plaque set into it */
+  .ws-head { grid-template-areas: 'all'; }
+  .ws-head > * { grid-area: all; }
+  .ws-head .ws-head__window { min-height: 22rem; }
+  .ws-head .ws-head__inner {
+    margin: clamp(1.5rem, 4vw, 3.5rem); justify-self: start; max-width: 34rem;
+    padding: var(--space-l); background: var(--surface-raised);
+    border: var(--frame) solid transparent; border-image: url(/workshop/frame.webp) 36 stretch;
+  }
+  /* phones: the plaque sits low in a taller window, so a band of lattice shows above it */
   @media (max-width: 47.99rem) {
-    .ws-head .ws-head__lattice {
-      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 32%, transparent 82%, #000 92%, transparent);
-      mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 32%, transparent 82%, #000 92%, transparent);
-      -webkit-mask-composite: source-over; mask-composite: add;
-    }
+    .ws-head .ws-head__window { min-height: 30rem; }
+    .ws-head .ws-head__inner { align-self: end; margin: 1rem; padding: var(--space-m); }
   }
   .ws { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
   .ws__skills { margin-bottom: var(--space-l); }
