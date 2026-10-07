@@ -136,28 +136,13 @@ test('motion allowed, mobile: Ed descends centred and lands below the text', asy
   expect(ed && text && ed.y > text.y + text.height - 12).toBe(true);
 });
 
-test('desktop nav link to About lands on the finished layout, not the closed clouds', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'desktop pin');
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
+test('nav About goes to the About page and marks it as the current page (Ed, round 12)', async ({ page, isMobile }) => {
   await page.goto('/');
-  await expect(page.locator('#about')).toHaveAttribute('data-pin-end', /\d/);
+  if (isMobile) await page.getByRole('button', { name: 'Menu' }).click();
   await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'About' }).click();
-  await expect.poll(() => edOpacity(page), { timeout: 8000 }).toBeGreaterThan(0.95);
-  await expect(page.locator('#about-title')).toBeInViewport();
-});
-
-test('desktop nav link to About moves keyboard focus to the About section', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'desktop pin (the jump is intercepted in JS)');
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
-  await expect(page.locator('#about')).toHaveAttribute('data-pin-end', /\d/);
-  const link = page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'About' });
-  await link.focus();
-  await page.keyboard.press('Enter');
-  await expect(page.locator('#about')).toBeFocused();
-  // the next Tab continues from About, not from the nav
-  await page.keyboard.press('Tab');
-  expect(await page.evaluate(() => Boolean(document.activeElement?.closest('#about, #contact, footer')))).toBe(true);
+  await expect(page).toHaveURL(/\/about\/$/);
+  // read straight off the link: on phones the menu is closed again on the new page
+  await expect(page.locator('#nav-links a[href="/about/"]')).toHaveAttribute('aria-current', 'page');
 });
 
 test('desktop: arriving on /#about lands on the finished layout with focus in About', async ({ page, isMobile }) => {

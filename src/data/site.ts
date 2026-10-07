@@ -13,7 +13,7 @@ export const site = {
   formspree: '' as string,
   nav: [
     { label: 'Work', href: '/#work' },
-    { label: 'About', href: '/#about' },
+    { label: 'About', href: '/about/' },
     { label: 'Contact', href: '/contact/' },
   ],
   // set apart from the page links, as its own button

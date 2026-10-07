@@ -15,7 +15,7 @@ const inWorkshop = here.startsWith(site.workshop.href);
       <button class="nav__menu label" type="button" aria-expanded="false" aria-controls="nav-links" data-nav-menu>Menu</button>
       <!-- the page links, then (after a hairline on wide screens) the Workshop, a place of its own; same link style -->
       <ul class="nav__links" id="nav-links">
-        {site.nav.map((item) => <li><a class="label" href={item.href}>{item.label}</a></li>)}
+        {site.nav.map((item) => <li><a class="label" href={item.href} aria-current={!item.href.includes('#') && here.startsWith(item.href) ? 'page' : undefined}>{item.label}</a></li>)}
         <li class="nav__rule" aria-hidden="true"></li>
         <li><a class="label nav__workshop" href={site.workshop.href} aria-current={inWorkshop ? 'page' : undefined}>{site.workshop.label}</a></li>
       </ul>

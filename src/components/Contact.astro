@@ -6,12 +6,12 @@ import SealStamp from './SealStamp.astro';
 interface Props { scroll?: boolean }
 const { scroll = false } = Astro.props;
 ---
-<section id="contact" class:list={['contact wrap', !scroll && 'contact--plain']} aria-labelledby="contact-title" data-scroll-paint={scroll ? '' : undefined}>
+<section id="contact" class:list={['contact', !scroll && 'contact--plain']} aria-labelledby="contact-title" data-scroll-paint={scroll ? '' : undefined}>
   <!-- the toy's controls above the scroll, in view before you start: the steps and the buttons. The prompt (its copy
        changes as you go) is for screen readers only now (Ed, round 9: too much on screen) -->
   <!-- no visible heading (Ed, round 9): the scroll and the line under it say it; this one names the section -->
   <h2 id="contact-title" class="visually-hidden">Contact</h2>
-  {scroll && (<>
+  {scroll && (<div class="wrap">
   <div class="paint__bar" data-paint-ui>
     <ol class="paint__steps" aria-label="Steps">
       <li data-step-item="paint"><span class="paint__num" aria-hidden="true">1</span>Paint</li>
@@ -56,21 +56,28 @@ const { scroll = false } = Astro.props;
     <img class="scroll__seal" src="/scroll/seal.webp" alt="" width="220" height="537" aria-hidden="true" loading="lazy" decoding="async" data-seal />
   </div>
   <p class="scroll__place" data-scroll-place>The Twelve Apostles, Victoria</p>
-  </>)}
-  <!-- then the real thing: the ways to reach Ed -->
+  </div>)}
+  <!-- then the real thing: the ways to reach Ed, on a wall of clouds that rises high on the left and tapers to the
+       right, falling into solid cobalt (Ed, round 12, after the Social Impact Capital site; art/round12/wall-cut.mjs) -->
   <div class="contact__foot">
-    <p class="contact__more">Let’s connect to make the world more beautiful.</p>
-      <ul class="contact__links">
-        <li><a href={`mailto:${site.email}`} aria-label={`Email ${site.email}`} title={site.email}><SocialIcon name="mail" /></a></li>
-        {site.linkedin && <li><a href={site.linkedin} rel="me noopener" target="_blank" aria-label="LinkedIn (opens in a new tab)" title="LinkedIn"><SocialIcon name="linkedin" /></a></li>}
-        {site.behance && <li><a href={site.behance} rel="me noopener" target="_blank" aria-label="Behance (opens in a new tab)" title="Behance"><SocialIcon name="behance" /></a></li>}
-        {site.resume && <li><a class="contact__resume" href={site.resume}>Resume</a></li>}
-      </ul>
+    <img class="contact__wall" src="/contact/wall-1600.webp" srcset="/contact/wall-800.webp 800w, /contact/wall-1600.webp 1600w, /contact/wall-2400.webp 2400w"
+      sizes="(max-width: 40rem) 200vw, 100vw" alt="" width="3120" height="1328" aria-hidden="true" loading="lazy" decoding="async" />
+    <div class="contact__ground">
+      <div class="wrap contact__say">
+        <p class="contact__more">Let’s connect to make the world more beautiful.</p>
+        <ul class="contact__links">
+          <li><a href={`mailto:${site.email}`} aria-label={`Email ${site.email}`} title={site.email}><SocialIcon name="mail" /></a></li>
+          {site.linkedin && <li><a href={site.linkedin} rel="me noopener" target="_blank" aria-label="LinkedIn (opens in a new tab)" title="LinkedIn"><SocialIcon name="linkedin" /></a></li>}
+          {site.behance && <li><a href={site.behance} rel="me noopener" target="_blank" aria-label="Behance (opens in a new tab)" title="Behance"><SocialIcon name="behance" /></a></li>}
+          {site.resume && <li><a class="contact__resume" href={site.resume}>Resume</a></li>}
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
-  .contact { padding-top: var(--space-xl); padding-bottom: var(--space-2xl); }
+  .contact { padding-top: var(--space-xl); padding-bottom: 0; }
   /* above the scroll: the three steps and the buttons on one line, the prompt under them */
   .paint__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-s) var(--space-m); margin-bottom: var(--space-m); }
   /* the three steps; the current one is marked as the visitor goes (scroll-paint.ts sets data-step on the section) */
@@ -96,18 +103,31 @@ const { scroll = false } = Astro.props;
   .paint__btn { display: inline-flex; align-items: center; gap: 0.45rem; }
   .paint__btn svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .paint__quiet { background: var(--surface-raised); }
-  .contact--plain .contact__foot { margin-top: 0; border-top: 0; padding-top: 0; }
-  .contact__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-m) var(--space-l); margin-top: var(--space-xl); padding-top: var(--space-l); border-top: var(--rule-hair); }
-  .contact__more { margin: 0; font-family: var(--font-display); font-size: var(--step-3); font-weight: var(--fw-bold); line-height: var(--lh-snug); color: var(--text-brand); max-width: 24ch; }
+  /* the cloud wall: full width, the painting on top, its flat cobalt ground continued below it in CSS (GROUND is the
+     painting's own bottom colour, measured by wall-cut.mjs) so the line and the links sit on solid blue */
+  .contact__foot { --ground: #232590; margin-top: var(--space-2xl); position: relative; }
+  .contact--plain .contact__foot { margin-top: var(--space-l); }
+  .contact__wall { display: block; width: 100%; height: auto; }
+  .contact__ground { background: var(--ground); margin-top: -1px; padding-bottom: clamp(3rem, 2rem + 5vw, 6rem); }
+  /* the words lift up into the darkest part of the clouds, left-aligned, the icons under them */
+  .contact__say { display: grid; justify-items: start; gap: var(--space-l); margin-top: clamp(-9rem, -10vw, -3rem); position: relative; }
+  .contact__more {
+    margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-xl); font-weight: var(--fw-bold);
+    line-height: 1.05; color: var(--text-on-invert); max-width: 16ch; text-wrap: balance;
+  }
   .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
-  /* 48px round targets holding a 26px icon, ringed in cobalt like a porcelain seal */
+  /* phones: the wall is cropped to its tall left end, so it still reads as a wall */
+  @media (max-width: 39.99rem) {
+    .contact__wall { width: 100%; height: 15rem; object-fit: cover; object-position: left bottom; }
+    .contact__say { margin-top: -2.5rem; }
+  }
   .contact__links a {
     display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; font-size: 26px;
-    border: 1px solid var(--border-default); border-radius: 50%; color: var(--text-brand); background: var(--surface-raised);
+    border: 1px solid color-mix(in oklab, var(--text-on-invert) 55%, transparent); border-radius: 50%; color: var(--text-on-invert); background: transparent;
     transition: background var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
   }
-  .contact__links a:hover { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
-  .contact__links a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+  .contact__links a:hover { background: var(--text-on-invert); color: var(--ground); border-color: var(--text-on-invert); }
+  .contact__links a:focus-visible { outline: 2px solid var(--text-on-invert); outline-offset: 3px; }
   .contact__links .contact__resume { width: auto; padding-inline: var(--space-s); border-radius: 24px; font-size: var(--text-sm); font-weight: var(--fw-semibold); }
 
   /* the scroll: rods wider than the paper, with knobbed ends; a pale silk mount; the paper itself */

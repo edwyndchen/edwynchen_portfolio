@@ -4,43 +4,25 @@ import Contact from '../components/Contact.astro';
 import { site } from '../data/site';
 import { LINES, ENERGY, FRAMES, LOW, stateFor, frameFor } from '../scripts/coffee';
 import ProvenResults from '../components/ProvenResults.astro';
-// Where Ed has worked, newest first. Figures match the case studies exactly (UI UX Design CLAUDE.md: one figure
-// everywhere, whole numbers).
+import { photos } from '../data/about-photos';
+// Where Ed has worked, newest first: just the places (Ed, round 12; the detail lives on the resume and in the case
+// studies).
 const JOBS = [
+  { company: 'In Form Media', brands: 'Punters and Racenet', role: 'Product Designer', years: '2023–2026' },
+  { company: 'EonX', brands: 'White-label fintech, including Mastercard', role: 'UX/UI Designer', years: '2022–2023' },
+  { company: 'New Aim', brands: 'Furniture and homewares', role: 'Graphic Designer', years: '2020–2021' },
+];
+// Ed's two signs, each with its painting and the character it goes by
+const SIGNS = [
   {
-    company: 'In Form Media',
-    brands: 'Punters and Racenet',
-    role: 'Product Designer',
-    dates: 'Jun 2023 – Mar 2026',
-    results: [
-      'Built Punters’ first design system from scratch in three months: 1,450+ accessibility errors cleared to WCAG AA and designer productivity up 30%.',
-      'Redesigned the form guide: bounce rate down 52%, time on page up 79% and bookmaker ad click-throughs up 44%.',
-      'The tokenised system later rebranded the whole Racenet sister site.',
-    ],
-    links: [{ label: 'Punters Design System', href: '/work/punters-design-system/' }, { label: 'Form Guide Redesign', href: '/work/form-guide-redesign/' }],
+    name: 'The pig', kind: 'Chinese zodiac, the Year of the Pig', glyph: '亥',
+    art: { src: '/scroll/pig.webp', width: 600, height: 451, alt: 'Brush painting of a spotted pig flying on white crane wings' },
+    body: 'Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.',
   },
   {
-    company: 'EonX',
-    brands: 'White-label fintech, including Mastercard',
-    role: 'UX/UI Designer',
-    dates: 'Mar 2022 – Jan 2023',
-    results: [
-      'Rebuilt the design system to WCAG AA: prototyping up 500% and client reskins cut from a week to under a day.',
-      'Designed the reseller and merchant portals for Mastercard’s Pay By Account, every design deadline met.',
-      'Built reusable Figma templates, prototypes and sales collateral.',
-    ],
-    links: [{ label: 'EonX Design System', href: '/work/eonx-design-system/' }, { label: 'Pay By Account', href: '/work/pay-by-account/' }],
-  },
-  {
-    company: 'New Aim',
-    brands: 'Furniture and homewares',
-    role: 'Graphic Designer',
-    dates: 'Jul 2020 – Nov 2021',
-    results: [
-      'Composited and styled 500+ product images across furniture and homewares.',
-      'Matched each sales channel’s styling while building on the existing brand guides.',
-    ],
-    links: [],
+    name: 'The water bearer', kind: 'Aquarius, my star sign', glyph: '瓶',
+    art: { src: '/about/vase.webp', width: 436, height: 900, alt: 'Brush painting of a blue-and-white porcelain vase with a lotus medallion' },
+    body: 'Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.',
   },
 ];
 const startState = stateFor(ENERGY.start);
@@ -88,48 +70,50 @@ const startFrame = frameFor(ENERGY.start);
   <!-- the proven numbers (moved here from the home page, Ed, round 11c) -->
   <ProvenResults />
 
-  <section class="ab-section wrap" aria-labelledby="ab-work">
+  <!-- where Ed has worked: just the places, a ledger of names (Ed, round 12) -->
+  <section class="ab-work wrap" aria-labelledby="ab-work">
     <h2 id="ab-work">Where I’ve worked</h2>
-    <ol class="jobs">
+    <ol class="ledger">
       {JOBS.map((j) => (
-        <li class="job">
-          <div class="job__head">
-            <h3>{j.company}</h3>
-            <p class="job__meta"><span>{j.role}</span><span>{j.dates}</span></p>
-            <p class="job__brands">{j.brands}</p>
-          </div>
-          <ul class="job__results">{j.results.map((r) => <li>{r}</li>)}</ul>
-          {j.links.length > 0 && <p class="job__links">{j.links.map((l) => <a href={l.href}>{l.label}<span aria-hidden="true"> →</span></a>)}</p>}
+        <li class="ledger__row">
+          <h3 class="ledger__company">{j.company}</h3>
+          <p class="ledger__role">{j.role}<span class="ledger__brands">{j.brands}</span></p>
+          <p class="ledger__years">{j.years}</p>
         </li>
       ))}
     </ol>
   </section>
 
-  <section class="ab-section ab-two wrap" aria-labelledby="ab-more">
-    <div>
-      <h2 id="ab-more">A bit more about me</h2>
-      <p>I like leaving places better than I found them, physically and digitally. I’m creative by default and bring that into most of what I do day to day. Every project is a chance to have a real impact on people’s lives.</p>
-      <p>Born and raised in Melbourne. When I’m not designing, I’m at the gym or hunting down the next good coffee.</p>
-      <h3 class="ab-tools-title">Favourite tools</h3>
-      <ul class="ab-tools">
-        <li>Figma</li><li>Tokens Studio</li><li>Framer</li><li>Adobe Suite</li><li>Claude Code</li>
-      </ul>
-    </div>
-    <div>
+  <!-- the two signs: a spread, each painting large over the character it goes by (Ed, round 12) -->
+  <section class="signs wrap" aria-labelledby="ab-zodiac">
+    <div class="signs__head">
       <h2 id="ab-zodiac">Why a pig and a water vase?</h2>
       <p>Tap me on the home page and I change outfits. Two of them are my signs.</p>
-      <!-- each sign with its painting (Ed, round 12): the crane-winged pig from the Contact scroll, and the water
-           bearer's vase repainted on its own (art/round12/vase-cut.mjs) -->
-      <div class="ab-sign">
-        <img class="ab-sign__art ab-sign__art--pig" src="/scroll/pig.webp" alt="Brush painting of a spotted pig flying on white crane wings" width="600" height="451" loading="lazy" decoding="async" />
-        <p><strong>The pig</strong> is my Chinese zodiac, the Year of the Pig. Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.</p>
-      </div>
-      <div class="ab-sign">
-        <img class="ab-sign__art ab-sign__art--vase" src="/about/vase.webp" alt="Brush painting of a blue-and-white porcelain vase with a lotus medallion" width="436" height="900" loading="lazy" decoding="async" />
-        <p><strong>The water bearer</strong> is Aquarius, my star sign. Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.</p>
-      </div>
+    </div>
+    <div class="signs__pair">
+      {SIGNS.map((g, i) => (
+        <article class:list={['sign', `sign--${i ? 'vase' : 'pig'}`]}>
+          <div class="sign__art">
+            <span class="sign__glyph" lang="zh-Hant" aria-hidden="true">{g.glyph}</span>
+            <img src={g.art.src} alt={g.art.alt} width={g.art.width} height={g.art.height} loading="lazy" decoding="async" />
+          </div>
+          <h3>{g.name}</h3>
+          <p class="sign__kind">{g.kind}</p>
+          <p class="sign__body">{g.body}</p>
+        </article>
+      ))}
     </div>
   </section>
+
+  <!-- photos of Ed: shows once src/data/about-photos.ts lists some -->
+  {photos.length > 0 && (
+    <section class="snaps wrap" aria-labelledby="ab-snaps">
+      <h2 id="ab-snaps" class="visually-hidden">Photos of me</h2>
+      <ul class="snaps__row">
+        {photos.map((p) => <li><img src={p.src} alt={p.alt} width={p.width} height={p.height} loading="lazy" decoding="async" /></li>)}
+      </ul>
+    </section>
+  )}
 
   <Contact />
 </BaseLayout>
@@ -195,33 +179,45 @@ const startFrame = frameFor(ENERGY.start);
   @keyframes coffee-pour { 45% { transform: translate(-30%, -55%) rotate(-38deg); } }
   @media (prefers-reduced-motion: reduce) { .coffee__fill, .coffee__img { transition: none; } .coffee__face.is-sip, .coffee__sip.is-sip { animation: none; } }
 
-  .ab-section { padding-block: var(--space-xl); border-top: var(--rule-hair); }
-  .ab-section h2 { font-size: var(--step-3); margin: 0 0 var(--space-l); }
-  .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l); }
-  .job { display: grid; gap: var(--space-s) var(--space-xl); padding-bottom: var(--space-l); border-bottom: var(--rule-hair); }
-  .job:last-child { border-bottom: 0; padding-bottom: 0; }
-  @media (min-width: 60rem) { .job { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); } .job__links { grid-column: 2; } }
-  .job h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
-  .job__meta { margin: 0.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-s); font-weight: var(--fw-semibold); }
-  .job__meta span + span { color: var(--text-secondary); font-weight: 400; }
-  .job__brands { margin: 0.25rem 0 0; color: var(--text-secondary); font-size: var(--text-sm); }
-  .job__results { margin: 0; padding-left: 1.1em; display: grid; gap: var(--space-xs); }
-  .job__results li { max-width: 62ch; }
-  .job__links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-m); }
-  .job__links a { font-weight: var(--fw-semibold); }
+  /* where I've worked: a ledger. Company names carry the weight; role and years sit quietly beside them */
+  .ab-work { padding-block: var(--space-2xl) var(--space-xl); }
+  .ab-work h2, .signs h2 { font-size: var(--step-3); margin: 0; text-wrap: balance; }
+  .ledger { list-style: none; margin: var(--space-l) 0 0; padding: 0; border-top: var(--rule); }
+  .ledger__row {
+    display: grid; gap: 0.25rem var(--space-l); align-items: baseline;
+    padding-block: clamp(1.1rem, 0.8rem + 1.2vw, 1.9rem); border-bottom: var(--rule-hair);
+  }
+  @media (min-width: 48rem) { .ledger__row { grid-template-columns: minmax(0, 5fr) minmax(0, 5fr) auto; } }
+  .ledger__company { margin: 0; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1.05; color: var(--cobalt); }
+  .ledger__role { margin: 0; font-weight: var(--fw-semibold); color: var(--text-primary); }
+  .ledger__brands { display: block; font-weight: 400; color: var(--text-secondary); font-size: var(--text-sm); }
+  .ledger__years { margin: 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  .ab-two { display: grid; gap: var(--space-xl); }
-  @media (min-width: 60rem) { .ab-two { grid-template-columns: 1fr 1fr; column-gap: var(--space-2xl); } }
-  .ab-two p { max-width: 58ch; }
-  /* the signs: a painting beside each paragraph, the same height so the two rows line up */
-  .ab-sign { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: var(--space-m); align-items: center; margin-block: var(--space-m); }
-  .ab-sign p { margin: 0; }
-  .ab-sign__art { justify-self: center; width: auto; height: 7rem; max-width: 100%; object-fit: contain; }
-  .ab-sign__art--vase { height: 8rem; }
-  @media (max-width: 29.99rem) { .ab-sign { grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--space-s); } .ab-sign__art { height: 5rem; } .ab-sign__art--vase { height: 6.5rem; } }
-  .ab-tools-title { margin: var(--space-l) 0 var(--space-xs); color: var(--gold-text); font-size: var(--text-md); }
-  .ab-tools { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
-  .ab-tools li { padding: 0.3rem 0.75rem; border: var(--rule); background: var(--surface-raised); font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-brand); }
+  /* the signs: two columns, each painting large over a pale character, the words under it */
+  .signs { padding-block: var(--space-xl) var(--space-2xl); }
+  .signs__head { display: grid; gap: var(--space-s); max-width: 40rem; }
+  .signs__head p { margin: 0; font-size: var(--step-1); color: var(--text-secondary); text-wrap: pretty; }
+  .signs__pair { display: grid; gap: var(--space-xl) var(--space-2xl); margin-top: var(--space-xl); }
+  @media (min-width: 48rem) { .signs__pair { grid-template-columns: 1fr 1fr; } }
+  .sign { display: grid; align-content: start; gap: var(--space-xs); }
+  .sign__art { --h: clamp(15rem, 9rem + 14vw, 24rem); position: relative; display: grid; place-items: end center; height: var(--h); margin-bottom: var(--space-m); }
+  /* the pig flies: it sits a little above the line the vase stands on */
+  .sign--pig .sign__art img { margin-bottom: calc(var(--h) * 0.12); }
+  .sign__glyph {
+    position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+    font-family: var(--font-cjk); font-size: clamp(11rem, 6rem + 16vw, 19rem); line-height: 1; color: color-mix(in oklab, var(--blue-100) 60%, transparent);
+  }
+  .sign__art img { position: relative; width: auto; height: calc(var(--h) * 0.62); max-width: 88%; object-fit: contain; }
+  .sign--vase .sign__art img { height: calc(var(--h) * 0.94); }
+  .sign h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
+  .sign__kind { margin: 0; font-weight: var(--fw-semibold); color: var(--text-primary); }
+  .sign__body { margin: var(--space-xs) 0 0; max-width: 44ch; text-wrap: pretty; }
+
+  /* photos of Ed, once added: a row that scrolls sideways on phones */
+  .snaps { padding-bottom: var(--space-2xl); }
+  .snaps__row { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 1fr); gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; }
+  .snaps__row li { scroll-snap-align: start; }
+  .snaps__row img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border: var(--rule); }
 </style>
 
 <script>

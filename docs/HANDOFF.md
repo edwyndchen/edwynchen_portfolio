@@ -161,13 +161,20 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Comparison sheets: `docs/review/round12/`. Screenshot helper: `node art/round12/shot.mjs <path> <out.png> [w] [h] [selector]` (dev server on BASE, default the preview port).
 - e2e: 10 tests fail, and they fail the same way on the round 11 commit (hero layers, hero spread, footer Back to top, case-study quick links, two About wind/descent tests on mobile). They broke in rounds 10b/11 (Lenis smooth scroll, 4k hero); fix in review round 2. Unit 73 passing.
 
+## Round 12b (2026-10-08)
+
+- Contact foot (every page): a full-width wall of clouds, tall on the left and tapering to the right, falling into solid cobalt; "Let's connect…" left-aligned in big white serif with white outline icons under it (Ed's reference: the Social Impact Capital site). Seedream with the hero and About cloud wall as references (options `art/round12/wall-1..3.png`, option 3 live; cut by `art/round12/wall-cut.mjs` into `public/contact/wall-{800,1600,2400}.webp`). The CSS continues the painting's ground colour (`--ground: #232590`, measured by the cutter) under it. Phones crop the wall to its tall left end (15rem). Contact is no longer a `.wrap` section; the home page's scroll toy has its own `.wrap`.
+- Nav About now goes to `/about/` (was `/#about`), and nav links mark the current page (`aria-current`).
+- About page restyled (impeccable, brand register, existing tokens kept): Where I've worked is a ledger of just the places (company in display serif, role and brands, years), no job details; "A bit more about me" and Favourite tools removed; the signs are a two-up spread, each painting large over a pale character (亥 for the pig, 瓶 for the vase), both on one baseline. Photos of Ed: list them in `src/data/about-photos.ts` (files in `public/about/photos/`) and a strip appears after the signs; empty for now (Ed adding some).
+- e2e: the two old "nav link to About" tests replaced by one that checks the link goes to /about/ and is marked current. Still the same 10 older failures.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
 
 1. Waiting on Ed: his Formspree form ID (goes in `formspree` in `src/data/site.ts`; until then the contact form opens an email), and the Punters and Racenet logo files (drop in `public/logos/`, run them through `art/round11/logos/build.mjs` or add a cobalt version, set `logo` in `src/data/clients.ts`).
+1b. Ed's photos for the About page (`src/data/about-photos.ts`).
 2. Ed uploads real images for Workshop entries and case studies in Keystatic (run `npm run dev`, edit at /keystatic, push; Keystatic edits files locally, not on the live site).
-3. Ed to check the About page copy line "When I'm not designing, I'm at the gym or hunting down the next good coffee." (written from his bio).
 4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Start by fixing the 10 stale e2e tests.
 5. Handoff README.
 
