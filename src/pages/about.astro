@@ -1,0 +1,194 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Contact from '../components/Contact.astro';
+import { site } from '../data/site';
+import { LINES, ENERGY, FRAMES, LOW, stateFor, frameFor } from '../scripts/coffee';
+import ProvenResults from '../components/ProvenResults.astro';
+// Where Ed has worked, newest first. Figures match the case studies exactly (UI UX Design CLAUDE.md: one figure
+// everywhere, whole numbers).
+const JOBS = [
+  {
+    company: 'In Form Media',
+    brands: 'Punters and Racenet',
+    role: 'Product Designer',
+    dates: 'Jun 2023 – Mar 2026',
+    results: [
+      'Built Punters’ first design system from scratch in three months: 1,450+ accessibility errors cleared to WCAG AA and designer productivity up 30%.',
+      'Redesigned the form guide: bounce rate down 52%, time on page up 79% and bookmaker ad click-throughs up 44%.',
+      'The tokenised system later rebranded the whole Racenet sister site.',
+    ],
+    links: [{ label: 'Punters Design System', href: '/work/punters-design-system/' }, { label: 'Form Guide Redesign', href: '/work/form-guide-redesign/' }],
+  },
+  {
+    company: 'EonX',
+    brands: 'White-label fintech, including Mastercard',
+    role: 'UX/UI Designer',
+    dates: 'Mar 2022 – Jan 2023',
+    results: [
+      'Rebuilt the design system to WCAG AA: prototyping up 500% and client reskins cut from a week to under a day.',
+      'Designed the reseller and merchant portals for Mastercard’s Pay By Account, every design deadline met.',
+      'Built reusable Figma templates, prototypes and sales collateral.',
+    ],
+    links: [{ label: 'EonX Design System', href: '/work/eonx-design-system/' }, { label: 'Pay By Account', href: '/work/pay-by-account/' }],
+  },
+  {
+    company: 'New Aim',
+    brands: 'Furniture and homewares',
+    role: 'Graphic Designer',
+    dates: 'Jul 2020 – Nov 2021',
+    results: [
+      'Composited and styled 500+ product images across furniture and homewares.',
+      'Matched each sales channel’s styling while building on the existing brand guides.',
+    ],
+    links: [],
+  },
+];
+const startState = stateFor(ENERGY.start);
+const startFrame = frameFor(ENERGY.start);
+---
+<!-- The About page (Ed, round 11): a coffee game up top (feed Ed coffee, watch his energy bar and his face change),
+     then where he's worked and what came of it, a bit more about him, and why the pig and the water bearer. -->
+<BaseLayout title={`About | ${site.name}`} description="About Edwyn Chen, product designer in Melbourne: where I've worked, the results, and a bit more about me.">
+  <section class="ab-hero wrap" aria-labelledby="ab-title">
+    <div class="ab-hero__text">
+      <h1 id="ab-title">About me<span class="ab-hero__mark" aria-hidden="true" lang="zh-Hant">陳</span></h1>
+      <p class="ab-hero__lead">I design digital products and I care about getting them right, both how they work and how they feel to use.</p>
+      <p>Coffee-fuelled designer and gym junkie. Speaking of coffee, keep me topped up while you read.</p>
+    </div>
+
+    <!-- the coffee game: his energy over his head, his face below it, the cup under him -->
+    <figure class:list={['coffee', { 'is-low': ENERGY.start < ENERGY.max * LOW }]} data-coffee-game data-energy={startState}>
+      <div class="coffee__hp">
+        <span class="coffee__hp-label label" id="coffee-hp">Energy</span>
+        <div class="coffee__bar" role="meter" aria-labelledby="coffee-hp" aria-valuemin="0" aria-valuemax="100" aria-valuenow={ENERGY.start} data-energy-bar>
+          <span class="coffee__fill" data-energy-fill style={`transform: scaleX(${ENERGY.start / 100})`}></span>
+        </div>
+      </div>
+      <!-- Ed is the button: carry the cup over and click him (or tap, or Enter) to give him a coffee -->
+      <button class="coffee__face" type="button" data-coffee data-coffee-face aria-label="Give Ed a coffee">
+        {Array.from({ length: FRAMES }, (_, i) => (
+          <img class:list={['coffee__img', { 'is-on': i === startFrame }]} data-frame={i} src={`/about/face-${i + 1}.webp`}
+            alt="" width="800" height="800" loading={i === startFrame ? 'eager' : 'lazy'} decoding="async" />
+        ))}
+      </button>
+      <figcaption class="coffee__line" role="status" data-coffee-line>{LINES[startState]}</figcaption>
+      <p class="coffee__hint"><span class="coffee__hint-mouse">Click Ed to give him a coffee.</span><span class="coffee__hint-touch">Tap Ed to give him a coffee.</span> <span class="coffee__count" data-coffee-count></span></p>
+      <!-- the cup that follows the mouse over him (coffee.ts); fixed to the screen, so the page never moves it -->
+      <img class="coffee__cup" src="/about/cup.webp" alt="" width="400" height="411" aria-hidden="true" decoding="async" data-cup />
+    </figure>
+  </section>
+
+  <!-- the proven numbers (moved here from the home page, Ed, round 11c) -->
+  <ProvenResults />
+
+  <section class="ab-section wrap" aria-labelledby="ab-work">
+    <h2 id="ab-work">Where I’ve worked</h2>
+    <ol class="jobs">
+      {JOBS.map((j) => (
+        <li class="job">
+          <div class="job__head">
+            <h3>{j.company}</h3>
+            <p class="job__meta"><span>{j.role}</span><span>{j.dates}</span></p>
+            <p class="job__brands">{j.brands}</p>
+          </div>
+          <ul class="job__results">{j.results.map((r) => <li>{r}</li>)}</ul>
+          {j.links.length > 0 && <p class="job__links">{j.links.map((l) => <a href={l.href}>{l.label}<span aria-hidden="true"> →</span></a>)}</p>}
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="ab-section ab-two wrap" aria-labelledby="ab-more">
+    <div>
+      <h2 id="ab-more">A bit more about me</h2>
+      <p>I like leaving places better than I found them, physically and digitally. I’m creative by default and bring that into most of what I do day to day. Every project is a chance to have a real impact on people’s lives.</p>
+      <p>Born and raised in Melbourne. When I’m not designing, I’m at the gym or hunting down the next good coffee.</p>
+      <h3 class="ab-tools-title">Favourite tools</h3>
+      <ul class="ab-tools">
+        <li>Figma</li><li>Tokens Studio</li><li>Framer</li><li>Adobe Suite</li><li>Claude Code</li>
+      </ul>
+    </div>
+    <div>
+      <h2 id="ab-zodiac">Why a pig and a water vase?</h2>
+      <p>Tap me on the home page and I change outfits. Two of them are my signs.</p>
+      <p><strong>The pig</strong> is my Chinese zodiac, the Year of the Pig. Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.</p>
+      <p><strong>The water bearer</strong> is Aquarius, my star sign. Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.</p>
+    </div>
+  </section>
+
+  <Contact />
+</BaseLayout>
+
+<style>
+  .ab-hero { display: grid; gap: var(--space-xl); align-items: center; padding-block: var(--space-xl); }
+  @media (min-width: 48rem) { .ab-hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+  .ab-hero h1 { font-size: var(--fluid-display-xl); margin: 0 0 var(--space-m); }
+  .ab-hero__mark { font-family: var(--font-cjk); font-weight: 400; font-size: 0.8em; color: var(--blue-400); margin-inline-start: 0.3em; }
+  .ab-hero__lead { font-family: var(--font-display); font-style: italic; font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--ink); max-width: 30ch; }
+
+  /* the game: a porcelain plate holding his face, the energy bar over his head */
+  .coffee { margin: 0; display: grid; gap: var(--space-s); justify-items: center; max-width: 24rem; width: 100%; justify-self: center; }
+  .coffee__hp { width: 70%; display: grid; gap: 0.35rem; }
+  .coffee__hp-label { color: var(--text-secondary); text-align: center; }
+  .coffee__bar { position: relative; height: 14px; border: var(--rule); outline: 1px solid var(--border-default); outline-offset: 2px; background: var(--surface-raised); overflow: hidden; }
+  .coffee__fill {
+    position: absolute; inset: 0; transform-origin: left; background: var(--action-primary);
+    transition: transform 0.4s var(--ease-standard), background-color 0.4s var(--ease-standard);
+  }
+  /* running low: the bar pales towards the seal red */
+  .coffee.is-low .coffee__fill { background: var(--text-seal); }
+  .coffee__face {
+    display: block; padding: 0; font: inherit; color: inherit; cursor: pointer;
+    position: relative; width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -8px; background: #fff; box-shadow: var(--shadow-sm); /* pure white behind his face (Ed) */
+  }
+  /* each frame crossfades into the next; the old one fades out a touch slower so there's never a gap (round 11b) */
+  .coffee__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in; }
+  .coffee__img.is-on { transition: opacity 0.28s ease-out; }
+  .coffee__img.is-on { opacity: 1; }
+  .coffee__face.is-sip { animation: coffee-sip 0.45s var(--ease-standard); }
+  @keyframes coffee-sip { 40% { transform: translateY(-6px) scale(1.02); } }
+  .coffee__line { margin: 0; min-height: 1.5em; text-align: center; font-family: var(--font-display); font-style: italic; font-size: var(--text-lg); color: var(--text-brand); }
+  .coffee__face:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
+  .coffee__face.has-cup { cursor: none; }
+  .coffee__hint { margin: 0; text-align: center; font-size: var(--text-sm); color: var(--text-secondary); }
+  .coffee__hint-touch { display: none; }
+  @media (hover: none) { .coffee__hint-mouse { display: none; } .coffee__hint-touch { display: inline; } }
+  /* the cup: its centre-left on the pointer, tilted towards him; it tips to pour on a click */
+  .coffee__cup {
+    position: fixed; left: 0; top: 0; z-index: 60; width: 92px; height: auto; pointer-events: none;
+    transform: translate(-30%, -55%) rotate(-12deg); opacity: 0; transition: opacity 0.15s;
+  }
+  .coffee__cup.is-on { opacity: 1; }
+  .coffee__cup.is-pour { animation: coffee-pour 0.5s var(--ease-standard); }
+  @keyframes coffee-pour { 45% { transform: translate(-30%, -55%) rotate(-38deg); } }
+  @media (prefers-reduced-motion: reduce) { .coffee__fill, .coffee__img { transition: none; } .coffee__face.is-sip { animation: none; } }
+
+  .ab-section { padding-block: var(--space-xl); border-top: var(--rule-hair); }
+  .ab-section h2 { font-size: var(--step-3); margin: 0 0 var(--space-l); }
+  .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l); }
+  .job { display: grid; gap: var(--space-s) var(--space-xl); padding-bottom: var(--space-l); border-bottom: var(--rule-hair); }
+  .job:last-child { border-bottom: 0; padding-bottom: 0; }
+  @media (min-width: 60rem) { .job { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); } .job__links { grid-column: 2; } }
+  .job h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
+  .job__meta { margin: 0.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-s); font-weight: var(--fw-semibold); }
+  .job__meta span + span { color: var(--text-secondary); font-weight: 400; }
+  .job__brands { margin: 0.25rem 0 0; color: var(--text-secondary); font-size: var(--text-sm); }
+  .job__results { margin: 0; padding-left: 1.1em; display: grid; gap: var(--space-xs); }
+  .job__results li { max-width: 62ch; }
+  .job__links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-m); }
+  .job__links a { font-weight: var(--fw-semibold); }
+
+  .ab-two { display: grid; gap: var(--space-xl); }
+  @media (min-width: 60rem) { .ab-two { grid-template-columns: 1fr 1fr; column-gap: var(--space-2xl); } }
+  .ab-two p { max-width: 58ch; }
+  .ab-tools-title { margin: var(--space-l) 0 var(--space-xs); color: var(--gold-text); font-size: var(--text-md); }
+  .ab-tools { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .ab-tools li { padding: 0.3rem 0.75rem; border: var(--rule); background: var(--surface-raised); font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-brand); }
+</style>
+
+<script>
+  import { initCoffee } from '../scripts/coffee';
+  const game = document.querySelector<HTMLElement>('[data-coffee-game]');
+  if (game) initCoffee(game);
+</script>

@@ -122,3 +122,17 @@ Hero clouds v3 (more swirls), Seedream off `7fe457e1`: xiangyun `9e43e9ac`, `f28
 - EonX cover, the same mix as an asymmetric bento sheet (Aa with weights, three colour ramps, grid, button/input/checkbox, cloud-scroll pattern, spacing bars, four line icons): `0ffe01ae-2194-4202-a7ce-2505b2d534f5`, `ed6c353e-bd1b-4b81-9e52-fb2d3febda7c`.
 - Ruyi sceptre wand (Ed's pick), cloud head top left, to be cut out to `public/about/ruyi.webp`: `7a87d048-bb93-4d71-8c48-60b31d2d6657`, `051e9b45-b347-44a2-9822-07f3205dc1d3`.
 - Ed's picks: Punters A, EonX B (its gibberish button labels removed by a Seedream edit, `6da3f945` used, `1b47e2f2` alt), ruyi A (B has a shadow wash). Traditional star wands to compare: `c295b590` (A), `bd0159bb` (B, faint glow along the rod). Ruyi cut with `art/round9/pig-cut.mjs`, recoloured (`recolor.mjs … 1.3`), cropped to the paint, 400px: `public/about/ruyi.webp`.
+
+## Round 10b, 4k upscales (Higgsfield bytedance upscale, 4k), 2026-10-06
+
+- Hanfu (flattened `ed-porcelain-before-brighten`): `c98c40ee` -> `art/round10/upscale/hanfu-4k.png` (2941x4096).
+- Hero layers: the full 3120px sources failed; each split into L/R 1680px halves (240px overlap) instead. Melbourne `dec9d944` / `8eb7a508`, far `432ed31a` / `2287a094`, peaks `f5c42780` / `20e46190`, peaks-front `93e72ccd` / `953ce6c8`. Stitched by `art/round10/hero-4k.mjs`.
+
+## Round 11, 2026-10-06
+
+- Coffee faces, Nano Banana Pro off a head-and-shoulders crop of the HD hanfu (uploaded `1fbe9b10`): drained `f232b494` (A) / `c3d0ea80` (B, live), tired `30501caa` / `2bda7f20` (B), okay `31e358ba` / `07542b54` (B), buzzing `a6b715ca` / `4c2d8273` (B). Options sheet `art/round11/faces-options.png`.
+- EonX cover fix, Seedream 5.0 Pro edit of `6da3f945`: `5ff641d0` (A, used, stray line then painted out) / `0b8ec66f` (B).
+- Coffee faces v2 (Ed: use his photos as the basis), Nano Banana Pro with three face crops of Ed's photos (`65488aa6` red envelopes, `ae54959f`, `bc238223`; sources `art/round11/face-ref-*.jpg`) plus the porcelain hanfu crop `1fbe9b10` for style: drained `926a1627` (A, live) / `b5407cf2`, tired `266db0cc` / `c22a5d1e` (B, live), okay `c3ccf379` (A, live) / `a06b7c86`, buzzing `bd5f87ad` (A, live) / `17242570`. Built by `art/round11/faces-build.mjs` (paper whitened; `PICK` per state). Sheet `art/round11/faces-v2-options.png`.
+- Coffee frames v3 (Ed: three stages, white background, no yawn, always front-facing, same outfit, smooth transitions): frame 4 = `c3ccf379` (the v2 okay A), and Nano Banana Pro expression-only edits of it: 1 `8c6acdb2`, 2 `a46f4ec7`, 3 `bb56eb6e`, 5 `cbccbcdf`, 6 `4ed49fe9`, 7 `7b48a7e7`. Strip `art/round11/frames-v3.png`.
+- Round 11c: coffee cup cursor, Seedream off `7fe457e1`: `66bcd69d` (A, used; cut and recoloured by `art/round10/wand-cut.mjs`) / `e1f4f55a`. In-between face frames (Nano Banana Pro edits of `c3ccf379`): 1b `8d14e8a4`, 2b `defb9764`, 3b `cc292f2c`, 4b `058576ce`, 5b `fcb39122`, 6b `1edf2c60` (dropped). Lattice windows: tall `58862060` / `6e462897` (too tall to span the screen), low transom off `6e462897`: `6d82f3da` (A, used) / `9f1eda45`.
+- Simpler lattice (Ed), Seedream edits of `6d82f3da`: `693ba277` (A, plain frames) / `788ff241` (B, a thin bar near each pane's edges, used).

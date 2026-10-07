@@ -5,7 +5,7 @@ import { sortCaseStudies } from '../lib/case-studies';
 const studies = sortCaseStudies(await getCollection('caseStudies'));
 ---
 <section id="work" class="work wrap" aria-labelledby="work-title">
-  <h2 id="work-title">Selected work</h2>
+  <h2 id="work-title" data-reveal-heading>Selected work</h2>
   <ol class="work__list">
     {studies.map((s) => (
       <li data-reveal-on-scroll>
@@ -21,7 +21,7 @@ const studies = sortCaseStudies(await getCollection('caseStudies'));
 </section>
 
 <style>
-  .work { padding-top: var(--space-xl); position: relative; overflow-x: clip; }
+  .work { padding-top: var(--space-xl); position: relative; z-index: 3; overflow-x: clip; } /* above the About cloud walls as they rise over the last cards, so the cards stay readable (Ed, round 10) */
   .work h2, .work__list { position: relative; z-index: 1; }
   .work h2 { font-size: var(--step-3); margin-bottom: var(--space-l); }
   .work__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-l) var(--space-xl); align-items: start; }

@@ -59,10 +59,11 @@ describe('collapsePercent', () => {
 });
 
 describe('zoomScale', () => {
-  test('a slight zoom that grows with nearness, so it keeps the parallax depth', () => {
+  test('a zoom that grows with nearness, so it keeps the parallax depth', () => {
     expect(zoomScale(0.04)).toBeGreaterThan(1);
     expect(zoomScale(0.04)).toBeLessThan(zoomScale(0.5));
     expect(zoomScale(0.5)).toBeLessThan(zoomScale(1));
-    expect(zoomScale(1)).toBeLessThanOrEqual(1.12);
+    expect(zoomScale(1)).toBeLessThanOrEqual(1.8);
+    expect(zoomScale(0.5)).toBeCloseTo(1.5, 2); // Melbourne ends 50% bigger (Ed, round 10)
   });
 });

@@ -8,10 +8,13 @@ export const site = {
   behance: 'https://www.behance.net/edwynchen' as string,
   // Not supplied yet. Components render this link only when non-empty.
   resume: '' as string,
+  // the contact page's form posts here (Formspree form ID, e.g. 'xyzabcd' from https://formspree.io/f/xyzabcd).
+  // Empty: the form opens the visitor's email app with the message filled in instead.
+  formspree: '' as string,
   nav: [
     { label: 'Work', href: '/#work' },
     { label: 'About', href: '/#about' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'Contact', href: '/contact/' },
   ],
   // set apart from the page links, as its own button
   workshop: { label: 'Workshop', href: '/workshop/' },

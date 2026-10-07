@@ -1,0 +1,60 @@
+---
+// Ed's proven numbers (round 11c), all straight from the case studies (one figure everywhere, whole numbers:
+// UI UX Design CLAUDE.md). `count` is the number the tile counts up to; `prefix`/`suffix` sit around it.
+const RESULTS = [
+  { count: 500, suffix: '%', label: 'Prototyping productivity up', where: 'EonX Design System', href: '/work/eonx-design-system/' },
+  { count: 1450, suffix: '+', label: 'Accessibility errors cleared to WCAG AA', where: 'Punters Design System', href: '/work/punters-design-system/' },
+  { count: 52, suffix: '%', label: 'Bounce rate down', where: 'Form Guide Redesign', href: '/work/form-guide-redesign/' },
+  { count: 79, suffix: '%', label: 'Time on page up', where: 'Form Guide Redesign', href: '/work/form-guide-redesign/' },
+  { count: 30, suffix: '%', label: 'Designer productivity up', where: 'Punters Design System', href: '/work/punters-design-system/' },
+  { count: 1, prefix: '<', suffix: ' day', label: 'Client reskins, down from a week', where: 'EonX Design System', href: '/work/eonx-design-system/' },
+];
+const fmt = (n: number) => n.toLocaleString('en-AU');
+---
+<!-- Proven results (Ed, round 11c): the headline numbers from the case studies, each on a porcelain tile that names
+     where it came from; the numbers count up as they come into view (reveal.ts), and simply show for reduced motion. -->
+<section class="proven wrap" aria-labelledby="proven-title">
+  <h2 id="proven-title" data-reveal-heading>Proven results</h2>
+  <ul class="proven__grid">
+    {RESULTS.map((r) => (
+      <li class="proven__tile" data-reveal-on-scroll>
+        <p class="proven__value"><span>{r.prefix}</span><span data-count={r.count}>{fmt(r.count)}</span><span>{r.suffix}</span></p>
+        <p class="proven__label">{r.label}</p>
+        <a class="proven__where" href={r.href}>{r.where}<span aria-hidden="true"> →</span></a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .proven { padding-block: var(--space-xl); border-top: var(--rule-hair); }
+  .proven h2 { font-size: var(--step-3); margin-bottom: var(--space-l); }
+  .proven__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-m); grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); }
+  /* each tile a small porcelain plate: white body, double keyline */
+  .proven__tile {
+    display: grid; align-content: start; gap: var(--space-xs);
+    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -6px;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); background: var(--surface-raised); box-shadow: var(--shadow-sm);
+  }
+  .proven__value { margin: 0; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1; color: var(--cobalt); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .proven__label { margin: 0; color: var(--text-primary); max-width: 26ch; }
+  .proven__where { margin-top: var(--space-xs); font-size: var(--text-sm); font-weight: var(--fw-semibold); }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  // count up once, as each tile comes into view; the real number is in the HTML, so no-JS and reduced motion just
+  // show it
+  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    gsap.registerPlugin(ScrollTrigger);
+    for (const el of document.querySelectorAll<HTMLElement>('.proven [data-count]')) {
+      const to = Number(el.dataset.count), obj = { n: 0 };
+      el.textContent = '0';
+      ScrollTrigger.create({
+        trigger: el, start: 'top 90%', once: true,
+        onEnter: () => gsap.to(obj, { n: to, duration: 1.4, ease: 'power2.out', onUpdate: () => { el.textContent = Math.round(obj.n).toLocaleString('en-AU'); } }),
+      });
+    }
+  }
+</script>

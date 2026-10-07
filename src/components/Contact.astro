@@ -20,13 +20,13 @@ const { scroll = false } = Astro.props;
     </ol>
     <div class="paint__buttons">
       <button class="button paint__btn" type="button" data-paint-action="auto">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 4.5l5 5L11 18H6v-5l8.5-8.5zM12.5 6.5l5 5" /><path d="M4 21h7" /></svg>Paint it for me</button>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 4.5l5 5L11 18H6v-5l8.5-8.5zM12.5 6.5l5 5" /><path d="M4 21h7" /></svg>Paint for me</button>
       <button class="button paint__btn" type="button" data-paint-action="pig" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></svg>Add a flying pig</button>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></svg>Paint pig</button>
       <button class="button paint__btn" type="button" data-paint-action="seal" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6v4a3 3 0 0 1-1 2.2V12h-4V9.2A3 3 0 0 1 9 7V3z" /><path d="M5 12h14v4H5z" /><path d="M7 20h10" /></svg>Add the seal</button>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6v4a3 3 0 0 1-1 2.2V12h-4V9.2A3 3 0 0 1 9 7V3z" /><path d="M5 12h14v4H5z" /><path d="M7 20h10" /></svg>Final Seal</button>
       <button class="button paint__btn paint__quiet" type="button" data-paint-action="reset">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>Start again</button>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>Restart</button>
       <button class="button paint__btn paint__quiet" type="button" data-paint-action="next" aria-label="Next scene: Wilsons Promontory">Next scene
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" /></svg>
       </button>
@@ -80,8 +80,16 @@ const { scroll = false } = Astro.props;
     display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; flex: none;
     border: 1px solid var(--border-default); font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-brand);
   }
-  [data-step='paint'] [data-step-item='paint'], [data-step='pig'] [data-step-item='pig'], [data-step='seal'] [data-step-item='seal'] { color: var(--text-brand); font-weight: var(--fw-semibold); }
-  [data-step='paint'] [data-step-item='paint'] .paint__num, [data-step='pig'] [data-step-item='pig'] .paint__num, [data-step='seal'] [data-step-item='seal'] .paint__num { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
+  /* the current step (Ed, round 10): a darker ring, and its label bold and blue */
+  [data-step='paint'] [data-step-item='paint'], [data-step='pig'] [data-step-item='pig'], [data-step='seal'] [data-step-item='seal'] { color: var(--text-brand); font-weight: var(--fw-bold); }
+  [data-step='paint'] [data-step-item='paint'] .paint__num, [data-step='pig'] [data-step-item='pig'] .paint__num, [data-step='seal'] [data-step-item='seal'] .paint__num { border: 2px solid var(--action-primary); }
+  /* finished steps: filled, with a tick in place of the number */
+  :is([data-step='pig'], [data-step='seal'], [data-step='done']) [data-step-item='paint'] .paint__num,
+  :is([data-step='seal'], [data-step='done']) [data-step-item='pig'] .paint__num,
+  [data-step='done'] [data-step-item='seal'] .paint__num {
+    background: var(--action-primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+    border-color: var(--action-primary); color: transparent;
+  }
   .paint__prompt { flex-basis: 100%; margin: 0; font-family: var(--font-display); font-style: italic; font-size: var(--fluid-display-sm); color: var(--text-brand); }
   .paint__buttons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); }
   .paint__buttons [hidden] { display: none; }

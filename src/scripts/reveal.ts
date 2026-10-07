@@ -15,6 +15,13 @@ export function initReveals(): void {
       const wide = Boolean(c.conditions?.wide);
       // the work cards drift up into frame as you scroll (Ed, round 9): tied to the scroll itself, so they move only
       // while you do, slowly, and settle by the time they're a little way up the screen
+      // headings (Selected work, the brands window) rise in on their own as you reach them, ahead of the cards (Ed, round 11)
+      gsap.utils.toArray<HTMLElement>('[data-reveal-heading]').forEach((el) => {
+        gsap.fromTo(el, { y: REVEAL.rise * 0.5, opacity: 0 }, {
+          y: 0, opacity: 1, ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top bottom', end: `top ${REVEAL.settle}`, scrub: REVEAL.scrub },
+        });
+      });
       gsap.utils.toArray<HTMLElement>('[data-reveal-on-scroll]').forEach((el, i) => {
         const lag = wide && i % 2 === 1 ? REVEAL.lag : 0;
         gsap.fromTo(el, { y: REVEAL.rise, opacity: 0 }, {

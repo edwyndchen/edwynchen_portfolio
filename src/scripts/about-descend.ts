@@ -14,13 +14,18 @@ export const DESCEND = {
   // Round 10 (Ed: he lingered too long in the centre, and felt choppy): the glide starts while he is still settling, so
   // the drop curves into the glide in one movement, with no pause between them
   phases: { part: [0, 0.4], descend: [0, 0.45], glide: [0.28, 0.85], clear: [0.3, 0.75] },
-  // phones: the walls part and slide off the sides (the text reads from the first part) while he descends behind them
-  phasesMobile: { part: [0, 0.35], descend: [0, 0.5], glide: [1, 1], clear: [0.28, 0.6] },
+  // desktop walls: one continuous move each, closed to off the side, across this span (round 10)
+  wallsDesktop: [0, 0.8],
+  // phones: no pin (Ed, round 10: pinning snapped on phones, and he lingered with nothing left to do). The scene plays
+  // as the stage scrolls up under the nav (`mobileFrom`, a fraction of the screen, to the nav): the walls part and slide
+  // off the sides while he descends behind them, everything ending together, as the clouds clear and Tap me appears
+  phasesMobile: { part: [0, 0.5], descend: [0, 0.75], glide: [1, 1], clear: [0.45, 1] },
+  mobileFrom: 0.6, // (0.85 opened the clouds before they had covered the stage: Ed came up from below, unrevealed)
   // Ed stays hidden behind the walls (his ribbon reached up through their feathered top) and fades in over this first
   // stretch of the timeline, as the walls start to part (Ed, round 10)
   appear: [0, 0.05],
-  // (round 10: 180/140 held the page still for almost two screens; shorter so the scroll keeps answering)
-  pin: { desktop: 120, mobile: 100 },
+  // (round 10: 180 held the page still for almost two screens; shorter so the scroll keeps answering). Desktop only
+  pin: { desktop: 90 }, // (Ed, round 10: 120 still took too long)
   // the walls start parting this far (fraction of a screen) before the pin, while the last work cards are still on
   // their way off screen (Ed, round 9); the timeline's phases run across this lead-in and the pin together
   lead: 0.55,
@@ -42,10 +47,10 @@ export const ED_START = { yPercent: DESCEND.dropFrom.desktop, rotation: 2, opaci
 export const SPLIT = '48rem';
 
 /**
- * A pinned stage. Two cloud walls meet over it, part, Ed descends through the opening and (tablet and up) glides
- * right into his column while the text rises in on the left. On phones the stage is one screen (heading, bio, Ed):
- * the text is under the walls, never faded, so it reads as soon as they part, and Ed drops a short way into the
- * space below it. When the pin releases, About is simply the finished layout. Reduced motion and no-JS never stage
+ * A pinned stage (tablet and up). Two cloud walls meet over it, part, Ed descends through the opening and glides
+ * right into his column while the text rises in on the left. On phones nothing pins: the stage is one screen (heading,
+ * bio, Ed) and the walls part off it as it scrolls up to the nav, the text under them never faded, while Ed drops a
+ * short way into the space below it. Afterwards About is simply the finished layout. Reduced motion and no-JS never stage
  * it: the walls stay hidden, all at rest.
  */
 export function initAboutDescend(root: HTMLElement): () => void {
@@ -59,6 +64,8 @@ export function initAboutDescend(root: HTMLElement): () => void {
   const right = root.querySelector<HTMLElement>('.about__wall--right');
   if (!ed || !fig || !stage || text.length < 2 || !box || !left || !right) return () => {};
   gsap.registerPlugin(ScrollTrigger);
+  // a phone's address bar showing and hiding resizes the screen: don't recompute every trigger (and jump) for it
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const mm = gsap.matchMedia();
   mm.add(
@@ -109,45 +116,59 @@ export function initAboutDescend(root: HTMLElement): () => void {
       const [d0, d1] = ph.descend;
       const [g0, g1] = ph.glide;
       const [c0, c1] = ph.clear;
-      // the pin holds the stage still; the timeline starts a little earlier (DESCEND.lead) and ends with it
-      const pin = ScrollTrigger.create({
-        trigger: focus,
-        start: desktop ? 'center center' : () => `top top+=${navH()}`,
-        end: `+=${desktop ? DESCEND.pin.desktop : DESCEND.pin.mobile}%`,
-        pin: root,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onRefresh: (st) => {
-          root.dataset.pinStart = String(Math.round(st.start));
-          root.dataset.pinEnd = String(Math.round(st.end));
-        },
-      });
+      // desktop: the pin holds the stage still; the timeline starts a little earlier (DESCEND.lead) and ends with it.
+      // Phones: no pin, the timeline runs as the stage scrolls up to the nav. (data-pin-* mark the scene's span, for tests)
+      const mark = (st: ScrollTrigger) => {
+        root.dataset.pinStart = String(Math.round(st.start));
+        root.dataset.pinEnd = String(Math.round(st.end));
+      };
+      const pin = desktop
+        ? ScrollTrigger.create({
+            trigger: focus,
+            start: 'center center',
+            end: `+=${DESCEND.pin.desktop}%`,
+            pin: root,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onRefresh: mark,
+          })
+        : null;
       const tl = gsap.timeline({
         // force3D: stay on the GPU between phases too (GSAP's default drops to a 2D transform whenever a tween ends,
         // which made the browser repaint the huge wall paintings mid-scroll: the jitter, round 10)
         defaults: { ease: 'none', force3D: true },
         scrollTrigger: {
-          start: () => Math.max(0, pin.start - window.innerHeight * DESCEND.lead),
-          end: () => pin.end,
+          ...(pin
+            ? { start: () => Math.max(0, pin.start - window.innerHeight * DESCEND.lead), end: () => pin.end }
+            : { trigger: stage, start: `top ${DESCEND.mobileFrom * 100}%`, end: () => `top top+=${navH()}` }),
           scrub: DESCEND.scrub,
           invalidateOnRefresh: true,
           onLeave: () => playFloat(),
           // the "magic trick" hint waits until he has landed (mid-descent it would float over the clouds)
           onUpdate: (st) => root.classList.toggle('is-landed', st.progress > 0.97),
           onToggle: (st) => root.classList.toggle('is-landed', st.progress > 0.97),
-          onRefresh: (st) => root.classList.toggle('is-landed', st.progress > 0.97), // loaded already past it
+          onRefresh: (st) => {
+            root.classList.toggle('is-landed', st.progress > 0.97); // loaded already past it
+            if (!pin) mark(st);
+          },
         },
       });
-      // phase 1: the walls part, opening from the first scroll (they start while the last work cards are leaving)
-      tl.to(left, { x: leftPart, duration: p1 - p0, ease: 'power1.out' }, p0)
-        .to(right, { x: rightPart, duration: p1 - p0, ease: 'power1.out' }, p0)
-        // Ed fades in behind the walls as they begin to part
-        .to(ed, { opacity: 1, duration: DESCEND.appear[1] - DESCEND.appear[0] }, DESCEND.appear[0])
+      if (desktop) {
+        // desktop (Ed, round 10: the part-then-drift handover jerked, as two tweens fought over x): one unbroken move
+        // per wall, from closed to off the side: quick to open (so Ed is revealed as he comes down), then easing away
+        tl.to(left, { x: leftOff, duration: DESCEND.wallsDesktop[1] - DESCEND.wallsDesktop[0], ease: 'power1.out' }, DESCEND.wallsDesktop[0])
+          .to(right, { x: rightOff, duration: DESCEND.wallsDesktop[1] - DESCEND.wallsDesktop[0], ease: 'power1.out' }, DESCEND.wallsDesktop[0]);
+      } else {
+        // phones: phase 1 the walls part, phase 3 they drift off the sides (Ed loves this one, round 10)
+        tl.to(left, { x: leftPart, duration: p1 - p0, ease: 'power1.out' }, p0)
+          .to(right, { x: rightPart, duration: p1 - p0, ease: 'power1.out' }, p0)
+          .to(left, { x: leftOff, duration: c1 - c0, ease: 'sine.inOut' }, c0)
+          .to(right, { x: rightOff, duration: c1 - c0, ease: 'sine.inOut' }, c0);
+      }
+      // Ed fades in behind the walls as they begin to part
+      tl.to(ed, { opacity: 1, duration: DESCEND.appear[1] - DESCEND.appear[0] }, DESCEND.appear[0])
         // phase 2: Ed comes down through the opening, the tilt settling as he lands (sine: no hard stop to linger on)
-        .to(ed, { yPercent: 0, rotation: 0, duration: d1 - d0, ease: 'sine.out' }, d0)
-        // phase 3: the walls drift off the sides, a touch ahead of the glide so the text rises into clear page
-        .to(left, { x: leftOff, duration: c1 - c0, ease: 'sine.inOut' }, c0)
-        .to(right, { x: rightOff, duration: c1 - c0, ease: 'sine.inOut' }, c0);
+        .to(ed, { yPercent: 0, rotation: 0, duration: d1 - d0, ease: 'sine.out' }, d0);
       // ...and on desktop Ed glides into his column while the text rises in on the left
       if (desktop) {
         tl.to(ed, { x: 0, duration: g1 - g0, ease: 'sine.inOut' }, g0)
@@ -192,7 +213,7 @@ export function initAboutDescend(root: HTMLElement): () => void {
       }
 
       return () => {
-        pin.kill();
+        pin?.kill();
         offMotion();
         ScrollTrigger.removeEventListener('refreshInit', placeBox);
         ScrollTrigger.removeEventListener('refreshInit', noteFocus);

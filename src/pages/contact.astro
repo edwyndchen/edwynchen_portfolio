@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SocialIcon from '../components/SocialIcon.astro';
+import { site } from '../data/site';
+// Formspree when an ID is set (src/data/site.ts); otherwise the form opens the visitor's email app (contact-form.ts)
+const action = site.formspree ? `https://formspree.io/f/${site.formspree}` : `mailto:${site.email}`;
+const TOPICS = ['A project', 'A job opportunity', 'A collaboration', 'Just saying hi'];
+---
+<!-- The contact page (Ed, round 11): the form (name, email, phone, topic, message) on a porcelain plate, and the
+     direct ways to reach Ed beside it. The home page keeps its paint-the-scroll toy. -->
+<BaseLayout title={`Contact | ${site.name}`} description="Get in touch with Edwyn Chen, product designer in Melbourne: projects, roles, collaborations.">
+  <section class="cpage wrap" aria-labelledby="cpage-title">
+    <div class="cpage__intro">
+      <h1 id="cpage-title">Contact</h1>
+      <p class="cpage__lead">Got a project, a role or a question? Tell me about it and I’ll get back to you.</p>
+      <ul class="cpage__links">
+        <li><a href={`mailto:${site.email}`}><SocialIcon name="mail" /><span>{site.email}</span></a></li>
+        {site.linkedin && <li><a href={site.linkedin} rel="me noopener" target="_blank"><SocialIcon name="linkedin" /><span>LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></span></a></li>}
+        {site.behance && <li><a href={site.behance} rel="me noopener" target="_blank"><SocialIcon name="behance" /><span>Behance<span class="visually-hidden"> (opens in a new tab)</span></span></a></li>}
+      </ul>
+    </div>
+
+    <form class="cpage__form" method="POST" action={action} data-contact-form data-mailto={site.formspree ? undefined : site.email}>
+      <!-- a trap for bots: people never see or fill it -->
+      <p class="visually-hidden" aria-hidden="true">
+        <label>Leave this empty <input name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+      </p>
+      <div class="field">
+        <label for="cf-name">Name</label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" required aria-describedby="cf-name-err" />
+        <p class="field__err" id="cf-name-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-email">Email</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required aria-describedby="cf-email-err" />
+        <p class="field__err" id="cf-email-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-phone">Phone <span class="field__opt">(optional)</span></label>
+        <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]{6,}" aria-describedby="cf-phone-err" />
+        <p class="field__err" id="cf-phone-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-topic">Topic</label>
+        <select id="cf-topic" name="topic" required aria-describedby="cf-topic-err">
+          <option value="">Choose one</option>
+          {TOPICS.map((t) => <option value={t}>{t}</option>)}
+        </select>
+        <p class="field__err" id="cf-topic-err" data-err></p>
+      </div>
+      <div class="field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="6" required aria-describedby="cf-message-err"></textarea>
+        <p class="field__err" id="cf-message-err" data-err></p>
+      </div>
+      <div class="cpage__send">
+        <button class="button button--primary" type="submit">Send message</button>
+        <p class="cpage__status" role="status" data-status></p>
+      </div>
+    </form>
+  </section>
+</BaseLayout>
+
+<style>
+  .cpage { display: grid; gap: var(--space-xl); align-items: start; padding-block: var(--space-xl) var(--space-2xl); }
+  @media (min-width: 60rem) { .cpage { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--space-2xl); } }
+  .cpage h1 { font-size: var(--fluid-display-xl); margin: 0; }
+  .cpage__lead { margin: var(--space-m) 0 var(--space-l); max-width: 34ch; font-size: var(--text-lg); }
+  .cpage__links { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-xs); }
+  .cpage__links a { display: inline-flex; align-items: center; gap: var(--space-s); min-height: 48px; font-weight: var(--fw-semibold); overflow-wrap: anywhere; }
+  .cpage__links :global(svg) { width: 22px; height: 22px; flex: none; }
+
+  /* the form on a porcelain plate: white body, double keyline, like the work cards */
+  .cpage__form {
+    display: grid; gap: var(--space-m);
+    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -7px;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); background: var(--surface-raised); box-shadow: var(--shadow-sm);
+  }
+  .field { display: grid; gap: var(--space-2); }
+  .field label { font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--text-primary); }
+  .field__opt { font-weight: var(--fw-regular, 400); color: var(--text-secondary); }
+  .field input, .field textarea, .field select {
+    width: 100%; min-height: 48px; padding: 12px 14px; font: inherit; color: var(--text-primary);
+    background: var(--surface-page); border: 1px solid var(--border-ink); border-radius: 0;
+  }
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%233231b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px; padding-right: 40px; }
+  .field textarea { resize: vertical; min-height: 9rem; }
+  .field :is(input, textarea, select):hover { border-color: var(--border-strong); }
+  .field :is(input, textarea, select):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; border-color: var(--border-strong); }
+  .field [aria-invalid='true'] { border-color: var(--text-seal); }
+  .field__err { margin: 0; font-size: var(--text-sm); color: var(--text-seal); }
+  .field__err:empty { display: none; }
+  .cpage__send { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s) var(--space-m); }
+  .cpage__status { margin: 0; font-size: var(--text-sm); color: var(--text-secondary); }
+  .cpage__status:empty { display: none; }
+  .cpage__form :global(.cpage__done) { margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-sm); color: var(--text-brand); }
+  .cpage__form :global(.cpage__done:focus) { outline: none; }
+</style>
+
+<script>
+  import { initContactForm } from '../scripts/contact-form';
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-contact-form]')) initContactForm(form);
+</script>

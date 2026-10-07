@@ -107,7 +107,7 @@ Committed up to the latest commit on `main` (unit 66, e2e 160 passing, 18 skippe
 - Smooth scrolling site-wide: Lenis on GSAP's ticker (`src/scripts/smooth-scroll.ts`, `SMOOTH.lerp` 0.09), off for reduced motion, held still during the landing doors. Same-page links, Back to top and the About link all glide through `scrollToY`. Touch keeps native scrolling.
 - Descent retimed (Ed: he lingered in the centre, felt choppy): the glide starts while he is still settling (`phases` descend 0–0.45, glide 0.28–0.85, sine eases), scrub 0.4 (was 1; the smooth scroll already eases). Ed is hidden until the walls start to part and fades in over `DESCEND.appear` (his ribbon used to peek over the walls' feathered top).
 - Contact scroll: the bottom rod tucks under the silk again. The rule used `:last-child`, which broke when the brush and seal were moved in after the rod; now `.scroll__rod--top` / `--bottom`.
-- Hero: a slight zoom into the city as you scroll, on top of the parallax (`zoomScale` in hero-motion.ts, 0.12, 20% more than the first cut: nearer layers grow more, far range ~4%, city ~8%, front clouds 12%; 60% of that on phones; all towards `ZOOM_ORIGIN` 50% 72%).
+- Hero: a slight zoom into the city as you scroll, on top of the parallax (`zoomScale` in hero-motion.ts, set by `CITY_ZOOM` 0.5: Melbourne ends 50% bigger (Ed), far range ~25%, front clouds ~77%, nearer layers growing more; same on phones; all towards `ZOOM_ORIGIN` 50% 72%).
 - Contact: a caption tucked under the scroll's bottom right corner names the place the painting is after ("The Twelve Apostles, Victoria", "Wilsons Promontory, Victoria"; `place` in `SCENES`, updates on Next scene). Ed asked for this, which overrides the earlier "Australian details never labelled" rule for this caption.
 - Wand: star A is Ed's pick and the default (`?wand=ruyi` / `?wand=star-b` show the others for that visit only). Its flick is a quick -8° from the handle end (`grip`), so the star end moves; no resting tilt, so the tip stays on the pointer.
 - Hanfu brightened (Ed: he read darker than the other outfits): mid-tones lifted with gamma 1.3 by `art/round10/brighten-hanfu.mjs` from the kept original `art/round10/ed-porcelain-before-brighten.webp` (mean 129 -> 145; the water bearer is 150). Rerun it after any hanfu re-place.
@@ -127,18 +127,38 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Hero paintings have a srcset (1200/1800/2400w, `npm run hero:sizes`, chained into `npm run hero`).
 - Phones drop two of the cloud-only hero layers (depth 0.12 and 0.35).
 - Hero name letter spacing 0.03em -> 0.01em (Ed).
+- Wand fallback cursor is now star wand A (`public/about/wand-a-cursor.png`, 64px, hotspot 7 7), not the old drawn SVG wand: it shows wherever the painted wand isn't running (touch screens, DevTools device mode, before the painting loads), so there's only ever one wand.
+- Phones, About: no pin any more (it snapped as the browser switched the section in and out of fixed). The scene plays as the stage scrolls up under the nav (from `DESCEND.mobileFrom` 0.6 of the screen): the closed clouds rise over it, part and clear while Ed comes down, all ending together so Tap me shows as the clouds go (`phasesMobile` part 0-0.5, descend 0-0.75, clear 0.45-1). `ScrollTrigger.config({ ignoreMobileResize: true })` stops the address bar from re-laying out the triggers. Tap me sits at his lower right on phones, inside his box.
+- Right cloud wall: its see-through washes (under the long tail, at the top, a few spots) filled solid with the cloud's own tones by `art/round10/fill-wall.mjs` (closing + hole fill, colour from a premultiplied blur), soft outer edge kept; original in `art/round10/cloud-wall-right-before-fill.webp`.
+- Scroll buttons: "Paint for me", "Restart", "Paint pig", "Final Seal" (Ed).
+- Hero in 4k: the four painted layers were AI upscaled on Higgsfield (split into two overlapping halves, since the upscaler rejects the 3120px width) and rebuilt by `art/round10/hero-4k.mjs` at 4800px, srcset 1200-4800 (`npm run hero:4k`; `npm run hero` now runs it after build.mjs, which needs the 4k tiles in `art/round10/upscale/`). `scripts/hero-sizes.mjs` is gone (superseded).
+- Hanfu in high resolution (2200px, `art/round10/hanfu-hd.mjs` from the 4k upscale `c98c40ee`), same shape, mid-tones lifted as before, and the skin's light tones lifted round the face, neck and hands (`SKIN`, `LIFT`).
+- Desktop About: each wall now makes one continuous move from closed to off-screen (`wallsDesktop` 0-0.8, power1.out); the old part-then-drift tweens overlapped on x and jerked at the handover. Pin 120% -> 90%. Phones keep the two-step walls.
+- Work section sits above the About cloud walls (`z-index: 3`), so the last cards stay readable as the clouds rise.
+- Tap me on phones closer to Ed (right 12%, bottom 4%).
+- Scroll steps: the current step has a darker 2px ring and a bold blue label; finished steps are filled with a white tick.
 - Hosting: switched to Vercel (`@astrojs/vercel`, `site` https://edwynchen-portfolio.vercel.app); privacy page rewritten for Vercel and for no contact form (it still described Netlify Forms).
 - Ed didn't show on Ed's phone (Chrome). Likely the wind filter: Apple's WebKit (Safari and every iPhone browser) can draw an element blank under an SVG displacement filter with feImage. The wind now runs only off WebKit and off touch-first devices (`windSupported()` in fabric-wind.ts); they get the still painting. Not yet confirmed on the real phone.
 
+## Round 11 (2026-10-06)
+
+- New pages: `/about/` (coffee game, where I've worked with results, a bit more about me, why the pig and the water bearer, then the plain Contact block) and `/contact/` (form: name, email, phone optional, topic, message; plus email, LinkedIn, Behance). Nav Contact now goes to `/contact/`; the home About section links to `/about/` ("More about me"). The home page keeps its cloud scene, outfit trick and paint-the-scroll.
+- Contact form posts to Formspree (`formspree` in `src/data/site.ts`, the form ID). Empty: the form opens the visitor's email app with everything filled in (`mailtoFor` in `src/scripts/contact-form.ts`). Honeypot field `_gotcha`.
+- Coffee game (`src/scripts/coffee.ts`, `ENERGY`, `FRAMES`, `LINES`): Ed is the button. A painted porcelain cup (`public/about/cup.webp`) follows the mouse over his face; click him (or tap, or Enter) to give him a coffee, and the cup tips to pour. The bar turns red only in its last quarter (`LOW` 0.25). Energy starts at 4, drains 2.5/s while on screen (rests when hidden, off screen or motion paused), a coffee adds 30. Three stages for the line under him (tired, okay, buzzing). His face follows the energy through twelve frames (`public/about/face-1..12.webp`, sleepiest first): one front-facing portrait from Ed's photos plus expression-only edits of it, all repainted onto the hero's cobalt ramp (no photo-brown eyes, one blue throughout) on pure white, by `art/round11/faces-build.mjs` (`ORDER`). It steps one frame at a time (`FRAME_STEP` 110ms) with a 0.5s crossfade.
+- Social proof: `Clients.astro` between the hero and Selected work: a painted lattice transom across the whole screen (simple lattice, Higgsfield `788ff241`, an edit of the key-fret `6d82f3da`; `art/round11/window-build.mjs`: cropped to the band, cobalt ramp, panes flood-filled see-through) with the brands sliding past behind it (`src/data/clients.ts`). Logos in cobalt by `art/round11/logos/build.mjs`: Mastercard (Wikimedia Commons, 2019 symbol), Crown (crownmelbourne.com.au header SVG), New Aim (newaim.com.au header PNG). Punters and Racenet are text until Ed supplies files (their sites block fetching). Pauses on hover/focus and with Pause motion; static for reduced motion.
+- Proven results (`ProvenResults.astro`, on the About page after the coffee game; moved off the home page, Ed): six porcelain tiles with the headline case-study numbers (500%, 1,450+, 52%, 79%, 30%, <1 day), each linking to its case study; the numbers count up once on scroll (static for reduced motion).
+- Selected work heading and the brands window rise in on their own as you scroll (`[data-reveal-heading]` in `reveal.ts`).
+- EonX cover: the empty strip and stray line removed (Seedream edit `5ff641d0` of the cleaned B, then the leftover stray line painted out locally, `art/round11/eonx-fix-a-clean.png`).
+
 ## Next steps
 
-Everything through round 9 is committed and pushed to GitHub: https://github.com/edwyndchen/edwynchen_portfolio (public, `main`).
+Everything through round 11 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
 
-1. Ed uploads real images for Workshop entries and case studies in Keystatic, and replaces the placeholder Workshop write-ups.
-2. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Worth checking live: the cloth drag on the descent, the flowing water, the brush cursor.
-3. Handoff README.
-
-Live on Vercel: https://edwynchen-portfolio.vercel.app (Ed set it up, deploys on every push to `main`). The project uses `@astrojs/vercel` and that `site` since 2026-10-06 (it was configured for Netlify before). Keystatic uses local storage, so content is edited with `npm run dev` and pushed; `/keystatic` doesn't edit the live site.
+1. Waiting on Ed: his Formspree form ID (goes in `formspree` in `src/data/site.ts`; until then the contact form opens an email), and the Punters and Racenet logo files (drop in `public/logos/`, run them through `art/round11/logos/build.mjs` or add a cobalt version, set `logo` in `src/data/clients.ts`).
+2. Ed uploads real images for Workshop entries and case studies in Keystatic (run `npm run dev`, edit at /keystatic, push; Keystatic edits files locally, not on the live site).
+3. Ed to check the About page copy line "When I'm not designing, I'm at the gym or hunting down the next good coffee." (written from his bio).
+4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375.
+5. Handoff README.
 
 ## Open items for Ed
 
@@ -164,4 +184,5 @@ Two cloud walls close over the end of the case studies, part on scroll (pinned s
 - Show 2–4 options side by side and let him pick; he gives precise visual feedback and iterates.
 - Art rules he set: no corner ornaments; clouds' wispy tails trail left (they travel left→right); no hard or cropped edges anywhere; figures and objects must sit fully inside their frame with margin; everything solid/opaque where layered (nothing see-through behind mountains or buildings); artwork blues match the hero landscape (use `art/portrait/recolor.mjs`); Melbourne kept simple (Spire + Flinders Street + tram only); Chinese first, Australian details subtle and never labelled.
 - Art rules from rounds 3 to 9: illustrations must read as drawn (every part outlined, never photographic); all About outfits keep the same figure size; only ribbons, water and the thin outer edge of sleeves and hems ripple (bodies masked out via painted maps in `art/round3/wind-maps.mjs`), and ribbons stream dramatically while he moves; Ed is already there behind the clouds and revealed as they open, never popping in after; gradients only on the very back layer, never on a peak or anything in front; nothing is ever clipped; hero layers start high and apart, then flatten as you scroll down; any new scene or creature matches the hero's bold cobalt and the About figures' style; seal impressions are round, opaque, tilted right and about 95% clean.
+- Motion rule (Ed, rounds 10 and 11): motion is gradual and smooth, never abrupt; no jumps or cuts, no lingering pauses, and small over big (a quick flick, not a swing).
 - Higgsfield: Seedream 5.0 Pro for landscape/cloud art (reference the approved hero `7fe457e1`), Nano Banana for Ed's likeness. Local images upload via `media_upload` + curl PUT (header `If-None-Match: *`), since the upload widget doesn't render in the Code tab.

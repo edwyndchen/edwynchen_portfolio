@@ -1,0 +1,54 @@
+---
+import { clients } from '../data/clients';
+// the strip slides one full copy of the list across, so it shows twice in a row: the second copy is hidden from
+// assistive tech (the first is the real list)
+const loop = [...clients, ...clients];
+---
+<!-- Social proof (Ed, round 11): a painted lattice transom across the whole screen (Higgsfield, built by
+     art/round11/window-build.mjs, its panes see-through), and the brands drift past behind it like a view outside.
+     Pauses on hover and focus, with the Pause motion switch, and stands still for reduced motion. -->
+<section class="clients" aria-labelledby="clients-title" data-reveal-heading>
+  <h2 class="clients__title label wrap" id="clients-title">Brands I’ve designed for</h2>
+  <div class="clients__window">
+    <div class="clients__view">
+      <ul class="clients__track">
+        {loop.map((c, i) => (
+          <li class="clients__item" aria-hidden={i >= clients.length ? 'true' : undefined}>
+            {c.logo
+              ? <img class="clients__logo" src={c.logo} alt={i >= clients.length ? '' : c.name} loading="lazy" decoding="async" />
+              : <span class="clients__word">{c.name}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <img class="clients__lattice" src="/clients/window.webp" alt="" width="2400" height="409" aria-hidden="true" decoding="async" />
+  </div>
+</section>
+
+<style>
+  .clients { padding-top: var(--space-xl); }
+  .clients__title { margin: 0 auto var(--space-s); text-align: center; color: var(--text-secondary); }
+  /* the window runs the full width of the screen; the brands slide in the white behind its panes */
+  .clients__window { --h: clamp(150px, 17vw, 300px); position: relative; height: var(--h); background: var(--surface-raised); overflow: hidden; }
+  .clients__lattice {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;
+    pointer-events: none;
+  }
+  .clients__view { position: absolute; inset: 0; display: flex; align-items: center; }
+  .clients__track {
+    list-style: none; margin: 0; padding: 0; display: flex; width: max-content;
+    animation: clients-slide 40s linear infinite;
+  }
+  .clients__window:hover .clients__track, .clients__window:focus-within .clients__track { animation-play-state: paused; }
+  :global(html.motion-paused) .clients__track { animation-play-state: paused; }
+  @keyframes clients-slide { to { transform: translateX(-50%); } }
+  /* each brand sized to sit inside a pane (about two thirds of the window's height square) as it passes */
+  .clients__item { display: grid; place-items: center; width: calc(var(--h) * 1.5); height: calc(var(--h) * 0.3); flex: none; }
+  .clients__logo { max-width: 46%; max-height: 100%; width: auto; height: auto; }
+  .clients__word { font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: clamp(0.95rem, 0.8rem + 0.55vw, 1.4rem); letter-spacing: 0.04em; color: var(--text-brand); white-space: nowrap; }
+  /* reduced motion: the brands sit still in a row under the window, the copy hidden */
+  @media (prefers-reduced-motion: reduce) {
+    .clients__track { animation: none; width: 100%; justify-content: space-around; }
+    .clients__item[aria-hidden='true'] { display: none; }
+  }
+</style>

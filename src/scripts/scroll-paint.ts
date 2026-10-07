@@ -3,10 +3,10 @@ import { gsap } from 'gsap';
 /**
  * Paint the scroll (Ed, 2026-10-05). The contact scroll is a little painting toy:
  *   1. paint   – a faint skeleton of the scene pulses; wherever the brush goes, the painting comes through in bristly
- *                strokes (the pointer is a brush over the paper; "Paint it for me" does it for keyboard users)
+ *                strokes (the pointer is a brush over the paper; "Paint for me" does it for keyboard users)
  *   2. pig     – then a prompt: add a flying pig; it paints itself in, stroke by stroke, where you click
  *   3. seal    – then Ed's seal follows the pointer; one click presses it in red
- *   4. done    – "Start again" clears it all; the arrow swaps between the mountains and the river
+ *   4. done    – "Restart" clears it all; the arrow swaps between the mountains and the river
  * Every step has a button, so it all works from the keyboard. Reduced motion: no pulsing, and reveals land at once.
  */
 export type Step = 'paint' | 'pig' | 'seal' | 'done';
@@ -63,7 +63,7 @@ function dab(ctx: CanvasRenderingContext2D, ax: number, ay: number, bx: number, 
   ctx.globalAlpha = 1;
   ctx.shadowBlur = 0;
 }
-/** A zig-zag of brush strokes that sweeps a box, for the automatic reveals (the pig, "Paint it for me"). */
+/** A zig-zag of brush strokes that sweeps a box, for the automatic reveals (the pig, "Paint for me"). */
 function sweep(x: number, y: number, w: number, h: number, rows: number): [number, number][] {
   const pts: [number, number][] = [];
   for (let i = 0; i <= rows; i++) {
@@ -184,7 +184,7 @@ export function initScrollPaint(root: HTMLElement): () => void {
     sketch.classList.add('is-gone');
   };
 
-  // automatic strokes along a path (pig, "Paint it for me"); instant with reduced motion
+  // automatic strokes along a path (pig, "Paint for me"); instant with reduced motion
   const autoPaint = (c: CanvasRenderingContext2D, pts: [number, number][], r: number, ms: number) => new Promise<void>((done) => {
     const br = bristles(14);
     if (reduce.matches || ms === 0) {

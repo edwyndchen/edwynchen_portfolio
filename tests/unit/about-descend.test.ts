@@ -20,8 +20,11 @@ describe('About descent', () => {
     expect(glide[0]).toBeGreaterThan(descend[0]);
     expect(glide[1]).toBeLessThanOrEqual(1);
   });
-  it('pins longer on desktop than on phones', () => {
-    expect(DESCEND.pin.desktop).toBeGreaterThan(DESCEND.pin.mobile);
+  it('pins on desktop only; on phones everything ends together as the clouds clear (no dead scroll)', () => {
+    expect(DESCEND.pin).not.toHaveProperty('mobile');
+    const { descend, clear } = DESCEND.phasesMobile;
+    expect(clear[1]).toBe(1);
+    expect(descend[1]).toBeLessThanOrEqual(1);
   });
 });
 

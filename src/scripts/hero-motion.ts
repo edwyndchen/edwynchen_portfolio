@@ -28,13 +28,15 @@ export function collapsePercent(depth: number, c = 3): number {
 
 /**
  * Scale at the end of the hero's scroll (Ed, round 10: a slight zoom into the city as you scroll, with the parallax).
- * Nearer layers grow more than far ones, so the zoom itself adds depth: the far range ~4%, the city ~8%, the front
- * clouds 12% (20% more than the first cut, Ed). Every layer zooms towards the same point, the city (`ZOOM_ORIGIN`), so the layers stay registered.
+ * Nearer layers grow more than far ones, so the zoom itself adds depth: set by how much bigger the city (depth 0.5) ends: `CITY_ZOOM` 0.5, i.e. 50% bigger (Ed, round 10), so the far range
+ * ends ~25% bigger and the front clouds ~77%. Phones and desktop alike. Every layer zooms towards the same point, the city (`ZOOM_ORIGIN`), so the layers stay registered.
  */
-export function zoomScale(depth: number, zoom = 0.12): number {
+export function zoomScale(depth: number, zoom = CITY_ZOOM / 0.65): number {
   return Math.round((1 + zoom * (0.3 + 0.7 * depth)) * 1000) / 1000;
 }
 export const ZOOM_ORIGIN = '50% 72%';
+/** How much bigger Melbourne (depth 0.5) is by the bottom of the hero: 0.5 = 50% bigger. */
+export const CITY_ZOOM = 0.5;
 
 /** Clouds cross 20% faster than the first cut (Ed, 2026-10-04): every duration divided by this. */
 export const CLOUD_SPEED = 1.2;
@@ -115,7 +117,7 @@ export function initHero(root: HTMLElement): () => void {
         }
         tl.to(layer, { yPercent: collapsed + scrollShift(factor), ease: 'none', duration: 1 - share });
         // the zoom runs the whole way, alongside both phases
-        tl.fromTo(layer, { scale: 1 }, { scale: zoomScale(depth, mobile.matches ? 0.072 : 0.12), ease: 'none', duration: 1 }, 0);
+        tl.fromTo(layer, { scale: 1 }, { scale: zoomScale(depth), ease: 'none', duration: 1 }, 0);
       };
       gsap.set(layer, { transformOrigin: ZOOM_ORIGIN });
       build();
