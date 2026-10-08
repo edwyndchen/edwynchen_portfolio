@@ -29,16 +29,19 @@ const fmt = (n: number) => n.toLocaleString('en-AU');
 <style>
   .proven { padding-block: var(--space-xl); border-top: var(--rule-hair); }
   .proven h2 { font-size: var(--step-3); margin-bottom: var(--space-l); }
-  .proven__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-m); grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); }
-  /* each tile a small porcelain plate: white body, double keyline */
+  .proven__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-s); grid-template-columns: 1fr; max-width: 52rem; }
+  /* six results: three by two on wide screens, two by three in between, so none is left on its own */
+  @media (min-width: 30rem) { .proven__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 60rem) { .proven__grid { grid-template-columns: repeat(3, 1fr); } }
+  /* each tile a small porcelain plate: white body, double keyline (round 12: smaller, Ed) */
   .proven__tile {
-    display: grid; align-content: start; gap: var(--space-xs);
-    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -6px;
-    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); background: var(--surface-raised); box-shadow: var(--shadow-sm);
+    display: grid; align-content: start; gap: 0.35rem;
+    border: var(--rule); outline: 1px solid var(--border-default); outline-offset: -5px;
+    padding: 1rem 1.1rem 1.1rem; background: var(--surface-raised); box-shadow: var(--shadow-sm);
   }
-  .proven__value { margin: 0; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-lg); line-height: 1; color: var(--cobalt); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .proven__label { margin: 0; color: var(--text-primary); max-width: 26ch; }
-  .proven__where { margin-top: var(--space-xs); font-size: var(--text-sm); font-weight: var(--fw-semibold); }
+  .proven__value { margin: 0; font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fluid-display-md); line-height: 1; color: var(--cobalt); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .proven__label { margin: 0; color: var(--text-primary); font-size: var(--text-sm); max-width: 26ch; }
+  .proven__where { margin-top: 0.25rem; font-size: var(--text-sm); font-weight: var(--fw-semibold); }
 </style>
 
 <script>

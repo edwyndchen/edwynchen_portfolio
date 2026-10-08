@@ -57,11 +57,12 @@ const { scroll = false } = Astro.props;
   </div>
   <p class="scroll__place" data-scroll-place>The Twelve Apostles, Victoria</p>
   </div>)}
-  <!-- then the real thing: the ways to reach Ed, on a wall of clouds that rises high on the left and tapers to the
-       right, falling into solid cobalt (Ed, round 12, after the Social Impact Capital site; art/round12/wall-cut.mjs) -->
+  <!-- then the real thing: the ways to reach Ed, written over a wall of big clouds that rises high on the left, tapers
+       to the right and darkens into the footer's navy (Ed, round 12c, after the Social Impact Capital site;
+       art/round12/bigwall-2.png cut by art/round12/wall-cut.mjs) -->
   <div class="contact__foot">
     <img class="contact__wall" src="/contact/wall-1600.webp" srcset="/contact/wall-800.webp 800w, /contact/wall-1600.webp 1600w, /contact/wall-2400.webp 2400w"
-      sizes="(max-width: 40rem) 200vw, 100vw" alt="" width="3120" height="1328" aria-hidden="true" loading="lazy" decoding="async" />
+      sizes="(max-width: 40rem) 220vw, 100vw" alt="" width="2720" height="1536" aria-hidden="true" loading="lazy" decoding="async" />
     <div class="contact__ground">
       <div class="wrap contact__say">
         <p class="contact__more">Let’s connect to make the world more beautiful.</p>
@@ -103,30 +104,52 @@ const { scroll = false } = Astro.props;
   .paint__btn { display: inline-flex; align-items: center; gap: 0.45rem; }
   .paint__btn svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .paint__quiet { background: var(--surface-raised); }
-  /* the cloud wall: full width, the painting on top, its flat cobalt ground continued below it in CSS (GROUND is the
-     painting's own bottom colour, measured by wall-cut.mjs) so the line and the links sit on solid blue */
-  .contact__foot { --ground: #232590; margin-top: var(--space-2xl); position: relative; }
+  /* the cloud wall: full width; the words sit on the clouds' darker lower left, and the painting's foot fades into the
+     footer's navy (the last stretch is a CSS fade to --surface-invert, so the join is exact) */
+  .contact__foot { margin-top: var(--space-2xl); position: relative; display: grid; }
   .contact--plain .contact__foot { margin-top: var(--space-l); }
+  .contact__foot > * { grid-area: 1 / 1; }
   .contact__wall { display: block; width: 100%; height: auto; }
-  .contact__ground { background: var(--ground); margin-top: -1px; padding-bottom: clamp(3rem, 2rem + 5vw, 6rem); }
-  /* the words lift up into the darkest part of the clouds, left-aligned, the icons under them */
-  .contact__say { display: grid; justify-items: start; gap: var(--space-l); margin-top: clamp(-9rem, -10vw, -3rem); position: relative; }
+  .contact__ground {
+    align-self: stretch; display: flex; align-items: flex-end; position: relative;
+    padding-bottom: clamp(1.75rem, 1rem + 2.5vw, 3.5rem);
+    background: linear-gradient(to bottom, transparent 78%, var(--surface-invert));
+  }
+  /* a soft navy shade over the lower left, cut to the clouds' own shape (masked by the painting), so the white words
+     always read on the clouds and the paper above them stays clean */
+  .contact__ground::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 65% 60% at 10% 85%, rgb(13 11 69 / 0.75), rgb(13 11 69 / 0) 100%);
+    -webkit-mask: url(/contact/wall-1600.webp) left bottom / 100% auto no-repeat; mask: url(/contact/wall-1600.webp) left bottom / 100% auto no-repeat;
+  }
+  .contact__say { position: relative; }
+  /* tablets: the painting alone is too short for the words, so it stands taller, cropped to its tall left end */
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .contact__wall { height: 36rem; object-fit: cover; object-position: left bottom; }
+    .contact__ground::before { -webkit-mask-size: cover; mask-size: cover; }
+  }
+  .contact__say { display: grid; justify-items: start; gap: var(--space-m); }
   .contact__more {
     margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-xl); font-weight: var(--fw-bold);
-    line-height: 1.05; color: var(--text-on-invert); max-width: 16ch; text-wrap: balance;
+    line-height: 1.05; color: var(--text-on-invert); max-width: 15ch; text-wrap: balance;
+    text-shadow: 0 1px 10px rgb(5 8 46 / 0.4); /* a breath of shadow for the odd pale curl behind it */
   }
   .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
-  /* phones: the wall is cropped to its tall left end, so it still reads as a wall */
+  /* phones: the wall is cropped to its tall left end and stands taller, so the words still sit on the clouds */
   @media (max-width: 39.99rem) {
-    .contact__wall { width: 100%; height: 15rem; object-fit: cover; object-position: left bottom; }
-    .contact__say { margin-top: -2.5rem; }
+    .contact__wall { height: 34rem; object-fit: cover; object-position: left bottom; }
+    .contact__more { font-size: var(--fluid-display-lg); }
+    .contact__ground::before {
+      background: radial-gradient(ellipse 110% 50% at 20% 80%, rgb(13 11 69 / 0.75), rgb(13 11 69 / 0) 100%);
+      -webkit-mask-size: cover; mask-size: cover;
+    }
   }
   .contact__links a {
     display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; font-size: 26px;
-    border: 1px solid color-mix(in oklab, var(--text-on-invert) 55%, transparent); border-radius: 50%; color: var(--text-on-invert); background: transparent;
+    border: 1px solid var(--text-on-invert); border-radius: 50%; color: var(--surface-invert); background: var(--text-on-invert);
     transition: background var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard), border-color var(--dur-med) var(--ease-standard);
   }
-  .contact__links a:hover { background: var(--text-on-invert); color: var(--ground); border-color: var(--text-on-invert); }
+  .contact__links a:hover { background: var(--action-primary); color: var(--text-on-brand); border-color: var(--action-primary); }
   .contact__links a:focus-visible { outline: 2px solid var(--text-on-invert); outline-offset: 3px; }
   .contact__links .contact__resume { width: auto; padding-inline: var(--space-s); border-radius: 24px; font-size: var(--text-sm); font-weight: var(--fw-semibold); }
 

@@ -15,12 +15,12 @@ const JOBS = [
 // Ed's two signs, each with its painting and the character it goes by
 const SIGNS = [
   {
-    name: 'The pig', kind: 'Chinese zodiac, the Year of the Pig', glyph: '亥',
+    name: 'The pig', kind: 'Chinese zodiac, the Year of the Pig', glyph: '豬',
     art: { src: '/scroll/pig.webp', width: 600, height: 451, alt: 'Brush painting of a spotted pig flying on white crane wings' },
     body: 'Pigs are known for being generous, honest and hard-working, and easy to get along with. That’s how I try to show up on a team.',
   },
   {
-    name: 'The water bearer', kind: 'Aquarius, my star sign', glyph: '瓶',
+    name: 'The water bearer', kind: 'Aquarius, my star sign', glyph: 'aquarius',
     art: { src: '/about/vase.webp', width: 436, height: 900, alt: 'Brush painting of a blue-and-white porcelain vase with a lotus medallion' },
     body: 'Aquarians are curious, independent thinkers who want to make things better for people. It’s the same pull that keeps me coming back to accessibility.',
   },
@@ -94,7 +94,10 @@ const startFrame = frameFor(ENERGY.start);
       {SIGNS.map((g, i) => (
         <article class:list={['sign', `sign--${i ? 'vase' : 'pig'}`]}>
           <div class="sign__art">
-            <span class="sign__glyph" lang="zh-Hant" aria-hidden="true">{g.glyph}</span>
+            {g.glyph === 'aquarius'
+              /* the Aquarius sign, two waves (drawn, so no emoji font can swap it) */
+              ? <svg class="sign__glyph sign__glyph--svg" viewBox="4 22 92 56" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path d="M10 42l13-12 13 12 14-12 13 12 14-12 13 12M10 70l13-12 13 12 14-12 13 12 14-12 13 12" /></svg>
+              : <span class="sign__glyph" lang="zh-Hant" aria-hidden="true">{g.glyph}</span>}
             <img src={g.art.src} alt={g.art.alt} width={g.art.width} height={g.art.height} loading="lazy" decoding="async" />
           </div>
           <h3>{g.name}</h3>
@@ -102,6 +105,22 @@ const startFrame = frameFor(ENERGY.start);
           <p class="sign__body">{g.body}</p>
         </article>
       ))}
+    </div>
+  </section>
+
+  <!-- outside of work (Ed, round 12): the gym and HYROX, and the side projects in the Workshop -->
+  <section class="offwork wrap" aria-labelledby="ab-offwork">
+    <h2 id="ab-offwork">Outside of work</h2>
+    <div class="offwork__list">
+      <article class="offwork__item">
+        <h3>Gym and HYROX</h3>
+        <p>I’m a gym junkie, and I train for HYROX: eight 1km runs, each one followed by a workout station. It’s the one place I’m happy to be timed.</p>
+      </article>
+      <article class="offwork__item">
+        <h3>Side projects</h3>
+        <p>When something bugs me, I build a fix. A lap timer for HYROX racers and a site that explains attachment styles are on the bench right now.</p>
+        <a class="offwork__link" href="/workshop/">See the Workshop<span aria-hidden="true"> →</span></a>
+      </article>
     </div>
   </section>
 
@@ -194,7 +213,7 @@ const startFrame = frameFor(ENERGY.start);
   .ledger__years { margin: 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   /* the signs: two columns, each painting large over a pale character, the words under it */
-  .signs { padding-block: var(--space-xl) var(--space-2xl); }
+  .signs { padding-block: var(--space-xl); }
   .signs__head { display: grid; gap: var(--space-s); max-width: 40rem; }
   .signs__head p { margin: 0; font-size: var(--step-1); color: var(--text-secondary); text-wrap: pretty; }
   .signs__pair { display: grid; gap: var(--space-xl) var(--space-2xl); margin-top: var(--space-xl); }
@@ -207,11 +226,22 @@ const startFrame = frameFor(ENERGY.start);
     position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
     font-family: var(--font-cjk); font-size: clamp(11rem, 6rem + 16vw, 19rem); line-height: 1; color: color-mix(in oklab, var(--blue-100) 60%, transparent);
   }
+  .sign__glyph--svg { inset: 10% 0; width: 100%; height: 80%; margin: auto; fill: none; stroke: color-mix(in oklab, var(--blue-100) 60%, transparent); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
   .sign__art img { position: relative; width: auto; height: calc(var(--h) * 0.62); max-width: 88%; object-fit: contain; }
   .sign--vase .sign__art img { height: calc(var(--h) * 0.94); }
   .sign h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
   .sign__kind { margin: 0; font-weight: var(--fw-semibold); color: var(--text-primary); }
   .sign__body { margin: var(--space-xs) 0 0; max-width: 44ch; text-wrap: pretty; }
+
+  /* outside of work: two short pieces side by side under a rule, the names in display serif */
+  .offwork { padding-block: 0 var(--space-2xl); }
+  .offwork h2 { font-size: var(--step-3); margin: 0; }
+  .offwork__list { display: grid; gap: var(--space-l) var(--space-2xl); margin-top: var(--space-l); padding-top: var(--space-l); border-top: var(--rule); }
+  @media (min-width: 48rem) { .offwork__list { grid-template-columns: 1fr 1fr; } }
+  .offwork__item { display: grid; align-content: start; gap: var(--space-xs); }
+  .offwork__item h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
+  .offwork__item p { margin: 0; max-width: 46ch; text-wrap: pretty; }
+  .offwork__link { margin-top: var(--space-xs); font-weight: var(--fw-semibold); }
 
   /* photos of Ed, once added: a row that scrolls sideways on phones */
   .snaps { padding-bottom: var(--space-2xl); }

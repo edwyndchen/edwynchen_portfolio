@@ -168,6 +168,12 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - About page restyled (impeccable, brand register, existing tokens kept): Where I've worked is a ledger of just the places (company in display serif, role and brands, years), no job details; "A bit more about me" and Favourite tools removed; the signs are a two-up spread, each painting large over a pale character (亥 for the pig, 瓶 for the vase), both on one baseline. Photos of Ed: list them in `src/data/about-photos.ts` (files in `public/about/photos/`) and a strip appears after the signs; empty for now (Ed adding some).
 - e2e: the two old "nav link to About" tests replaced by one that checks the link goes to /about/ and is marked current. Still the same 10 older failures.
 
+## Round 12c (2026-10-08)
+
+- Contact cloud wall repainted with fewer, much bigger billows that darken to navy at the foot (`art/round12/bigwall-2.png`, options in `docs/review/round12/contact-bigwall-options.png`; cut by `wall-cut.mjs`). The words sit on the clouds' lower left (no solid block); a navy shade masked to the painting's shape (`.contact__ground::before`) keeps the white type readable, and the last stretch fades to `--surface-invert`, so the clouds run straight into the footer. Social buttons are filled (paper discs, navy icons; cobalt on hover). Phones and tablets crop the wall to its tall left end (34rem / 36rem).
+- About: Proven results tiles are smaller (display-md numbers, tighter padding), three by two on wide screens, two by three in between. The pig's character is 豬 (pig); the vase has the Aquarius sign (two waves, drawn as SVG so no emoji font swaps it). New "Outside of work" section: Gym and HYROX, Side projects (links to the Workshop). Copy is a draft for Ed to check ("It's the one place I'm happy to be timed." is a line I wrote).
+- Screenshot helper for the page foot: `node art/round12/shot-foot.mjs <path> <out> <w> <h>` (full-page clip; at tablet width it can miss the lazy wall, check in the browser pane).
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
