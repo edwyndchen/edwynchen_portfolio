@@ -116,15 +116,16 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
   .case-band__facts { display: grid; gap: var(--space-xl); align-content: start; }
 
   /* NEUTRAL (preview): the page goes quiet so the images lead. The hero sits framed in the column (no fade, no blend),
-     the band becomes paper with cobalt type (its token repaint undone with inherit), and a hairline closes it */
+     the band keeps all its info but turns a neutral porcelain grey (its token repaint undone with inherit) */
   [data-cs='neutral'] .case-hero { width: min(var(--max), 100% - 2 * var(--gutter)); margin: calc(4.5rem + var(--space-l)) auto 0; border: var(--rule-hair); }
   [data-cs='neutral'] .case-hero__img { max-height: none; mix-blend-mode: normal; -webkit-mask-image: none; mask-image: none; }
   [data-cs='neutral'] .case-band {
     --text-primary: inherit; --text-secondary: inherit; --gold-text: inherit; --cobalt: inherit; --border-strong: inherit;
     --border-hairline: inherit; --focus-ring: inherit;
-    background: none; color: var(--text-primary); padding-block: var(--space-xl) var(--space-l);
+    /* the band stays, in a neutral porcelain white-grey instead of cobalt (Ed, round 12) */
+    background: var(--surface-sunken); color: var(--text-primary);
+    border-block: var(--rule-hair); margin-top: var(--space-xl);
   }
-  [data-cs='neutral'] .case-band__inner { border-bottom: var(--rule-hair); padding-bottom: var(--space-xl); }
   [data-cs='neutral'] .case-band h1 { color: var(--text-brand); }
   [data-cs='neutral'] .case-band__tags li { border-color: var(--border-default); color: var(--text-brand); }
   [data-cs='neutral'] .case-band__overview p:first-of-type { color: var(--ink); }

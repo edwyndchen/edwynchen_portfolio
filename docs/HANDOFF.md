@@ -183,6 +183,12 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Case studies: no flora on any screen (banksia removed; the flora no-crop test now checks the Workshop). The phone section tabs sit flush on the strip's bottom border (no bottom padding).
 - Case study alternative for Ed: `?cs=neutral` (preview switch in `work/[slug].astro`): the hero framed in the column, the band as paper with cobalt type, a hairline under it. Compare: `docs/review/round12/case-study-band-vs-neutral.png`. Remove the switch once Ed picks.
 
+## Round 12e (2026-10-16)
+
+- Coffee: as the cup tips, the pool sinks towards the low rim (|sin tilt|) and narrows to the tipped mouth (cos tilt), always level, so the coffee gathers on the low side and the inside wall shows on the high side (CSS trig in `CoffeeCup.astro`; without trig support it stays the upright pool).
+- Neutral case study preview (`?cs=neutral`): the info band stays, in porcelain cream (`--surface-sunken`) with hairlines above and below, instead of cobalt; the hero framed in the column.
+- Every case study now opens with Outcomes, then My role, Problem, Goals, Process, Learnings, Next steps.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
