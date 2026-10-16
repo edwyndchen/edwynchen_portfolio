@@ -174,6 +174,15 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - About: Proven results tiles are smaller (display-md numbers, tighter padding), three by two on wide screens, two by three in between. The pig's character is 豬 (pig); the vase has the Aquarius sign (two waves, drawn as SVG so no emoji font swaps it). New "Outside of work" section: Gym and HYROX, Side projects (links to the Workshop). Copy is a draft for Ed to check ("It's the one place I'm happy to be timed." is a line I wrote).
 - Screenshot helper for the page foot: `node art/round12/shot-foot.mjs <path> <out> <w> <h>` (full-page clip; at tablet width it can miss the lazy wall, check in the browser pane).
 
+## Round 12d (2026-10-16)
+
+- Aquarius sign behind the vase: drawn as a serif glyph (thick downstrokes, thin upstrokes, overlapping at the corners) to sit with 豬, built in the About page front matter (`aquariusPath`), solid fill so overlaps don't darken.
+- Coffee cup in layers (`CoffeeCup.astro`): the painted cup (`public/about/cup-body.webp`, an upright empty cup, Nano Banana 2.1 edit `70fbbb00`, cut by `art/round12/cup-build.mjs`) tips by a registered `--tilt`; the coffee (an ellipse pool clipped to the measured mouth, `MOUTH`) turns back by the same angle so its surface stays level; three steam wisps rise from the rim (rest with Pause motion and reduced motion). Upright at rest; the pour tips -28deg, the phone sip -24deg. `public/about/cup.webp` is no longer used.
+- Out of energy (the sleepiest frame, mouse and pen only), Ed's eyes follow the pointer anywhere on the page: nine Nano Banana 2.1 gaze edits of frame 1 (`art/round12/gaze/`), only their eye band pasted onto face-1 through a feathered mask (`art/round12/gaze-build.mjs` -> `public/about/gaze-0..8.webp`), pupils measured into `src/data/gaze.json`; `gazeFor()` in coffee.ts picks the closest. After a coffee the normal (energetic) faces take over.
+- Mobile menu: the current page has a pale cobalt bar and a bold label.
+- Case studies: no flora on any screen (banksia removed; the flora no-crop test now checks the Workshop). The phone section tabs sit flush on the strip's bottom border (no bottom padding).
+- Case study alternative for Ed: `?cs=neutral` (preview switch in `work/[slug].astro`): the hero framed in the column, the band as paper with cobalt type, a hairline under it. Compare: `docs/review/round12/case-study-band-vs-neutral.png`. Remove the switch once Ed picks.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.

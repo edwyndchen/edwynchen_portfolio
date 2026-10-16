@@ -3,7 +3,6 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PlaceholderFrame from '../../components/PlaceholderFrame.astro';
 import CaseToc from '../../components/CaseToc.astro';
-import Flora from '../../components/Flora.astro';
 import AtAGlance from '../../components/AtAGlance.astro';
 import CaseNav from '../../components/CaseNav.astro';
 import Gallery from '../../components/Gallery.astro';
@@ -28,7 +27,12 @@ const tags = [d.discipline === 'design-system' ? 'Design system' : 'Product desi
 const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 <BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
-  <article>
+  <!-- PREVIEW (Ed, round 12): ?cs=neutral shows a quieter page, paper instead of the cobalt band, so the case study's
+       images lead. Remove the switch once Ed picks. -->
+  <article data-cs="band">
+    <script is:inline>
+      { const v = new URLSearchParams(location.search).get('cs'); if (v) document.currentScript.parentElement.dataset.cs = v; }
+    </script>
     <!-- 1. the image, edge to edge -->
     <div class="case-hero">
       {heroSrc
@@ -66,7 +70,6 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
 
     <!-- 4. the story, with its On this page links beside it -->
     <div class="wrap case-body">
-      <Flora plant="banksia" side="right" class="flora--case" />
       <CaseToc headings={headings} />
       <div class="prose">
         <Content />
@@ -112,14 +115,22 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
   .case-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--paper-0); }
   .case-band__facts { display: grid; gap: var(--space-xl); align-content: start; }
 
+  /* NEUTRAL (preview): the page goes quiet so the images lead. The hero sits framed in the column (no fade, no blend),
+     the band becomes paper with cobalt type (its token repaint undone with inherit), and a hairline closes it */
+  [data-cs='neutral'] .case-hero { width: min(var(--max), 100% - 2 * var(--gutter)); margin: calc(4.5rem + var(--space-l)) auto 0; border: var(--rule-hair); }
+  [data-cs='neutral'] .case-hero__img { max-height: none; mix-blend-mode: normal; -webkit-mask-image: none; mask-image: none; }
+  [data-cs='neutral'] .case-band {
+    --text-primary: inherit; --text-secondary: inherit; --gold-text: inherit; --cobalt: inherit; --border-strong: inherit;
+    --border-hairline: inherit; --focus-ring: inherit;
+    background: none; color: var(--text-primary); padding-block: var(--space-xl) var(--space-l);
+  }
+  [data-cs='neutral'] .case-band__inner { border-bottom: var(--rule-hair); padding-bottom: var(--space-xl); }
+  [data-cs='neutral'] .case-band h1 { color: var(--text-brand); }
+  [data-cs='neutral'] .case-band__tags li { border-color: var(--border-default); color: var(--text-brand); }
+  [data-cs='neutral'] .case-band__overview p:first-of-type { color: var(--ink); }
+
   .case-body { position: relative; padding-top: var(--space-2xl); display: grid; gap: var(--space-l); }
   @media (min-width: 60rem) { .case-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
-  /* the banksia grows in the right margin beside the start of the story; on narrow screens it sits above it */
-  .case-body :global(.flora--case) { position: relative; grid-column: 1 / -1; justify-self: end; margin: 0 0 calc(var(--space-l) * -1); }
-  /* wide screens: it grows in the margin right of the 68ch text column, beside the start of the story */
-  @media (min-width: 80rem) {
-    .case-body :global(.flora--case) { position: absolute; top: var(--space-2xl); right: 0; margin: 0; width: clamp(110px, 9vw, 150px); }
-  }
   /* headings land below the sticky nav (and the phone link strip) */
   .case-body :global(.prose h2) { scroll-margin-top: 6rem; }
   @media (max-width: 59.99rem) { .case-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }

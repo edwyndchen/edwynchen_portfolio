@@ -70,6 +70,11 @@ const inWorkshop = here.startsWith(site.workshop.href);
     }
     :global(.js) .nav__links:not(.is-open) { display: none; }
     :global(.js) .nav__links a { justify-content: flex-start; width: 100%; min-height: 48px; border-top: 1px solid var(--border-hairline); }
+    /* the page you're on: a soft cobalt bar behind it, with a bold label (Ed, round 12: the underline was too quiet) */
+    :global(.js) .nav__links a[aria-current='page'] {
+      background: var(--blue-100); text-decoration: none; font-weight: var(--fw-bold);
+      padding-inline: var(--space-s); margin-inline: calc(var(--space-s) * -1); width: calc(100% + var(--space-s) * 2);
+    }
     /* without JS there is no menu to open: the links stay in the bar, tightened */
     :global(html:not(.js)) .nav__menu { display: none; }
     :global(html:not(.js)) .nav__links { gap: var(--space-2); }

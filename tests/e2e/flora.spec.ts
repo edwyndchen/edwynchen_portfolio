@@ -28,7 +28,7 @@ test('the case study cover keeps its descriptive alt text', async ({ page }) => 
 
 // art rule: no cropped edges. Each painting is trimmed tight, so its whole box must sit inside the viewport and
 // inside every ancestor that clips it.
-for (const path of ['/work/form-guide-redesign/']) {
+for (const path of ['/workshop/']) {
   for (const width of [320, 768, 1440]) {
     test(`flora is never cropped at ${width}px on ${path}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -58,12 +58,7 @@ for (const path of ['/work/form-guide-redesign/']) {
   }
 }
 
-test('the banksia sits clear of the story text, never behind it', async ({ page }) => {
+test('case studies carry no flora, on any screen (Ed, round 12)', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  const flora = (await page.locator('img.flora--case').boundingBox())!;
-  const plate = (await page.locator('.case-body .prose p').first().boundingBox())!;
-  const overlap =
-    Math.max(0, Math.min(flora.x + flora.width, plate.x + plate.width) - Math.max(flora.x, plate.x)) *
-    Math.max(0, Math.min(flora.y + flora.height, plate.y + plate.height) - Math.max(flora.y, plate.y));
-  expect(overlap).toBe(0);
+  await expect(page.locator('img.flora')).toHaveCount(0);
 });

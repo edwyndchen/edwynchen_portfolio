@@ -1,0 +1,55 @@
+---
+// The coffee cup in layers (Ed, round 12): the painted cup (public/about/cup-body.webp, art/round12/cup-build.mjs)
+// tips by --tilt, the coffee inside its mouth turns back by the same angle so its surface stays level, and steam rises
+// straight up from the rim whatever the cup does. Animate --tilt (a registered angle) to pour or sip.
+// MOUTH is the inner rim ellipse as fractions of the painting (centre x/y, half width/height), measured by eye on a 5%
+// grid of the 600x447 cut.
+interface Props { class?: string; [key: string]: unknown }
+const { class: className, ...rest } = Astro.props;
+const MOUTH = { cx: 0.414, cy: 0.204, rx: 0.356, ry: 0.119 };
+const mouth = `left:${(MOUTH.cx - MOUTH.rx) * 100}%;top:${(MOUTH.cy - MOUTH.ry) * 100}%;width:${MOUTH.rx * 200}%;height:${MOUTH.ry * 200}%`;
+---
+<span class:list={['cup', className]} aria-hidden="true" {...rest}>
+  <span class="cup__body">
+    <img class="cup__img" src="/about/cup-body.webp" alt="" width="600" height="447" decoding="async" />
+    <span class="cup__mouth" style={mouth}><span class="cup__coffee"></span></span>
+  </span>
+  <svg class="cup__steam" viewBox="0 0 60 80" style={`left:${(MOUTH.cx - 0.17) * 100}%`} focusable="false">
+    <path d="M18 78c-8-12 8-18 0-30s8-18 0-30" />
+    <path d="M32 78c-8-12 8-18 0-30s8-18 0-34" />
+    <path d="M46 78c-8-12 8-18 0-30s8-18 0-26" />
+  </svg>
+</span>
+
+<style>
+  @property --tilt { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+  .cup { --tilt: 0deg; position: relative; display: inline-block; aspect-ratio: 600 / 447; }
+  .cup__body { position: absolute; inset: 0; transform: rotate(var(--tilt)); transform-origin: 42% 85%; }
+  .cup__img { display: block; width: 100%; height: 100%; }
+  /* the coffee: a pool clipped to the mouth. Its layer is three times the mouth's size and turned back by the tilt, so
+     the pool stays level; the pool itself is an ellipse a little below the rim (a sliver of the inside wall shows
+     above it), shaded like the painting's washes with a pale lit edge */
+  .cup__mouth { position: absolute; clip-path: ellipse(50% 50% at 50% 50%); }
+  .cup__coffee { position: absolute; inset: -100%; transform: rotate(calc(var(--tilt) * -1)); }
+  .cup__coffee::before {
+    content: ''; position: absolute; left: 34.2%; width: 31.6%; top: 38.6%; height: 30%; border-radius: 50%;
+    background: radial-gradient(ellipse 60% 70% at 45% 40%, #4a47c0 0%, #2a27a6 45%, #16137f 100%);
+    box-shadow: inset 0 0.18em 0.25em -0.05em rgb(219 222 247 / 0.75), inset 0 -0.3em 0.6em rgb(13 11 69 / 0.5);
+    filter: blur(0.4px);
+  }
+  /* steam: three soft wisps rising out of the cup, staggered, drifting and fading as they go */
+  .cup__steam {
+    position: absolute; bottom: 82%; width: 34%; height: auto; overflow: visible; pointer-events: none;
+    fill: none; stroke: var(--blue-300, #9fa3ea); stroke-width: 3.6; stroke-linecap: round;
+  }
+  .cup__steam path { opacity: 0; animation: cup-steam 2.8s var(--ease-standard, ease-out) infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  .cup__steam path:nth-child(2) { animation-delay: 0.9s; }
+  .cup__steam path:nth-child(3) { animation-delay: 1.8s; }
+  @keyframes cup-steam {
+    0% { opacity: 0; transform: translateY(14%) scaleX(0.8); }
+    30% { opacity: 0.75; }
+    100% { opacity: 0; transform: translateY(-22%) scaleX(1.15) skewX(-8deg); }
+  }
+  :global(html.motion-paused) .cup__steam path { animation-play-state: paused; opacity: 0.5; }
+  @media (prefers-reduced-motion: reduce) { .cup__steam path { animation: none; opacity: 0.5; } }
+</style>

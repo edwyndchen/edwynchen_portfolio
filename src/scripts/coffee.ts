@@ -1,5 +1,6 @@
 import { isMotionPaused } from './motion';
 import { burst } from './magic-wand';
+import GAZE from '../data/gaze.json';
 
 /**
  * The About page's coffee game (Ed, round 11): Ed's energy bar sits over his head and drains over time; every coffee
@@ -50,22 +51,58 @@ export const LINES: Record<State, string> = {
   buzzing: 'Fully caffeinated. Watch out.',
 };
 
+/**
+ * Out of energy (the sleepiest frame), Ed's eyes follow the mouse, yearning for the coffee (Ed, round 12). Nine
+ * versions of that face that differ only in the eyes (public/about/gaze-0..8.webp, art/round12/gaze-build.mjs); each
+ * carries the direction its pupils actually point (src/data/gaze.json). The page picks the one closest to the
+ * pointer's direction from his eyes; within `near` px of them he looks straight out. Mouse and pen only.
+ */
+export const GAZE_FOLLOW = { near: 60, eyes: { x: 0.5, y: 0.505 } };
+/** The gaze frame for a pointer offset (dx, dy) from Ed's eyes. Pure, for tests. */
+export function gazeFor(dx: number, dy: number): number {
+  if (Math.hypot(dx, dy) < GAZE_FOLLOW.near) return 0;
+  const a = Math.atan2(dy, dx);
+  let best = 0, score = -Infinity;
+  for (const g of GAZE) {
+    if (!g.x && !g.y) continue;
+    const s = Math.cos(Math.atan2(g.y, g.x) - a);
+    if (s > score) { score = s; best = g.frame; }
+  }
+  return best;
+}
+
 export function initCoffee(root: HTMLElement): () => void {
   const frames = [...root.querySelectorAll<HTMLElement>('[data-frame]')];
+  const gazes = [...root.querySelectorAll<HTMLElement>('[data-gaze]')];
   const meter = root.querySelector<HTMLElement>('[data-energy-bar]');
   const fill = root.querySelector<HTMLElement>('[data-energy-fill]');
   const line = root.querySelector<HTMLElement>('[data-coffee-line]');
   const count = root.querySelector<HTMLElement>('[data-coffee-count]');
   const button = root.querySelector<HTMLButtonElement>('[data-coffee]');
-  const cup = root.querySelector<HTMLImageElement>('[data-cup]');
+  const cup = root.querySelector<HTMLElement>('[data-cup]');
   const face = root.querySelector<HTMLElement>('[data-coffee-face]');
   if (!meter || !fill || !line || !button || !face || frames.length !== FRAMES) return () => {};
 
   let energy = ENERGY.start, cups = 0, state: State | null = null;
   // the face shown, and a timer that walks it one frame at a time towards the energy's frame (so a coffee plays
   // through every expression in between instead of cutting)
-  let shown = frameFor(energy), walk = 0;
-  const show = (i: number) => { shown = i; frames.forEach((f, k) => f.classList.toggle('is-on', k === i)); };
+  let shown = frameFor(energy), walk = 0, gaze = 0;
+  const follows = gazes.length > 0 && window.matchMedia('(hover: hover)').matches;
+  // at the sleepiest frame, one of the gaze faces stands in for it (the eyes on the pointer)
+  const paint = () => {
+    const yearning = follows && shown === 0;
+    frames.forEach((f, k) => f.classList.toggle('is-on', k === shown && !yearning));
+    gazes.forEach((g, k) => g.classList.toggle('is-on', yearning && k === gaze));
+  };
+  const show = (i: number) => { shown = i; paint(); };
+  if (follows) {
+    window.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch' || shown !== 0) return;
+      const r = face.getBoundingClientRect();
+      const next = gazeFor(e.clientX - (r.left + r.width * GAZE_FOLLOW.eyes.x), e.clientY - (r.top + r.height * GAZE_FOLLOW.eyes.y));
+      if (next !== gaze) { gaze = next; paint(); }
+    }, { passive: true });
+  }
   const follow = () => {
     const target = frameFor(energy);
     if (target === shown) { walk = 0; return; }
@@ -113,7 +150,7 @@ export function initCoffee(root: HTMLElement): () => void {
 
   // the cup: follows the mouse over his face in place of the cursor (mouse and pen only; phones just tap him)
   if (cup && window.matchMedia('(hover: hover)').matches) {
-    cup.decode().then(() => button.classList.add('has-cup')).catch(() => {});
+    (cup.querySelector('img')?.decode() ?? Promise.resolve()).then(() => button.classList.add('has-cup')).catch(() => {});
     const place = (e: PointerEvent) => { cup.style.translate = `${e.clientX}px ${e.clientY}px`; };
     button.addEventListener('pointermove', (e) => { if (e.pointerType !== 'touch') { place(e); cup.classList.add('is-on'); } });
     button.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') { place(e); cup.classList.add('is-on'); } });
