@@ -97,6 +97,8 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
     --text-brand: var(--gold-600); --cobalt: var(--gold-600); --action-primary: var(--gold-600); --action-primary-hover: var(--gold-700);
     --border-hairline: var(--paper-300); --border-default: var(--paper-300); --border-strong: var(--gold-500);
     --surface-brand-soft: var(--gold-50); --frame-bg: var(--paper-100); --frame-lattice: var(--paper-300);
+    /* the rule shorthands resolve where they're defined (:root), so they're restated here to pick up the cream */
+    --rule: 1px solid var(--border-strong); --rule-soft: 1px solid var(--border-default); --rule-hair: 1px solid var(--border-hairline);
   }
   /* the band: all the case's info, on porcelain cream with a cream line above and below */
   .case-band { background: var(--surface-sunken); border-block: var(--rule-hair); padding-block: var(--space-xl); }
