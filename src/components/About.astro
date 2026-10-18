@@ -227,8 +227,13 @@ const wallR = size(WALL_R);
     .about.is-staged .about__inner { padding-top: var(--space-l); }
     /* the figure row holds Ed (taking what height is left) and the hint line under him */
     .about.is-staged .about__figure { width: 100%; max-width: none; min-height: 0; height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; justify-items: center; }
-    .about.is-staged .about__swap { min-height: 0; height: 100%; width: auto; }
-    .about.is-staged .about__ed { height: 100%; width: auto; max-width: 100%; }
+    /* Ed's size comes from the room the row leaves him, read as container units: WebKit (Safari and every iPhone
+       browser) can't size a button from a child whose width hangs off a percentage height, and drew him 0px wide
+       (Ed, round 12: invisible on his phone, Safari and Chrome) */
+    .about.is-staged .about__swap { min-height: 0; height: 100%; width: 100%; container-type: size; display: grid; place-items: center; }
+    .about.is-staged .about__ed { width: min(100cqw, 100cqh * var(--ratio)); height: auto; max-width: none; }
+    /* older browsers without container units: a fixed share of the screen's height */
+    @supports not (width: 1cqh) { .about.is-staged .about__ed { width: min(100%, 42svh * var(--ratio)); } }
   }
 
   /* Tablets up: two columns, the text and list on the left, Ed beside them */

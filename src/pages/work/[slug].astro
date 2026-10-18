@@ -27,12 +27,9 @@ const tags = [d.discipline === 'design-system' ? 'Design system' : 'Product desi
 const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 <BaseLayout title={`${d.title} | ${site.name}`} description={d.dek}>
-  <!-- PREVIEW (Ed, round 12): ?cs=neutral shows a quieter page, paper instead of the cobalt band, so the case study's
-       images lead. Remove the switch once Ed picks. -->
-  <article data-cs="band">
-    <script is:inline>
-      { const v = new URLSearchParams(location.search).get('cs'); if (v) document.currentScript.parentElement.dataset.cs = v; }
-    </script>
+  <!-- the case study in a neutral palette (Ed, round 12): cream band, cream dividers, gold headings and accents, so
+       the work's own images lead; the hero still runs full width behind the top of the page -->
+  <article class="case">
     <!-- 1. the image, edge to edge -->
     <div class="case-hero">
       {heroSrc
@@ -93,42 +90,28 @@ const overview = d.overview.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean
     mask-image: linear-gradient(to bottom, transparent, #000 8%);
   }
 
-  /* The band repaints the tokens its children use, so the Results and At a glance blocks read on cobalt as they are.
-     Contrast on blue-700: paper 9.5:1, blue-100 7.1:1, gold-300 6.9:1. */
-  .case-band {
-    --text-primary: var(--paper-50); --text-secondary: var(--blue-100); --gold-text: var(--gold-300);
-    --cobalt: var(--paper-0); --border-strong: var(--blue-200); --border-hairline: rgba(255, 255, 255, 0.28);
-    --focus-ring: var(--paper-0);
-    background: var(--surface-brand); color: var(--text-primary);
-    padding-block: var(--space-xl);
+  /* The neutral palette (Ed, round 12): inside the case study the brand blue gives way to gold for headings, labels,
+     links and markers, and the dividers turn warm cream, so the paintings and screens carry the colour.
+     Contrast: gold-600 on paper-50 6.1:1, on paper-100 5.6:1. */
+  .case {
+    --text-brand: var(--gold-600); --cobalt: var(--gold-600); --action-primary: var(--gold-600); --action-primary-hover: var(--gold-700);
+    --border-hairline: var(--paper-300); --border-default: var(--paper-300); --border-strong: var(--gold-500);
+    --surface-brand-soft: var(--gold-50); --frame-bg: var(--paper-100); --frame-lattice: var(--paper-300);
   }
+  /* the band: all the case's info, on porcelain cream with a cream line above and below */
+  .case-band { background: var(--surface-sunken); border-block: var(--rule-hair); padding-block: var(--space-xl); }
   .case-band__inner { display: grid; gap: var(--space-xl); }
   @media (min-width: 60rem) { .case-band__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: var(--space-2xl); } }
-  .case-band h1 { font-size: var(--fluid-display-xl); color: var(--paper-0); margin: 0 0 var(--space-m); max-width: 16ch; }
+  .case-band h1 { font-size: var(--fluid-display-xl); color: var(--gold-600); margin: 0 0 var(--space-m); max-width: 16ch; }
   .case-band__tags { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .case-band__tags li {
     padding: 5px 11px; font-size: var(--text-xs); font-weight: var(--fw-semibold); letter-spacing: var(--ls-caps); text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.5); border-radius: var(--radius-round); color: var(--paper-0);
+    border: 1px solid var(--paper-300); border-radius: var(--radius-round); color: var(--gold-600); background: var(--surface-raised);
   }
   .case-band__overview h2 { color: var(--gold-text); margin: 0 0 var(--space-s); }
   .case-band__overview p { margin: 0 0 var(--space-m); max-width: 60ch; font-size: var(--step-0); line-height: var(--lh-relaxed); }
-  .case-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--paper-0); }
+  .case-band__overview p:first-of-type { font-family: var(--font-display); font-size: var(--step-1); line-height: var(--lh-snug); color: var(--ink); }
   .case-band__facts { display: grid; gap: var(--space-xl); align-content: start; }
-
-  /* NEUTRAL (preview): the page goes quiet so the images lead. The hero sits framed in the column (no fade, no blend),
-     the band keeps all its info but turns a neutral porcelain grey (its token repaint undone with inherit) */
-  [data-cs='neutral'] .case-hero { width: min(var(--max), 100% - 2 * var(--gutter)); margin: calc(4.5rem + var(--space-l)) auto 0; border: var(--rule-hair); }
-  [data-cs='neutral'] .case-hero__img { max-height: none; mix-blend-mode: normal; -webkit-mask-image: none; mask-image: none; }
-  [data-cs='neutral'] .case-band {
-    --text-primary: inherit; --text-secondary: inherit; --gold-text: inherit; --cobalt: inherit; --border-strong: inherit;
-    --border-hairline: inherit; --focus-ring: inherit;
-    /* the band stays, in a neutral porcelain white-grey instead of cobalt (Ed, round 12) */
-    background: var(--surface-sunken); color: var(--text-primary);
-    border-block: var(--rule-hair); margin-top: var(--space-xl);
-  }
-  [data-cs='neutral'] .case-band h1 { color: var(--text-brand); }
-  [data-cs='neutral'] .case-band__tags li { border-color: var(--border-default); color: var(--text-brand); }
-  [data-cs='neutral'] .case-band__overview p:first-of-type { color: var(--ink); }
 
   .case-body { position: relative; padding-top: var(--space-2xl); display: grid; gap: var(--space-l); }
   @media (min-width: 60rem) { .case-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }

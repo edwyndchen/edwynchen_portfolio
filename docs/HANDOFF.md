@@ -189,6 +189,11 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Neutral case study preview (`?cs=neutral`): the info band stays, in porcelain cream (`--surface-sunken`) with hairlines above and below, instead of cobalt; the hero framed in the column.
 - Every case study now opens with Outcomes, then My role, Problem, Goals, Process, Learnings, Next steps.
 
+## Round 12f (2026-10-19)
+
+- Case studies are neutral by default (the `?cs` preview is gone): the hero runs full width as before; the info band is porcelain cream (`--surface-sunken`) with cream hairlines; inside `.case` the brand tokens are re-pointed to gold (`--text-brand`, `--cobalt`, `--action-primary` = gold-600) and the dividers to paper-300, so headings, labels, links, markers and the tab line are gold, not blue. Placeholder frames take cream there too (`--frame-bg`, `--frame-lattice`).
+- Ed invisible on his iPhone (Safari and Chrome, live site): not reproducible in Playwright's WebKit 26.6 (installed 2026-10-19; `node art/round12/ios-ed.mjs <out>` checks it, also against the live site with BASE). Suspected an older iOS Safari failing to size the phone figure button from a child whose width hangs off a percentage height; the phone stage now sizes Ed from container units (`.about__swap` is a size container, Ed `min(100cqw, 100cqh * ratio)`), with a `42svh` fallback without container units. Ed to confirm on his phone after the push.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
