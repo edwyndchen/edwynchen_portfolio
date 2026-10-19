@@ -21,13 +21,19 @@ const caseStudies = defineCollection({
       coverAlt: z.string().default(''),
       hero: z.string().nullish(),
       heroAlt: z.string().default(''),
-      // the finished work, as a carousel above My role (Ed, round 9)
+      // the finished work: a looping screen recording or GIF (Ed, round 12), else a carousel of stills (round 9)
+      showreel: z.string().nullish(),
+      showreelAlt: z.string().default(''),
       finals: z.array(z.object({ image: z.string().nullish(), alt: z.string().default(''), caption: z.string().default('') })).default([]),
       metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
     })
     .refine((d) => !d.cover || d.coverAlt.trim().length > 0, {
       message: 'coverAlt is required when a cover image is set',
       path: ['coverAlt'],
+    })
+    .refine((d) => !d.showreel || d.showreelAlt.trim().length > 0, {
+      message: 'showreelAlt is required when a showreel is set',
+      path: ['showreelAlt'],
     })
     .refine((d) => !d.hero || d.heroAlt.trim().length > 0, {
       message: 'heroAlt is required when a hero image is set',

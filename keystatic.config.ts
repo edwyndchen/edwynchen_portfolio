@@ -59,7 +59,7 @@ export default config({
         outcome: fields.text({ label: 'Outcome (one line, numbers first)', validation: { length: { min: 1 } } }),
         overview: fields.text({
           label: 'Overview',
-          description: 'Shown in the blue band at the top of the case study. Leave a blank line between paragraphs.',
+          description: 'Shown in the band at the top of the case study. Leave a blank line between paragraphs.',
           multiline: true,
         }),
         role: text('Role'),
@@ -80,6 +80,13 @@ export default config({
           publicPath: '/images/case-studies/',
         }),
         heroAlt: text('Hero alt text', 'Required when a hero image is set.'),
+        showreel: fields.file({
+          label: 'Finished work showreel',
+          description: 'A screen recording of the finished work: MP4 or WebM (best: small and sharp) or a GIF. It loops silently in place of the gallery below. Keep it under about 8 MB.',
+          directory: 'public/images/case-studies',
+          publicPath: '/images/case-studies/',
+        }),
+        showreelAlt: text('Showreel description', 'What the recording shows, for screen readers. Required when a showreel is set.'),
         finals: fields.array(
           fields.object({
             image: fields.image({ label: 'Image', directory: 'public/images/case-studies', publicPath: '/images/case-studies/' }),
@@ -88,7 +95,7 @@ export default config({
           }),
           {
             label: 'Finished work (gallery)',
-            description: 'The finished screens, shown as a carousel at the top of the story, above My role. Placeholder frames show until images are added.',
+            description: 'The finished screens, shown as a carousel above the story when there is no showreel.',
             itemLabel: (p) => p.fields.caption.value || p.fields.alt.value || 'Image',
           },
         ),

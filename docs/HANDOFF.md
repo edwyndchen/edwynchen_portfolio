@@ -194,11 +194,17 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Case studies are neutral by default (the `?cs` preview is gone): the hero runs full width as before; the info band is porcelain cream (`--surface-sunken`) with cream hairlines; inside `.case` the brand tokens are re-pointed to gold (`--text-brand`, `--cobalt`, `--action-primary` = gold-600) and the dividers to paper-300, so headings, labels, links, markers and the tab line are gold, not blue. Placeholder frames take cream there too (`--frame-bg`, `--frame-lattice`). The rule shorthands (`--rule`, `--rule-soft`, `--rule-hair`) are restated on `.case`: they resolve on :root, so overriding the border colours alone left the At a glance and band dividers blue.
 - Ed invisible on his iPhone (Safari and Chrome, live site): not reproducible in Playwright's WebKit 26.6 (installed 2026-10-19; `node art/round12/ios-ed.mjs <out>` checks it, also against the live site with BASE). Suspected an older iOS Safari failing to size the phone figure button from a child whose width hangs off a percentage height; the phone stage now sizes Ed from container units (`.about__swap` is a size container, Ed `min(100cqw, 100cqh * ratio)`), with a `42svh` fallback without container units. Ed to confirm on his phone after the push.
 
+## Round 12g (2026-10-19)
+
+- Brands: Ed's own Punters, Racenet and Mastercard files (from his Folio/Logos folder, copied to `art/round11/logos/`), tinted cobalt by `build.mjs`; every pane now has a real logo. Phones get one window of two rows of three sharing a middle rail (`public/clients/window-3x2.webp`, `art/round12/window-3x2.mjs`), not two stacked windows.
+- Contact cloud wall repainted onto the cobalt ramp and lifted into the About walls' brightness (155-234), its foot turning to the footer navy (`wall-cut.mjs`, FOOT); "Let's connect" a size smaller (display-lg; phones display-md).
+- Case studies: the band is a step darker (paper-200, secondary text paper-600 for contrast); the phone title is 2rem. The finished work is now a showreel: a new Keystatic field (`showreel`, MP4/WebM/GIF, with `showreelAlt`) shown as one wide looping frame with its own Pause (it stops for reduced motion and the Pause motion switch); stills fall back to the carousel; otherwise one placeholder.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
 
-1. Waiting on Ed: his Formspree form ID (goes in `formspree` in `src/data/site.ts`; until then the contact form opens an email), and the Punters and Racenet logo files (drop in `public/logos/`, run them through `art/round11/logos/build.mjs` or add a cobalt version, set `logo` in `src/data/clients.ts`).
+1. Waiting on Ed: his Formspree form ID (goes in `formspree` in `src/data/site.ts`; until then the contact form opens an email), and a screen recording or GIF per case study (Keystatic: Finished work showreel).
 1b. Ed's photos for the About page (`src/data/about-photos.ts`).
 2. Ed uploads real images for Workshop entries and case studies in Keystatic (run `npm run dev`, edit at /keystatic, push; Keystatic edits files locally, not on the live site).
 4. Review round 2 (plan Task 11): four reviewers, screenshots at 1440, tablet and 375. Start by fixing the 10 stale e2e tests.

@@ -94,11 +94,11 @@ test('carousel: Next and Previous move a slide and the count follows; arrow keys
   await expect(count).toHaveText('2');
 });
 
-test('case study: the finished work sits in a carousel above My role', async ({ page }) => {
+test('case study: the finished work sits above the story, as a showreel, stills or one placeholder (round 12)', async ({ page }) => {
   await page.goto('/work/pay-by-account/');
   const finals = page.locator('.case-finals');
   await expect(finals.getByRole('heading', { name: 'The finished work' })).toBeVisible();
-  await expect(finals.locator('[data-gallery]')).toHaveCount(1);
+  await expect(finals.locator('[data-reel], [data-gallery], .reel')).toHaveCount(1);
   const g = await finals.boundingBox(), role = await page.locator('.prose h2').first().boundingBox();
   expect(g && role && g.y < role.y).toBe(true);
 });

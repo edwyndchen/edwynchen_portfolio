@@ -130,15 +130,15 @@ const { scroll = false } = Astro.props;
   }
   .contact__say { display: grid; justify-items: start; gap: var(--space-m); }
   .contact__more {
-    margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-xl); font-weight: var(--fw-bold);
-    line-height: 1.05; color: var(--text-on-invert); max-width: 15ch; text-wrap: balance;
+    margin: 0; font-family: var(--font-display); font-size: var(--fluid-display-lg); font-weight: var(--fw-bold);
+    line-height: 1.08; color: var(--text-on-invert); max-width: 16ch; text-wrap: balance;
     text-shadow: 0 1px 10px rgb(5 8 46 / 0.4); /* a breath of shadow for the odd pale curl behind it */
   }
   .contact__links { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-s); }
   /* phones: the wall is cropped to its tall left end and stands taller, so the words still sit on the clouds */
   @media (max-width: 39.99rem) {
     .contact__wall { height: 34rem; object-fit: cover; object-position: left bottom; }
-    .contact__more { font-size: var(--fluid-display-lg); }
+    .contact__more { font-size: var(--fluid-display-md); }
     .contact__ground::before {
       background: radial-gradient(ellipse 110% 50% at 20% 80%, rgb(13 11 69 / 0.75), rgb(13 11 69 / 0) 100%);
       -webkit-mask-size: cover; mask-size: cover;
