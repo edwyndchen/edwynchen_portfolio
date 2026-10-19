@@ -7,10 +7,10 @@
 export interface Client { name: string; logo?: string }
 
 export const clients: Client[] = [
-  { name: 'Punters', logo: '/logos/punters.webp' },
-  { name: 'Racenet', logo: '/logos/racenet.webp' },
-  { name: 'EonX', logo: '/logos/eonx.webp' },
   { name: 'Mastercard', logo: '/logos/mastercard.webp' },
   { name: 'Crown', logo: '/logos/crown.webp' },
+  { name: 'EonX', logo: '/logos/eonx.webp' },
   { name: 'New Aim', logo: '/logos/newaim.webp' },
+  { name: 'Punters', logo: '/logos/punters.webp' },
+  { name: 'Racenet', logo: '/logos/racenet.webp' },
 ];

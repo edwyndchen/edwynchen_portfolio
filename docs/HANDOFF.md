@@ -200,6 +200,13 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Contact cloud wall repainted onto the cobalt ramp and lifted into the About walls' brightness (155-234), its foot turning to the footer navy (`wall-cut.mjs`, FOOT); "Let's connect" a size smaller (display-lg; phones display-md).
 - Case studies: the band is a step darker (paper-200, secondary text paper-600 for contrast); the phone title is 2rem. The finished work is now a showreel: a new Keystatic field (`showreel`, MP4/WebM/GIF, with `showreelAlt`) shown as one wide looping frame with its own Pause (it stops for reduced motion and the Pause motion switch); stills fall back to the carousel; otherwise one placeholder.
 
+## Round 12h (2026-10-19)
+
+- Brands order (Ed): Mastercard, Crown, EonX, New Aim, Punters, Racenet (`src/data/clients.ts`).
+- Scroll toy on phones: icon buttons (a 46px circle, the main action filled cobalt) with a short label under each (Paint, Pig, Seal, Restart, Next), all on one line; `.paint__long` / `.paint__short` swap the label text at the phone breakpoint. Desktop unchanged.
+- The current step's number now has a light cobalt fill (blue-100) as well as the darker ring.
+- "Let's connect" a touch bigger: clamp(2.25rem … 3.75rem); phones display-lg.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
