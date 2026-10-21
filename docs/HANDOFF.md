@@ -207,6 +207,12 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - The current step's number now has a light cobalt fill (blue-100) as well as the darker ring.
 - "Let's connect" a touch bigger: clamp(2.25rem … 3.75rem); phones display-lg.
 
+## Round 12i (2026-10-21)
+
+- Footer: Ed's seal sits on the logo's line (`.footer__brandrow`); under the rule, the copyright, then Privacy policy, Terms of use and a Back to top button (an outlined pill with an arrow, a real `<button>`) on one line, phones included.
+- Case study sections (Ed): Overview (band), the finished work (showreel), then Context, Problem, Process, Solution, Results. Regrouped by `art/round12/restructure.py`, nothing dropped: My role -> Context; Goals -> "What we set out to do" under Problem; Discover/Research (and the first Develop paragraphs where they're about method) -> Process; the designs and Launch and test -> Solution, which opens with a new one-line lead per case study (Ed to check); Outcomes, Learnings ("What I learned") and Next steps ("What's next") -> Results. Galleries relabelled (Solution, Process).
+- CMS: Keystatic runs locally only (`storage: local`): start the dev server and open /keystatic; edits save into the repo files, then commit and push to publish.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.

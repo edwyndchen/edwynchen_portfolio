@@ -17,18 +17,7 @@ overview: |-
   
   Mastercard was launching Pay by Account, a way to pay directly from your bank account at checkout. To support it they needed three portals: one for resellers (the banks), one for merchants, and one for customers, running the operational side of the product: transaction overviews, dispute management, merchant onboarding and offboarding, and financial reporting.
 ---
-
-## Outcomes
-
-Clear, production-ready designs.
-
-The high-fidelity Figma prototypes went down well with the Mastercard client team, and every design deadline was met. Stakeholder testing showed users could move through the portals and finish key tasks without friction: reviewing merchant accounts, onboarding and offboarding, dispute management, and API key generation. The experience across all three portals was confirmed as consistent.
-
-The project was later scoped down on the client side, for reasons outside the design team's remit. The design work itself was signed off and production-ready.
-
-{% gallery label="Outcomes" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
-
-## My role
+## Context
 
 One of two UX/UI designers, responsible for the reseller and merchant portals end to end. Working alongside a design lead, I turned each user type's distinct needs into flows, wireframes, and high-fidelity prototypes. I worked inside a team of 10 and managed stakeholder input at every stage, from discovery through to prototype sign-off.
 
@@ -44,7 +33,7 @@ Building for all three at once meant getting sharp about priorities from the sta
 
 {% sectionImage /%}
 
-## Goals
+### What we set out to do
 
 Create an experience users understand and adopt quickly.
 
@@ -66,13 +55,27 @@ Create an experience users understand and adopt quickly.
 
 **Stakeholder input reshaped the structure, and that's the point of showing it early.** After I presented the initial architecture and screens, two things changed. Settlements (meant to help resellers track earnings per merchant) got pushed to a later phase; it was still half-formed, and forcing it into the MVP would have added complexity without reliable value. And in testing, stakeholders didn't expect API key generation to sit apart from the merchant profile, so we moved that action into the individual merchant pages, where people were already working.
 
+{% gallery label="Process" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
+
+## Solution
+
+Two admin portals, reseller and merchant, sharing one set of patterns and scoped tight for the MVP.
+
 **Cutting the onboarding flow from three approvals to one.** The original onboarding and offboarding flows needed sign-off from three separate admins. Thorough, but too complex to build in the time we had. Working closely with the backend developers, we cut the verification to a single confirmation email: faster to build, easier for resellers to action, and no less secure for MVP.
 
 **The scope calls paid off at testing.** Prototype testing with stakeholders confirmed the core flows, merchant review, onboarding, offboarding, and API key generation, with no major structural issues. That was largely because the earlier decisions about what to defer had already headed off most of the navigation and discoverability problems before anyone hit them.
 
-{% gallery label="Process" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
+{% gallery label="Solution" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
 
-## Learnings
+## Results
+
+Clear, production-ready designs.
+
+The high-fidelity Figma prototypes went down well with the Mastercard client team, and every design deadline was met. Stakeholder testing showed users could move through the portals and finish key tasks without friction: reviewing merchant accounts, onboarding and offboarding, dispute management, and API key generation. The experience across all three portals was confirmed as consistent.
+
+The project was later scoped down on the client side, for reasons outside the design team's remit. The design work itself was signed off and production-ready.
+
+### What I learned
 
 **Financial products need structural clarity above all else.** When users are managing disputes or onboarding merchants, unclear navigation isn't a small UX issue, it's a trust issue. Getting the information architecture right early was the single most important investment on this project.
 
@@ -82,6 +85,6 @@ Create an experience users understand and adopt quickly.
 
 **Stakeholder testing surfaces problems that wireframe reviews don't.** The API key placement only showed up once real users were navigating with a task in mind.
 
-## Next steps
+### What's next
 
 The foundation is in place. Future phases should prioritise building out Settlements for resellers, richer dispute tracking with full stage history and audit logs, and more granular analytics for merchants. That moves the portal from an operational tool to a real business intelligence resource.

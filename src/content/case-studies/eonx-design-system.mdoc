@@ -23,19 +23,7 @@ overview: |-
   
   EonX is a fintech company running several customer-facing websites off one shared design system. One is an employee benefits and bulletin hub (staff discounts at partner stores) that takes on each client's branding. By the time the new design team came together, that system hadn't been meaningfully updated in years: the visual language was fragmented, the code was out of step with the designs, and the accessibility failures were serious enough to carry legal risk. The brief was clear. Rebuild it, don't patch it. A system that met modern accessibility standards, gave designers one source of truth, and could scale across multiple brands without starting from scratch each time.
 ---
-
-## Outcomes
-
-The rebuilt system was delivered in full and beat expectations on every front.
-
-- **Prototyping productivity up 500%.** Pre-prototyped components meant a Figma file could replicate a live website experience in a fraction of the previous time
-- **Full WCAG AA compliance** across the colour system, through rigorously tested, accessible token pairings and component anatomy
-- **Reskinning unlocked for white-label clients.** Design tokens linked to a GitHub repository let the employee benefits and communications sites be rebranded per client by swapping token sets, turning a manual rebuild into a configuration task
-- **A single source of truth** for design and development, cutting out the ambiguity and duplication that had slowed the team down
-
-{% gallery label="Outcomes" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
-
-## My role
+## Context
 
 One of three designers, working alongside a design lead and a senior UX/UI designer. My part covered the full span of the build: auditing the existing system, researching best-in-class design systems, rebuilding from foundational tokens up, and constructing the component library through to page-level templates. The developers went through accessibility training too, so the whole team could get to WCAG AA (the standard for accessible contrast and interaction) rather than leaving it to design alone.
 
@@ -53,7 +41,7 @@ One of three designers, working alongside a design lead and a senior UX/UI desig
 
 {% sectionImage /%}
 
-## Goals
+### What we set out to do
 
 Improve accessibility, usability, and designer efficiency.
 
@@ -78,6 +66,12 @@ Improve accessibility, usability, and designer efficiency.
 
 **Typography and the rest of the foundations got the same treatment.** Font scales were rebuilt with proper visual intervals for desktop and mobile, replacing the ad hoc sizing that had piled up. Spacing, sizing, stroke widths, border radius, blur, and opacity were all systematised and documented. It's the unglamorous scaffolding that makes a system feel coherent rather than cobbled together, which is exactly why it mattered.
 
+{% gallery label="Process" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
+
+## Solution
+
+A token-driven component library, built atoms up, that every EonX site and every white-label client could draw from.
+
 **Component construction was the most complex phase, and the biggest payoff.** Pre-prototyped components, with hover, focus, expanded states, and animated transitions all built in, meant thinking through how each state behaves across contexts and screen sizes. Every state had to pass contrast thresholds as well as look right. Expanding elements had to animate without breaking the layout around them. Button placements and labels followed established interaction conventions so behaviour stayed predictable across the different sites. Once the library was in place, new pages could be assembled and prototyped in a fraction of the time it used to take.
 
 **Design tokens were where the biggest impact landed, and it landed hardest on the white-label business.** The core suite was licensed to multiple clients, each wanting the product in their own brand, and before this, every new client meant reworking components and styles from the ground up.
@@ -88,9 +82,18 @@ Improve accessibility, usability, and designer efficiency.
 
 **Tokens also pulled design and development closer together.** They encoded design decisions in a format developers could consume directly, instead of interpreting them from static files. This was where I got a lot sharper on communicating design decisions in a developer-friendly way. Adopting Tailwind CSS naming conventions for the tokens made the handoff substantially cleaner and cut the back-and-forth.
 
-{% gallery label="Process" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
+{% gallery label="Solution" items=[{image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}, {image: null, alt: "", caption: ""}] /%}
 
-## Learnings
+## Results
+
+The rebuilt system was delivered in full and beat expectations on every front.
+
+- **Prototyping productivity up 500%.** Pre-prototyped components meant a Figma file could replicate a live website experience in a fraction of the previous time
+- **Full WCAG AA compliance** across the colour system, through rigorously tested, accessible token pairings and component anatomy
+- **Reskinning unlocked for white-label clients.** Design tokens linked to a GitHub repository let the employee benefits and communications sites be rebranded per client by swapping token sets, turning a manual rebuild into a configuration task
+- **A single source of truth** for design and development, cutting out the ambiguity and duplication that had slowed the team down
+
+### What I learned
 
 **Accessibility is easier to build in than to retrofit.** The contrast failures existed partly because accessibility had never been a first-class constraint. Rebuilding with WCAG AA as a hard requirement from the token level up meant it was never something to chase after the fact.
 
@@ -100,6 +103,6 @@ Improve accessibility, usability, and designer efficiency.
 
 **Rebuilding from scratch takes discipline.** The pull to patch rather than rebuild is real under time pressure. We committed to a clean rebuild from atoms up, and it's the reason the system actually holds together in a way patching never could have.
 
-## Next steps
+### What's next
 
 The system is the foundation; the next phase is full rollout. Every website in the EonX ecosystem needs rebuilding on the new components, sourcing tokens from the correct repository. As new clients come on, designers create client-specific token sets that the reskinning capability turns into a configuration task rather than a design one. Comprehensive public-facing documentation should be built and hosted, covering colour usage, component behaviour, interaction patterns, and the reasoning behind key decisions, so the system can grow without losing coherence.

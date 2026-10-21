@@ -12,10 +12,10 @@ for (const slug of SLUGS) {
     await expect(page.getByRole('navigation', { name: 'More case studies' }).getByRole('link', { name: /Next/ })).toHaveAttribute('href', /\/work\/.+\//);
   });
 
-  test(`case study ${slug}: no Results panel in the band (the numbers live in the overview and Outcomes)`, async ({ page }) => {
+  test(`case study ${slug}: no Results panel in the band (the numbers live in the overview and the Results section)`, async ({ page }) => {
     await page.goto(`/work/${slug}/`);
     await expect(page.locator('.case-band [data-stat]')).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'Results' })).toHaveCount(0);
+    await expect(page.locator('.case-band').getByRole('heading', { name: 'Results' })).toHaveCount(0);
   });
 
   test(`case study ${slug} ends with a way to get in touch`, async ({ page }) => {
@@ -57,16 +57,16 @@ test('case study: image across the top, then the blue band with title, tags, ove
 test('case study quick links: one per section beside the story, they jump there and mark where you are', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const toc = page.getByRole('navigation', { name: 'On this page' });
-  await expect(toc.getByRole('link')).toHaveText(['My role', 'Problem', 'Goals', 'Outcomes', 'Process', 'Learnings', 'Next steps']);
-  await toc.getByRole('link', { name: 'Outcomes' }).click();
-  await expect(page).toHaveURL(/#outcomes$/);
-  await expect(page.locator('#outcomes')).toBeInViewport();
-  await expect.poll(() => toc.getByRole('link', { name: 'Outcomes' }).getAttribute('aria-current')).toBe('true');
+  await expect(toc.getByRole('link')).toHaveText(['Context', 'Problem', 'Process', 'Solution', 'Results']);
+  await toc.getByRole('link', { name: 'Solution' }).click();
+  await expect(page).toHaveURL(/#solution$/);
+  await expect(page.locator('#solution')).toBeInViewport();
+  await expect.poll(() => toc.getByRole('link', { name: 'Solution' }).getAttribute('aria-current')).toBe('true');
 });
-test('Problem has an image; Outcomes and Process have carousels', async ({ page }) => {
+test('Problem has an image; Process and Solution have carousels', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
   const after = await page.evaluate(() =>
-    ['problem', 'outcomes', 'process'].map((id) => {
+    ['problem', 'process', 'solution'].map((id) => {
       let el = document.getElementById(id)?.nextElementSibling;
       while (el && el.tagName !== 'H2') {
         if (el.matches('figure.section-image')) return 'image';
@@ -81,7 +81,7 @@ test('Problem has an image; Outcomes and Process have carousels', async ({ page 
 
 test('carousel: Next and Previous move a slide and the count follows; arrow keys work too', async ({ page }) => {
   await page.goto('/work/form-guide-redesign/');
-  const g = page.getByRole('region', { name: 'Outcomes images' });
+  const g = page.getByRole('region', { name: 'Solution images' });
   await g.scrollIntoViewIfNeeded();
   const count = g.locator('[data-current]');
   await expect(count).toHaveText('1');
