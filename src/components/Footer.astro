@@ -57,7 +57,7 @@ const year = new Date().getFullYear();
   }
   .footer__base p { margin: 0; color: var(--text-invert-dim); }
   /* the two legal links and Back to top: one line, the button pushed to the far right */
-  .footer__legal { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: var(--space-l); flex: 1 1 auto; }
+  .footer__legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); flex: 1 1 auto; }
   .footer__legal a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-sm); white-space: nowrap; }
   .footer__end { margin-left: auto; }
   /* Back to top: a proper button, an outlined pill on the navy with an up arrow; fills ivory on hover */
@@ -73,7 +73,7 @@ const year = new Date().getFullYear();
   /* phones: the copyright on its own line, then the links and the button on one line */
   @media (max-width: 39.99rem) {
     .footer__base p { flex-basis: 100%; }
-    .footer__legal { gap: var(--space-s); }
+    .footer__legal { gap: var(--space-xs) var(--space-s); }
     .footer__top { padding: 0 0.8rem; }
   }
 
