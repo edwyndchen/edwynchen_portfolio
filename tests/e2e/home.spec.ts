@@ -47,7 +47,7 @@ test('nav brand is the wordmark (the brush mark alone on phones) with an accessi
   await expect(page.locator(isMobile ? '.nav__brand svg.logo--mark' : '.nav__brand svg.nav__logo')).toBeVisible();
 });
 
-test('footer: summary, Ed\'s seal (a named image), legal links and back to top on the copyright line', async ({ page }) => {
+test('footer: summary, Ed\'s seal (a named image), legal links and a Back to top button', async ({ page }) => {
   await page.goto('/');
   const footer = page.locator('footer');
   await expect(footer).not.toContainText('Made in Melbourne');
@@ -59,7 +59,7 @@ test('footer: summary, Ed\'s seal (a named image), legal links and back to top o
   await expect(base).toContainText('© ');
   await expect(base.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy/');
   await expect(base.getByRole('link', { name: 'Terms of use' })).toHaveAttribute('href', '/terms/');
-  await base.getByRole('link', { name: /Back to top/ }).click();
+  await base.getByRole('button', { name: /Back to top/ }).click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
@@ -86,9 +86,15 @@ test('hovering a case study plate changes its rim, nothing lifts or zooms', asyn
   await expect.poll(() => plate.evaluate((el) => getComputedStyle(el).boxShadow)).toBe(shadow);
 });
 
-test('footer: the seal ends the copyright line, far right and level with Back to top', async ({ page }) => {
+test('footer: the seal sits on the logo\'s line; the legal links and Back to top share one line (round 12)', async ({ page }) => {
   await page.goto('/');
   const box = (sel: string) => page.locator(sel).first().evaluate((el) => { const r = el.getBoundingClientRect(); return { mid: r.top + r.height / 2, right: r.right, left: r.left }; });
+  const logo = await box('.footer__brand'), seal = await box('.footer__seal');
+  expect(Math.abs(logo.mid - seal.mid)).toBeLessThan(6);
+  expect(seal.left).toBeGreaterThan(logo.right);
+  const privacy = await box('.footer__legal a'), top = await box('.footer__top');
+  expect(Math.abs(privacy.mid - top.mid)).toBeLessThan(3);
+});
   const top = await box('.footer__top'), seal = await box('.footer__seal');
   expect(Math.abs(top.mid - seal.mid)).toBeLessThan(3);
   expect(seal.left).toBeGreaterThan(top.right);

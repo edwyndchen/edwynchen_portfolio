@@ -7,7 +7,11 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="wrap footer__main">
     <div class="footer__about">
-      <a class="footer__brand" href="/" aria-label={`${site.name}, home`}><Logo /></a>
+      <!-- the logo and Ed's seal share a line (Ed, round 12), so the links below fit one line on a phone -->
+      <div class="footer__brandrow">
+        <a class="footer__brand" href="/" aria-label={`${site.name}, home`}><Logo /></a>
+        <span class="footer__seal"><SealStamp id="seal-footer" title={`${site.name}'s seal`} /></span>
+      </div>
       <p class="footer__summary">{site.summary}</p>
     </div>
   </div>
@@ -16,13 +20,8 @@ const year = new Date().getFullYear();
     <ul class="footer__legal">
       <li><a href="/privacy/">Privacy policy</a></li>
       <li><a href="/terms/">Terms of use</a></li>
+      <li class="footer__end"><button class="footer__top" type="button" data-back-to-top>Back to top<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" /></svg></button></li>
     </ul>
-    <!-- Back to top and Ed's seal travel together, so when the line wraps on a phone the seal still ends it, far
-         right (Ed, round 9) -->
-    <div class="footer__end">
-      <a class="footer__top" href="#" data-back-to-top>Back to top<span aria-hidden="true"> ↑</span></a>
-      <span class="footer__seal"><SealStamp id="seal-footer" title={`${site.name}'s seal`} /></span>
-    </div>
   </div>
 </footer>
 <!-- Acknowledgement of Country: its own band beneath the footer, with the flags -->
@@ -47,7 +46,8 @@ const year = new Date().getFullYear();
   .footer a:hover { color: var(--text-invert-dim); }
   .footer :focus-visible { outline-color: var(--text-on-invert); }
   .footer__main { display: grid; gap: var(--space-l); align-items: start; padding-bottom: var(--space-l); }
-    .footer__brand { display: inline-flex; min-height: 44px; align-items: center; }
+  .footer__brandrow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); }
+  .footer__brand { display: inline-flex; min-height: 44px; align-items: center; }
   .footer__summary { margin: var(--space-s) 0 0; max-width: 34ch; font-family: var(--font-display); font-size: var(--fluid-display-sm); line-height: var(--lh-snug); color: var(--text-on-invert); }
   /* the seal: seal red on the navy reads at 3.4:1, clear of the 3:1 non-text contrast minimum */
   .footer__seal { display: block; width: 2.75rem; height: 2.75rem; flex: none; }
@@ -56,10 +56,26 @@ const year = new Date().getFullYear();
     padding-block: var(--space-m); border-top: 1px solid var(--border-invert);
   }
   .footer__base p { margin: 0; color: var(--text-invert-dim); }
-  .footer__legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); }
-  .footer__legal a, .footer__top { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-sm); }
-  .footer__end { margin-left: auto; display: flex; align-items: center; gap: var(--space-l); }
-  .footer__top { font-weight: var(--fw-semibold); }
+  /* the two legal links and Back to top: one line, the button pushed to the far right */
+  .footer__legal { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: var(--space-l); flex: 1 1 auto; }
+  .footer__legal a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-sm); white-space: nowrap; }
+  .footer__end { margin-left: auto; }
+  /* Back to top: a proper button, an outlined pill on the navy with an up arrow; fills ivory on hover */
+  .footer__top {
+    display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0 1rem; cursor: pointer; white-space: nowrap;
+    font: inherit; font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-on-invert);
+    background: transparent; border: 1px solid var(--text-on-invert); border-radius: 22px;
+    transition: background var(--dur-med) var(--ease-standard), color var(--dur-med) var(--ease-standard);
+  }
+  .footer__top svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .footer__top:hover { background: var(--text-on-invert); color: var(--surface-invert); }
+  .footer__top:focus-visible { outline: 2px solid var(--text-on-invert); outline-offset: 3px; }
+  /* phones: the copyright on its own line, then the links and the button on one line */
+  @media (max-width: 39.99rem) {
+    .footer__base p { flex-basis: 100%; }
+    .footer__legal { gap: var(--space-s); }
+    .footer__top { padding: 0 0.8rem; }
+  }
 
   .country { background: var(--surface-page); border-top: 4px solid var(--surface-invert); }
   .country__inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-m) var(--space-l); padding-block: var(--space-l); }
@@ -73,9 +89,8 @@ const year = new Date().getFullYear();
 <script>
   import { scrollToY } from '../scripts/smooth-scroll';
   // Back to top: smooth only when motion is fine, and focus lands at the top so keyboard users start over too
-  const top = document.querySelector<HTMLAnchorElement>('[data-back-to-top]');
-  top?.addEventListener('click', (e) => {
-    e.preventDefault();
+  const top = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+  top?.addEventListener('click', () => {
     const smooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
     scrollToY(0, { immediate: !smooth });
     document.querySelector<HTMLElement>('.nav__brand')?.focus({ preventScroll: true });
