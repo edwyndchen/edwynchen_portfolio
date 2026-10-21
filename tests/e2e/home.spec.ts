@@ -95,10 +95,3 @@ test('footer: the seal sits on the logo\'s line; the legal links and Back to top
   const privacy = await box('.footer__legal a'), top = await box('.footer__top');
   expect(Math.abs(privacy.mid - top.mid)).toBeLessThan(3);
 });
-  const top = await box('.footer__top'), seal = await box('.footer__seal');
-  expect(Math.abs(top.mid - seal.mid)).toBeLessThan(3);
-  expect(seal.left).toBeGreaterThan(top.right);
-  await expect(page.locator('.footer__end > :last-child')).toHaveClass(/footer__seal/);
-  const base = await page.locator('.footer__base').evaluate((el) => { const r = el.getBoundingClientRect(), p = parseFloat(getComputedStyle(el).paddingRight); return r.right - p; });
-  expect(Math.abs(base - seal.right)).toBeLessThan(2);
-});
