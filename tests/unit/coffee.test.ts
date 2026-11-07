@@ -1,6 +1,5 @@
-import GAZE_DATA from '../../src/data/gaze.json';
 import { describe, expect, it } from 'vitest';
-import { ENERGY, FRAMES, stateFor, frameFor, drained, topped , gazeFor, GAZE_FOLLOW } from '../../src/scripts/coffee';
+import { ENERGY, FRAMES, stateFor, frameFor, drained, topped , irisFor, EYES } from '../../src/scripts/coffee';
 import { mailtoFor } from '../../src/scripts/contact-form';
 
 describe('coffee game', () => {
@@ -31,13 +30,12 @@ describe('contact form email fallback', () => {
   });
 });
 
-describe('gazeFor (round 12: out of energy, his eyes follow the mouse)', () => {
-  it('looks straight out when the pointer is on his eyes', () => expect(gazeFor(GAZE_FOLLOW.near - 1, 0)).toBe(0));
-  it('picks the frame whose pupils point closest to the pointer', () => {
-    const pick = (dx: number, dy: number) => GAZE_DATA[gazeFor(dx, dy)];
-    expect(Math.sign(pick(-400, 0).x)).toBe(-1);
-    expect(Math.sign(pick(400, 0).x)).toBe(1);
-    expect(Math.sign(pick(0, -400).y)).toBe(-1);
-    expect(Math.sign(pick(0, 400).y)).toBe(1);
+describe('irisFor (round 12: out of energy, his eyes follow the mouse, smoothly)', () => {
+  it('looks straight out with the pointer on his eyes', () => expect(irisFor(0, 0)).toEqual({ x: 0, y: 0 }));
+  it('turns towards the pointer, never past the reach', () => {
+    const left = irisFor(-1000, 0), up = irisFor(0, -1000), near = irisFor(EYES.far / 2, 0);
+    expect(left.x).toBeCloseTo(-EYES.reach.x); expect(left.y).toBeCloseTo(0);
+    expect(up.y).toBeCloseTo(-EYES.reach.y);
+    expect(near.x).toBeCloseTo(EYES.reach.x / 2);
   });
 });

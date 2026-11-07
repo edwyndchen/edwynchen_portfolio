@@ -1,6 +1,5 @@
 import { isMotionPaused } from './motion';
 import { burst } from './magic-wand';
-import GAZE from '../data/gaze.json';
 
 /**
  * The About page's coffee game (Ed, round 11): Ed's energy bar sits over his head and drains over time; every coffee
@@ -52,28 +51,25 @@ export const LINES: Record<State, string> = {
 };
 
 /**
- * Out of energy (the sleepiest frame), Ed's eyes follow the mouse, yearning for the coffee (Ed, round 12). Nine
- * versions of that face that differ only in the eyes (public/about/gaze-0..8.webp, art/round12/gaze-build.mjs); each
- * carries the direction its pupils actually point (src/data/gaze.json). The page picks the one closest to the
- * pointer's direction from his eyes; within `near` px of them he looks straight out. Mouse and pen only.
+ * Out of energy (the sleepiest frame), Ed's eyes follow the mouse, yearning for the coffee (Ed, round 12). The face
+ * has its irises painted out (public/about/face-eyes.webp, art/round12/eyes-build.mjs) and the page draws them, so they
+ * glide anywhere inside the eye openings instead of stepping between whole frames. `reach` is how far the irises can
+ * travel (face px, the face is 800 across), `far` the pointer distance (screen px) at which they reach it; `ease` is
+ * how much of the way they move each frame. Touch screens: the eyes look straight out.
  */
-export const GAZE_FOLLOW = { near: 60, eyes: { x: 0.5, y: 0.505 } };
-/** The gaze frame for a pointer offset (dx, dy) from Ed's eyes. Pure, for tests. */
-export function gazeFor(dx: number, dy: number): number {
-  if (Math.hypot(dx, dy) < GAZE_FOLLOW.near) return 0;
-  const a = Math.atan2(dy, dx);
-  let best = 0, score = -Infinity;
-  for (const g of GAZE) {
-    if (!g.x && !g.y) continue;
-    const s = Math.cos(Math.atan2(g.y, g.x) - a);
-    if (s > score) { score = s; best = g.frame; }
-  }
-  return best;
+export const EYES = { reach: { x: 6.5, y: 3 }, far: 260, ease: 0.18, centre: { x: 0.5, y: 0.51 } };
+/** The iris offset (face px) for a pointer offset (dx, dy) in screen px from his eyes. Pure, for tests. */
+export function irisFor(dx: number, dy: number): { x: number; y: number } {
+  const d = Math.hypot(dx, dy);
+  if (!d) return { x: 0, y: 0 };
+  const k = Math.min(1, d / EYES.far);
+  return { x: (dx / d) * k * EYES.reach.x, y: (dy / d) * k * EYES.reach.y };
 }
 
 export function initCoffee(root: HTMLElement): () => void {
   const frames = [...root.querySelectorAll<HTMLElement>('[data-frame]')];
-  const gazes = [...root.querySelectorAll<HTMLElement>('[data-gaze]')];
+  const eyes = root.querySelector<HTMLElement>('[data-eyes]');
+  const irises = [...root.querySelectorAll<SVGGElement>('[data-iris]')];
   const meter = root.querySelector<HTMLElement>('[data-energy-bar]');
   const fill = root.querySelector<HTMLElement>('[data-energy-fill]');
   const line = root.querySelector<HTMLElement>('[data-coffee-line]');
@@ -86,21 +82,27 @@ export function initCoffee(root: HTMLElement): () => void {
   let energy = ENERGY.start, cups = 0, state: State | null = null;
   // the face shown, and a timer that walks it one frame at a time towards the energy's frame (so a coffee plays
   // through every expression in between instead of cutting)
-  let shown = frameFor(energy), walk = 0, gaze = 0;
-  const follows = gazes.length > 0 && window.matchMedia('(hover: hover)').matches;
-  // at the sleepiest frame, one of the gaze faces stands in for it (the eyes on the pointer)
+  let shown = frameFor(energy), walk = 0;
+  // at the sleepiest frame, the face with drawn eyes stands in for it
   const paint = () => {
-    const yearning = follows && shown === 0;
+    const yearning = Boolean(eyes) && shown === 0;
     frames.forEach((f, k) => f.classList.toggle('is-on', k === shown && !yearning));
-    gazes.forEach((g, k) => g.classList.toggle('is-on', yearning && k === gaze));
+    eyes?.classList.toggle('is-on', yearning);
   };
   const show = (i: number) => { shown = i; paint(); };
-  if (follows) {
+  // the irises ease towards where the pointer is, one animation frame at a time, only while they're showing
+  if (eyes && window.matchMedia('(hover: hover)').matches) {
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const step = () => {
+      x += (tx - x) * EYES.ease; y += (ty - y) * EYES.ease;
+      for (const g of irises) g.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.02 ? requestAnimationFrame(step) : 0;
+    };
     window.addEventListener('pointermove', (e) => {
       if (e.pointerType === 'touch' || shown !== 0) return;
       const r = face.getBoundingClientRect();
-      const next = gazeFor(e.clientX - (r.left + r.width * GAZE_FOLLOW.eyes.x), e.clientY - (r.top + r.height * GAZE_FOLLOW.eyes.y));
-      if (next !== gaze) { gaze = next; paint(); }
+      ({ x: tx, y: ty } = irisFor(e.clientX - (r.left + r.width * EYES.centre.x), e.clientY - (r.top + r.height * EYES.centre.y)));
+      if (!raf) raf = requestAnimationFrame(step);
     }, { passive: true });
   }
   const follow = () => {

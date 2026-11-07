@@ -213,6 +213,13 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Case study sections (Ed): Overview (band), the finished work (showreel), then Context, Problem, Process, Solution, Results. Regrouped by `art/round12/restructure.py`, nothing dropped: My role -> Context; Goals -> "What we set out to do" under Problem; Discover/Research (and the first Develop paragraphs where they're about method) -> Process; the designs and Launch and test -> Solution, which opens with a new one-line lead per case study (Ed to check); Outcomes, Learnings ("What I learned") and Next steps ("What's next") -> Results. Galleries relabelled (Solution, Process).
 - CMS: Keystatic runs locally only (`storage: local`): start the dev server and open /keystatic; edits save into the repo files, then commit and push to publish.
 
+## Round 12j (2026-11-07)
+
+- Hero: a "Scroll" cue with a line that draws downward, bottom centre of the first screen (or of the hero, if that ends first on phones); fades out once you scroll; still for reduced motion and Pause motion.
+- Coffee eyes, smooth: the nine gaze frames are gone. The sleepiest face has its irises painted out (`public/about/face-eyes.webp`, `art/round12/eyes-build.mjs`, eye openings measured as lid curves into `src/data/eyes.json`) and the page draws the irises (gradient iris, pupil, catchlight) clipped to each opening, easing towards the pointer every frame (`EYES`, `irisFor()` in coffee.ts). Touch screens: they look straight out.
+- About: Proven results numbers larger (clamp 2.5-3.75rem), no case study links (just the project name, small). "Outside of work" is the page's one cobalt-drenched band (white type, large titles); "Fitness" replaces "Gym and HYROX" with Ed's words.
+- Acknowledgement of Country: the two flags side by side.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.

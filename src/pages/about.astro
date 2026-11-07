@@ -5,6 +5,7 @@ import { site } from '../data/site';
 import { LINES, ENERGY, FRAMES, LOW, stateFor, frameFor } from '../scripts/coffee';
 import ProvenResults from '../components/ProvenResults.astro';
 import CoffeeCup from '../components/CoffeeCup.astro';
+import EYE_SHAPES from '../data/eyes.json';
 import { photos } from '../data/about-photos';
 // Where Ed has worked, newest first: just the places (Ed, round 12; the detail lives on the resume and in the case
 // studies).
@@ -75,10 +76,28 @@ const startFrame = frameFor(ENERGY.start);
           <img class:list={['coffee__img', { 'is-on': i === startFrame }]} data-frame={i} src={`/about/face-${i + 1}.webp`}
             alt="" width="800" height="800" loading={i === startFrame ? 'eager' : 'lazy'} decoding="async" />
         ))}
-        {/* out of energy, his eyes follow the mouse (coffee.ts, GAZE_FOLLOW) */}
-        {Array.from({ length: 9 }, (_, i) => (
-          <img class="coffee__img coffee__gaze" data-gaze={i} src={`/about/gaze-${i}.webp`} alt="" width="800" height="800" loading="eager" decoding="async" />
-        ))}
+        {/* out of energy, his eyes follow the mouse: the face without irises, and the irises drawn over it, each
+             clipped to its eye's opening so the lids sit over them (coffee.ts, EYES; art/round12/eyes-build.mjs) */}
+        <span class="coffee__img coffee__eyes" data-eyes>
+          <img src="/about/face-eyes.webp" alt="" width="800" height="800" decoding="async" />
+          <svg viewBox="0 0 800 800" aria-hidden="true" focusable="false">
+            <defs>
+              <radialGradient id="iris-paint" cx="0.45" cy="0.42" r="0.62">
+                <stop offset="0" stop-color="#6b69cf" /><stop offset="0.6" stop-color="#4a47c0" /><stop offset="1" stop-color="#2420a6" />
+              </radialGradient>
+              {EYE_SHAPES.map((e, i) => <clipPath id={`eye-open-${i}`}><path d={e.clip} /></clipPath>)}
+            </defs>
+            {EYE_SHAPES.map((e, i) => (
+              <g clip-path={`url(#eye-open-${i})`}>
+                <g data-iris>
+                  <circle cx={e.iris[0]} cy={e.iris[1]} r={e.r} fill="url(#iris-paint)" stroke="#1f1c9f" stroke-width="1.4" />
+                  <circle cx={e.iris[0]} cy={e.iris[1]} r={e.r * 0.42} fill="#120f7e" />
+                  <circle cx={e.iris[0] + e.r * 0.3} cy={e.iris[1] - e.r * 0.32} r={e.r * 0.2} fill="#fff" />
+                </g>
+              </g>
+            ))}
+          </svg>
+        </span>
       </button>
       <CoffeeCup class="coffee__sip" data-sip-cup />
       </div>
@@ -132,18 +151,20 @@ const startFrame = frameFor(ENERGY.start);
   </section>
 
   <!-- outside of work (Ed, round 12): the gym and HYROX, and the side projects in the Workshop -->
-  <section class="offwork wrap" aria-labelledby="ab-offwork">
-    <h2 id="ab-offwork">Outside of work</h2>
-    <div class="offwork__list">
-      <article class="offwork__item">
-        <h3>Gym and HYROX</h3>
-        <p>I’m a gym junkie, and I train for HYROX: eight 1km runs, each one followed by a workout station. It’s the one place I’m happy to be timed.</p>
-      </article>
-      <article class="offwork__item">
-        <h3>Side projects</h3>
-        <p>When something bugs me, I build a fix. A lap timer for HYROX racers and a site that explains attachment styles are on the bench right now.</p>
-        <a class="offwork__link" href="/workshop/">See the Workshop<span aria-hidden="true"> →</span></a>
-      </article>
+  <section class="offwork" aria-labelledby="ab-offwork">
+    <div class="wrap offwork__inner">
+      <h2 id="ab-offwork">Outside of work</h2>
+      <div class="offwork__list">
+        <article class="offwork__item">
+          <h3>Fitness</h3>
+          <p>I love looking after my body. It’s how I de-stress, and it keeps me growing, pushing myself to do things I didn’t think were possible.</p>
+        </article>
+        <article class="offwork__item">
+          <h3>Side projects</h3>
+          <p>When something bugs me, I build a fix. A lap timer for HYROX racers and a site that explains attachment styles are on the bench right now.</p>
+          <a class="offwork__link" href="/workshop/">See the Workshop<span aria-hidden="true"> →</span></a>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -187,8 +208,8 @@ const startFrame = frameFor(ENERGY.start);
   .coffee__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in; }
   .coffee__img.is-on { transition: opacity 0.28s ease-out; }
   .coffee__img.is-on { opacity: 1; }
-  /* the eyes move quickly between gaze faces, still a crossfade so they never jump */
-  .coffee__gaze, .coffee__gaze.is-on { transition-duration: 0.14s; }
+  /* the drawn-eyes face: the painting and the irises' svg stacked, the svg in the painting's own 800px units */
+  .coffee__eyes img, .coffee__eyes svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .coffee__face.is-sip { animation: coffee-sip 0.45s var(--ease-standard); }
   @keyframes coffee-sip { 40% { transform: translateY(-6px) scale(1.02); } }
   .coffee__line { margin: 0.15rem 0 0; min-height: 1.5em; text-align: center; font-family: var(--font-display); font-style: italic; font-size: var(--text-lg); color: var(--text-brand); }
@@ -260,15 +281,18 @@ const startFrame = frameFor(ENERGY.start);
   .sign__kind { margin: 0; font-weight: var(--fw-semibold); color: var(--text-primary); }
   .sign__body { margin: var(--space-xs) 0 0; max-width: 44ch; text-wrap: pretty; }
 
-  /* outside of work: two short pieces side by side under a rule, the names in display serif */
-  .offwork { padding-block: 0 var(--space-2xl); }
-  .offwork h2 { font-size: var(--step-3); margin: 0; }
-  .offwork__list { display: grid; gap: var(--space-l) var(--space-2xl); margin-top: var(--space-l); padding-top: var(--space-l); border-top: var(--rule); }
+  /* outside of work: the one cobalt-drenched band on the page (Ed, round 12: it read too like the rest), paper-white
+     type, the two pieces large and side by side. Contrast on blue-700: paper 9.5:1, blue-100 7.1:1 */
+  .offwork { background: var(--surface-brand); color: var(--paper-50); padding-block: var(--space-2xl); margin-bottom: var(--space-2xl); }
+  .offwork h2 { font-size: var(--step-3); margin: 0; color: var(--paper-0); }
+  .offwork__list { display: grid; gap: var(--space-xl) var(--space-2xl); margin-top: var(--space-xl); }
   @media (min-width: 48rem) { .offwork__list { grid-template-columns: 1fr 1fr; } }
-  .offwork__item { display: grid; align-content: start; gap: var(--space-xs); }
-  .offwork__item h3 { margin: 0; font-size: var(--fluid-display-md); color: var(--cobalt); }
-  .offwork__item p { margin: 0; max-width: 46ch; text-wrap: pretty; }
-  .offwork__link { margin-top: var(--space-xs); font-weight: var(--fw-semibold); }
+  .offwork__item { display: grid; align-content: start; gap: var(--space-s); padding-top: var(--space-m); border-top: 1px solid rgb(255 255 255 / 0.35); }
+  .offwork__item h3 { margin: 0; font-size: var(--fluid-display-xl); line-height: 1; color: var(--paper-0); }
+  .offwork__item p { margin: 0; max-width: 40ch; font-size: var(--step-1); line-height: var(--lh-normal); color: var(--blue-100); text-wrap: pretty; }
+  .offwork__link { margin-top: var(--space-xs); justify-self: start; font-weight: var(--fw-semibold); color: var(--paper-0); }
+  .offwork__link:hover { color: var(--blue-100); }
+  .offwork :focus-visible { outline-color: var(--paper-0); }
 
   /* photos of Ed, once added: a row that scrolls sideways on phones */
   .snaps { padding-bottom: var(--space-2xl); }
