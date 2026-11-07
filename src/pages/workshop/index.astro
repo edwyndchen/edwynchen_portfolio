@@ -65,7 +65,10 @@ const skills = skillsOf(entries);
   /* the words on a plain white patch, lined up with the page's text column */
   .ws-head .ws-head__inner {
     margin-block: clamp(2rem, 5vw, 4rem); margin-inline: max(var(--gutter), (100% - var(--max)) / 2) auto;
-    justify-self: start; max-width: 34rem; padding: var(--space-l); background: var(--surface-raised); box-shadow: var(--shadow-sm);
+    justify-self: start; max-width: 34rem; padding: var(--space-l); box-shadow: var(--shadow-sm);
+    /* frosted: the lattice blurs softly through the white (Ed, round 12) */
+    background: rgb(255 255 255 / 0.62); backdrop-filter: blur(10px) saturate(1.1); -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgb(255 255 255 / 0.7);
   }
   /* phones: the plaque sits low in a taller window, so a band of lattice shows above it */
   @media (max-width: 47.99rem) {

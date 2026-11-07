@@ -28,8 +28,20 @@ const inWorkshop = here.startsWith(site.workshop.href);
     </nav>
   </div>
 </header>
+<!-- the Pause motion toast: bottom centre, fades in and out (a status message, read out politely) -->
+<p class="motion-toast" role="status" aria-live="polite" data-motion-toast></p>
 
 <style>
+  .motion-toast {
+    position: fixed; left: 50%; bottom: max(1.25rem, env(safe-area-inset-bottom)); z-index: 70; translate: -50% 0.75rem;
+    margin: 0; padding: 0.7rem 1.15rem; border-radius: 999px; pointer-events: none;
+    background: var(--surface-invert); color: var(--text-on-invert); box-shadow: var(--shadow-md, 0 8px 24px rgb(13 11 69 / 0.25));
+    font-size: var(--text-sm); font-weight: var(--fw-semibold); letter-spacing: 0.01em; white-space: nowrap;
+    opacity: 0; transition: opacity 0.25s var(--ease-standard), translate 0.25s var(--ease-standard);
+  }
+  .motion-toast:empty { padding: 0; }
+  .motion-toast.is-on { opacity: 1; translate: -50% 0; }
+  @media (prefers-reduced-motion: reduce) { .motion-toast { translate: -50% 0; transition: opacity 0.2s linear; } }
   /* DS nav: transparent over the top of the page, gains the ivory backing and a hairline once scrolled */
   .nav {
     position: sticky; top: 0; z-index: 50;
@@ -102,7 +114,20 @@ const inWorkshop = here.startsWith(site.workshop.href);
       motion.title = paused ? 'Play motion' : 'Pause motion';
     };
     sync();
-    motion.addEventListener('click', () => { setMotionPaused(!isMotionPaused()); sync(); });
+    // a toast says what just happened (Ed, round 12), read out too: it's a polite live region
+    const toast = document.querySelector<HTMLElement>('[data-motion-toast]');
+    let hide = 0;
+    const say = (text: string) => {
+      if (!toast) return;
+      toast.textContent = text;
+      toast.classList.add('is-on');
+      window.clearTimeout(hide);
+      hide = window.setTimeout(() => toast.classList.remove('is-on'), 2400);
+    };
+    motion.addEventListener('click', () => {
+      setMotionPaused(!isMotionPaused()); sync();
+      say(isMotionPaused() ? 'Animations paused' : 'Animations playing');
+    });
   }
   if (nav) {
     const update = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);

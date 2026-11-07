@@ -227,6 +227,11 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Workshop header: the lattice runs the full width of the page (rails top and bottom only); the title and line sit on a plain white patch aligned with the text column.
 - Workshop project pages: no "Workshop" back link; the write-up starts close under the band (desktop: the first heading level with On this page; phones: the tabs flush under the band).
 
+## Round 12l (2026-11-07)
+
+- Pause motion shows a toast, bottom centre: "Animations paused" / "Animations playing" (a polite status region in Nav.astro, fades out after 2.4s).
+- Workshop header patch is frosted: translucent white with a 10px backdrop blur, so the lattice softens through it.
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
