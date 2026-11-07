@@ -11,9 +11,9 @@ const skills = skillsOf(entries);
 ---
 <BaseLayout title={`Workshop | ${site.name}`} description="Personal projects and experiments by Edwyn Chen.">
   <!-- the header: a painted lattice set in a framed window, hard edges and mitred corners, like part of the wall,
-       with the words on a framed paper plaque set into it (Ed, round 12, layout B; the frame is the brands window's own
-       moulding, art/round12/frame-build.mjs) -->
-  <header class="ws-head wrap">
+       with the words on a white patch over it (Ed, round 12: the lattice runs the full width of the page, the rails
+       top and bottom only; the frame is the brands window's own moulding, art/round12/frame-build.mjs) -->
+  <header class="ws-head">
     <div class="ws-head__window" aria-hidden="true">
       <div class="ws-head__lattice" style="--lattice: url(/workshop/lattice-octagon.webp)"></div>
     </div>
@@ -48,9 +48,9 @@ const skills = skillsOf(entries);
 
 <style>
   /* the frame: nine-slice of the painted moulding; the lattice fills the opening edge to edge, no fades */
-  .ws-head { --frame: clamp(14px, 1.6vw, 22px); position: relative; padding-block: var(--space-xl); display: grid; gap: var(--space-l); align-items: stretch; }
+  .ws-head { --frame: clamp(14px, 1.6vw, 22px); position: relative; margin-block: var(--space-xl); display: grid; gap: var(--space-l); align-items: stretch; }
   .ws-head__window {
-    border: var(--frame) solid transparent; border-image: url(/workshop/frame.webp) 36 stretch;
+    border-block: var(--frame) solid transparent; border-inline: 0; border-image: url(/workshop/frame.webp) 36 0 stretch;
     background: var(--surface-raised); min-height: 12rem;
   }
   /* the lattice a touch deeper than the painting, nearer the frame's cobalt */
@@ -62,15 +62,15 @@ const skills = skillsOf(entries);
   .ws-head { grid-template-areas: 'all'; }
   .ws-head > * { grid-area: all; }
   .ws-head .ws-head__window { min-height: 22rem; }
+  /* the words on a plain white patch, lined up with the page's text column */
   .ws-head .ws-head__inner {
-    margin: clamp(1.5rem, 4vw, 3.5rem); justify-self: start; max-width: 34rem;
-    padding: var(--space-l); background: var(--surface-raised);
-    border: var(--frame) solid transparent; border-image: url(/workshop/frame.webp) 36 stretch;
+    margin-block: clamp(2rem, 5vw, 4rem); margin-inline: max(var(--gutter), (100% - var(--max)) / 2) auto;
+    justify-self: start; max-width: 34rem; padding: var(--space-l); background: var(--surface-raised); box-shadow: var(--shadow-sm);
   }
   /* phones: the plaque sits low in a taller window, so a band of lattice shows above it */
   @media (max-width: 47.99rem) {
     .ws-head .ws-head__window { min-height: 30rem; }
-    .ws-head .ws-head__inner { align-self: end; margin: 1rem; padding: var(--space-m); }
+    .ws-head .ws-head__inner { align-self: end; margin: var(--space-m) var(--gutter); padding: var(--space-m); }
   }
   .ws { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
   .ws__skills { margin-bottom: var(--space-l); }

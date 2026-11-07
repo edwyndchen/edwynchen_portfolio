@@ -220,6 +220,13 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - About: Proven results numbers larger (clamp 2.5-3.75rem), no case study links (just the project name, small). "Outside of work" is the page's one cobalt-drenched band (white type, large titles); "Fitness" replaces "Gym and HYROX" with Ed's words.
 - Acknowledgement of Country: the two flags side by side.
 
+## Round 12k (2026-11-07)
+
+- Acknowledgement of Country: the words take the band's full width (`.country__text` grows; the global paragraph cap lifted there).
+- Scroll cue: a frosted paper pill (hairline, soft shadow) holding "Scroll" and a small arrow that nudges down.
+- Workshop header: the lattice runs the full width of the page (rails top and bottom only); the title and line sit on a plain white patch aligned with the text column.
+- Workshop project pages: no "Workshop" back link; the write-up starts close under the band (desktop: the first heading level with On this page; phones: the tabs flush under the band).
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.

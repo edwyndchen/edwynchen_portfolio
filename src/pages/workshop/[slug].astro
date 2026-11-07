@@ -40,7 +40,6 @@ const glance = [
     <header class="wsp-band">
       <div class="wrap wsp-band__inner">
         <div>
-          <p class="wsp-back"><a href="/workshop/"><span aria-hidden="true">← </span>Workshop</a></p>
           <h1>{d.title}</h1>
           <ul class="wsp-band__tags" aria-label="Tags">
             <li>{STATUS_LABEL[d.status]}</li>
@@ -86,8 +85,6 @@ const glance = [
   }
   .wsp-band__inner { display: grid; gap: var(--space-xl); }
   @media (min-width: 60rem) { .wsp-band__inner { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); column-gap: var(--space-2xl); } }
-  .wsp-back { margin: 0 0 var(--space-s); }
-  .wsp-back a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--fw-semibold); color: var(--paper-0); }
   .wsp-band h1 { font-size: var(--fluid-display-xl); color: var(--paper-0); margin: 0 0 var(--space-m); max-width: 16ch; }
   .wsp-band__tags { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .wsp-band__tags li {
@@ -104,7 +101,10 @@ const glance = [
   .wsp-glance dl div { border-top: var(--rule-hair); padding-top: var(--space-3); }
   .wsp-glance dt { margin-bottom: var(--space-1); color: var(--text-secondary); }
   .wsp-glance dd { margin: 0; }
-  .wsp-body { padding-block: var(--space-2xl) var(--space-xl); display: grid; gap: var(--space-l); }
+  /* the tabs (phones) or On this page column sit close under the band (Ed, round 12: the gap was too big) */
+  .wsp-body { padding-block: var(--space-l) var(--space-xl); display: grid; gap: var(--space-m); }
+  .wsp-body :global(.prose article > h2:first-child) { margin-top: 0; }
+  @media (max-width: 59.99rem) { .wsp-body { padding-top: 0; } .wsp-body :global(.prose article > h2:first-child) { margin-top: var(--space-l); } }
   @media (min-width: 60rem) { .wsp-body { grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--space-2xl); } }
   .wsp-body :global(.prose h2) { scroll-margin-top: 6rem; }
   @media (max-width: 59.99rem) { .wsp-body :global(.prose h2) { scroll-margin-top: 8.5rem; } }

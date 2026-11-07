@@ -32,7 +32,7 @@ const year = new Date().getFullYear();
       <!-- copyright: Torres Strait Island Regional Council; shown here as part of the Acknowledgement -->
       <li><img src="/flags/torres-strait-islander.svg" alt="Torres Strait Islander flag" width="72" height="36" /></li>
     </ul>
-    <div>
+    <div class="country__text">
       <h2 id="country-title" class="label">Acknowledgement of Country</h2>
       <p>I live and work on the lands of the Wurundjeri Woi-wurrung people of the Kulin Nation. I pay my respects to their Elders, past and present, and to all Aboriginal and Torres Strait Islander peoples.</p>
     </div>
@@ -84,7 +84,9 @@ const year = new Date().getFullYear();
   /* exactly the same size (both drawn at 1:2) */
   .country__flags img { display: block; width: 72px; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
   .country h2 { color: var(--gold-text); margin: 0 0 var(--space-2); }
-  .country p { margin: 0; max-width: 70ch; font-size: var(--text-sm); color: var(--text-primary); }
+  /* the words take the rest of the band's width (Ed, round 12: they stopped short) */
+  .country__text { flex: 1 1 20rem; min-width: 0; }
+  .country p { margin: 0; max-width: none; font-size: var(--text-sm); color: var(--text-primary); }
 </style>
 
 <script>
