@@ -79,8 +79,8 @@ const year = new Date().getFullYear();
 
   .country { background: var(--surface-page); border-top: 4px solid var(--surface-invert); }
   .country__inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-m) var(--space-l); padding-block: var(--space-l); }
-  /* side by side (Ed, round 12: stacked, they took too much room on phones) */
-  .country__flags { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-xs); }
+  /* stacked (Ed, round 12: back to stacked after trying side by side) */
+  .country__flags { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-xs); }
   /* exactly the same size (both drawn at 1:2) */
   .country__flags img { display: block; width: 72px; height: 36px; box-shadow: 0 0 0 1px var(--border-hairline); }
   .country h2 { color: var(--gold-text); margin: 0 0 var(--space-2); }

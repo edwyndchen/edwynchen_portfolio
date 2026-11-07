@@ -232,6 +232,12 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Pause motion shows a toast, bottom centre: "Animations paused" / "Animations playing" (a polite status region in Nav.astro, fades out after 2.4s).
 - Workshop header patch is frosted: translucent white with a 10px backdrop blur, so the lattice softens through it.
 
+## Round 12m (2026-11-07)
+
+- Acknowledgement flags stacked again (Ed).
+- Proven results: just the number and its label (project names gone), more space between them.
+- Outside of work: the section title is the big one (display-xl); Fitness and Side projects one step under it (display-md).
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
