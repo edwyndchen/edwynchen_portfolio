@@ -48,7 +48,8 @@ const skills = skillsOf(entries);
 
 <style>
   /* the frame: nine-slice of the painted moulding; the lattice fills the opening edge to edge, no fades */
-  .ws-head { --frame: clamp(14px, 1.6vw, 22px); position: relative; margin-block: var(--space-xl); display: grid; gap: var(--space-l); align-items: stretch; }
+  /* flush under the nav (Ed, round 12: there was a gap) */
+  .ws-head { --frame: clamp(14px, 1.6vw, 22px); position: relative; margin-block: 0 var(--space-xl); display: grid; gap: var(--space-l); align-items: stretch; }
   .ws-head__window {
     border-block: var(--frame) solid transparent; border-inline: 0; border-image: url(/workshop/frame.webp) 36 0 stretch;
     background: var(--surface-raised); min-height: 12rem;
@@ -65,15 +66,22 @@ const skills = skillsOf(entries);
   /* the words on a plain white patch, lined up with the page's text column */
   .ws-head .ws-head__inner {
     margin-block: clamp(2rem, 5vw, 4rem); margin-inline: max(var(--gutter), (100% - var(--max)) / 2) auto;
-    justify-self: start; max-width: 34rem; padding: var(--space-l); box-shadow: var(--shadow-sm);
-    /* frosted: the lattice blurs softly through the white (Ed, round 12) */
-    background: rgb(255 255 255 / 0.62); backdrop-filter: blur(10px) saturate(1.1); -webkit-backdrop-filter: blur(10px) saturate(1.1);
-    border: 1px solid rgb(255 255 255 / 0.7);
+    justify-self: start; max-width: 34rem; padding: var(--space-l); position: relative; isolation: isolate;
+  }
+  /* frosted, and feathered: the white and the blur fade out towards every edge, so the patch melts into the lattice
+     with no hard corners (Ed, round 12). The frost sits on a layer behind the words, reaching past the box. */
+  .ws-head .ws-head__inner::before {
+    content: ''; position: absolute; inset: -3rem -5rem; z-index: -1; pointer-events: none;
+    background: rgb(255 255 255 / 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    -webkit-mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 74%, transparent 100%);
   }
   /* phones: the plaque sits low in a taller window, so a band of lattice shows above it */
   @media (max-width: 47.99rem) {
     .ws-head .ws-head__window { min-height: 30rem; }
-    .ws-head .ws-head__inner { align-self: end; margin: var(--space-m) var(--gutter); padding: var(--space-m); }
+    .ws-head .ws-head__inner { align-self: end; margin: var(--space-m) var(--gutter) calc(var(--frame) + 1.75rem); padding: var(--space-m); }
+    /* the frost stays inside the window, clear of the bottom rail */
+    .ws-head .ws-head__inner::before { inset: -1.5rem -2.5rem; }
   }
   .ws { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
   .ws__skills { margin-bottom: var(--space-l); }

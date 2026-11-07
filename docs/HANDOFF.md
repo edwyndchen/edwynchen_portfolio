@@ -238,6 +238,11 @@ latency, plus GPU load that hurts weaker devices. Fixes:
 - Proven results: just the number and its label (project names gone), more space between them.
 - Outside of work: the section title is the big one (display-xl); Fitness and Side projects one step under it (display-md).
 
+## Round 12n (2026-11-07)
+
+- Workshop header flush under the nav. Every lattice flower is five-petal now: the four-petal ones in the small squares replaced by the painting's own five-petal flower (`art/round12/lattice-petals.mjs`, from `art/round12/lattice-octagon-before.webp`; petal-shaped mask, the horizontal bar kept behind). The frosted patch feathers out on every side (a radial mask on `.ws-head__inner::before`); on phones it stays inside the window, clear of the bottom rail.
+- Acknowledgement flags: stacked beside the words on wide screens, side by side on phones (where the words drop underneath).
+
 ## Next steps
 
 Everything through round 12 is committed and pushed to GitHub (`main`) and live on Vercel: https://edwynchen-portfolio.vercel.app.
